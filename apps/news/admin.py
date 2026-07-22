@@ -1,7 +1,5 @@
 from django.contrib import admin
-
-from .models import NewsArticle, CredibilityReview
-
+from .models import NewsArticle, CredibilityReview, Vote
 
 @admin.register(NewsArticle)
 class NewsArticleAdmin(admin.ModelAdmin):
@@ -33,3 +31,7 @@ class CredibilityReviewAdmin(admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None):
         return False
+@admin.register(Vote)
+class VoteAdmin(admin.ModelAdmin):
+    list_display = ("article", "user", "rating", "updated_at")
+    list_filter = ("rating",)

@@ -1,6 +1,7 @@
-from django.conf import settings
 from django.db import models
+from django.conf import settings
 from django.urls import reverse
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 class NewsArticle(models.Model):
@@ -96,3 +97,46 @@ class CredibilityReview(models.Model):
 
     def __str__(self):
         return f"{self.article.title}: {self.previous_status} → {self.new_status}"
+
+class Vote(models.Model):
+    """
+    One credibility rating (1-5) from one user on one article.
+    A user can only have one vote per article.
+    """
+
+    article = models.ForeignKey(
+        NewsArticle,
+        on_delete=models.CASCADE,
+        related_name="votes",
+    )
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="votes_cast",
+    )
+
+    rating = models.PositiveSmallIntegerField(
+        validators=[
+            MinValueValidator(1),
+            MaxValueValidator(5)
+        ],
+        help_text="1 = not credible, 5 = highly credible",
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["article", "user"],
+                name="one_vote_per_user_per_article",
+            )
+        ]
+
+
+    def __str__(self):
+        return f"{self.user} rated {self.article} = {self.rating}"

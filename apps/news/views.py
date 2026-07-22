@@ -1,9 +1,15 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import render, redirect, get_object_or_404
+
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.decorators import login_required
+
 from django.views.generic import ListView, DetailView, CreateView
 
-from .forms import NewsSubmissionForm, StatusChangeForm
-from .models import NewsArticle, CredibilityReview
+from django.db.models import Avg, Count
+
+from .forms import NewsSubmissionForm, StatusChangeForm, VoteForm
+from .models import NewsArticle, CredibilityReview, Vote
 
 class ArticleListView(ListView):
     model = NewsArticle
@@ -16,6 +22,37 @@ class ArticleDetailView(DetailView):
     model = NewsArticle
     template_name = "news/article_detail.html"
     context_object_name = "article"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        score = self.object.votes.aggregate(
+            average=Avg("rating"),
+            count=Count("id")
+        )
+
+        average_rating = score["average"]
+
+        context["average_rating"] = average_rating
+        context["vote_count"] = score["count"]
+
+        context["average_rating_percent"] = (
+            round((average_rating / 5) * 100)
+            if average_rating is not None
+            else None
+        )
+
+        if self.request.user.is_authenticated:
+            existing_vote = Vote.objects.filter(
+                article=self.object,
+                user=self.request.user
+            ).first()
+
+            context["vote_form"] = VoteForm(
+                instance=existing_vote
+            )
+
+        return context
 
 
 class ArticleCreateView(LoginRequiredMixin, CreateView):
@@ -146,3 +183,20 @@ def review_article(request, pk):
             "article": article,
         }
     )
+
+@login_required
+def cast_vote(request, pk):
+    article = get_object_or_404(NewsArticle, pk=pk)
+
+    if request.method == "POST":
+        form = VoteForm(request.POST)
+        if form.is_valid():
+            Vote.objects.update_or_create(
+                article=article,
+                user=request.user,
+                defaults={
+                    "rating": form.cleaned_data["rating"]
+                },
+            )
+
+    return redirect(article.get_absolute_url())

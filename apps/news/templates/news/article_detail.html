@@ -34,7 +34,52 @@
         View Original Source
     </a>
 
+<hr>
 
+<h4>Credibility Score</h4>
+
+{% if vote_count %}
+    <p>
+        <strong>{{ average_rating|floatformat:1 }} / 5</strong>
+        ({{ average_rating_percent }}%)
+        · {{ vote_count }} vote{{ vote_count|pluralize }}
+    </p>
+{% else %}
+    <p class="text-muted">
+        No votes yet — be the first to rate this article.
+    </p>
+{% endif %}
+
+
+{% if user.is_authenticated %}
+
+<form method="post" action="{% url 'news:article_vote' article.pk %}">
+    {% csrf_token %}
+
+    <div>
+    {{ vote_form.rating }}
+    </div>
+
+    <button type="submit" class="btn btn-success ms-2">
+        {% if vote_form.instance.pk %}
+            Update Rating
+        {% else %}
+            Rate Article
+        {% endif %}
+    </button>
+
+</form>
+
+{% else %}
+
+<p>
+    <a href="{% url 'accounts:login' %}">
+        Log in
+    </a>
+    to rate this article.
+</p>
+
+{% endif %}
     {% if article.review_history.exists %}
     <hr>
 

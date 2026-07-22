@@ -1,7 +1,6 @@
 from django import forms
 
-from .models import NewsArticle
-
+from .models import NewsArticle, CredibilityReview, Vote
 
 class NewsSubmissionForm(forms.ModelForm):
     class Meta:
@@ -39,3 +38,13 @@ class StatusChangeForm(forms.Form):
             )
 
         return new_status
+
+class VoteForm(forms.ModelForm):
+    class Meta:
+        model = Vote
+        fields = ["rating"]
+        widgets = {
+            "rating": forms.RadioSelect(
+                choices=[(i, i) for i in range(1, 6)]
+            ),
+        }
