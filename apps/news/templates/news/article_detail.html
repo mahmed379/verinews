@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}{{ article.title }} — VeriNews{% endblock %}
+
+{% block content %}
+
+<article>
+
+    <div class="d-flex justify-content-between align-items-start">
+        <h1>{{ article.title }}</h1>
+
+        <span class="badge text-bg-secondary fs-6">
+            {{ article.get_status_display }}
+        </span>
+    </div>
+
+
+    <p class="text-muted">
+        {{ article.get_category_display }}
+        · submitted by {{ article.submitted_by }}
+        on {{ article.created_at|date:"M d, Y" }}
+    </p>
+
+
+    <p>
+        {{ article.description|linebreaks }}
+    </p>
+
+
+    <a href="{{ article.source_url }}"
+       target="_blank"
+       rel="noopener noreferrer"
+       class="btn btn-outline-secondary">
+        View Original Source
+    </a>
+
+</article>
+
+{% endblock %}
