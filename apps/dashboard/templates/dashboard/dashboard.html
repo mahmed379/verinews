@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — VeriNews{% endblock %}
+
+{% block content %}
+
+<h1 class="mb-4">Your Dashboard</h1>
+
+
+{% if user.is_staff %}
+
+<div class="card mb-4 border-primary">
+
+    <div class="card-header bg-primary text-white">
+        Staff Overview
+    </div>
+
+    <div class="card-body">
+
+        <div class="row text-center">
+
+            <div class="col">
+                <h3>{{ pending_review_count }}</h3>
+                <p class="text-muted">Pending Review</p>
+            </div>
+
+            <div class="col">
+                <h3>{{ open_report_count }}</h3>
+                <p class="text-muted">Open Reports</p>
+            </div>
+
+            <div class="col">
+                <h3>{{ total_articles }}</h3>
+                <p class="text-muted">Total Articles</p>
+            </div>
+
+            <div class="col">
+                <h3>{{ total_users }}</h3>
+                <p class="text-muted">Total Users</p>
+            </div>
+
+        </div>
+
+
+        <a href="{% url 'news:moderation_queue' %}" class="btn btn-primary btn-sm">
+            Go to Moderation Queue
+        </a>
+
+
+        {% if recent_reviews %}
+
+        <h5 class="mt-4">Recent Status Changes</h5>
+
+        <ul>
+
+        {% for review in recent_reviews %}
+
+            <li>
+                <a href="{{ review.article.get_absolute_url }}">
+                    {{ review.article.title }}
+                </a>
+
+                →
+                {{ review.get_new_status_display }}
+
+            </li>
+
+        {% endfor %}
+
+        </ul>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endif %}
+
+
+
+<div class="row">
+
+
+<!-- MY SUBMISSIONS -->
+
+<div class="col-md-6 mb-4">
+
+<h4>My Submissions</h4>
+
+<p class="text-muted">
+
+{{ submission_counts.pending }} Pending |
+{{ submission_counts.verified }} Verified |
+{{ submission_counts.disputed }} Disputed |
+{{ submission_counts.false }} False
+
+</p>
+
+
+{% for article in submissions %}
+
+<div class="border-bottom py-2">
+
+<a href="{{ article.get_absolute_url }}">
+{{ article.title }}
+</a>
+
+<span class="badge bg-secondary float-end">
+{{ article.get_status_display }}
+</span>
+
+</div>
+
+
+{% empty %}
+
+<p class="text-muted">
+You haven't submitted any articles yet.
+</p>
+
+{% endfor %}
+
+</div>
+
+
+
+
+
+<!-- MY VOTES -->
+
+<div class="col-md-6 mb-4">
+
+<h4>My Votes ({{ vote_count }} total)</h4>
+
+
+{% for vote in votes %}
+
+<div class="border-bottom py-2">
+
+<a href="{{ vote.article.get_absolute_url }}">
+{{ vote.article.title }}
+</a>
+
+<span class="badge bg-light text-dark float-end">
+{{ vote.rating }}/5
+</span>
+
+</div>
+
+
+{% empty %}
+
+<p class="text-muted">
+You haven't rated any articles yet.
+</p>
+
+{% endfor %}
+
+
+</div>
+
+
+
+
+
+<!-- MY COMMENTS -->
+
+<div class="col-md-6 mb-4">
+
+<h4>My Comments</h4>
+
+
+{% for comment in comments %}
+
+<div class="border-bottom py-2">
+
+<a href="{{ comment.article.get_absolute_url }}">
+{{ comment.article.title }}
+</a>
+
+<p class="text-muted small">
+{{ comment.body|truncatewords:15 }}
+</p>
+
+</div>
+
+
+{% empty %}
+
+<p class="text-muted">
+You haven't commented yet.
+</p>
+
+{% endfor %}
+
+
+</div>
+
+
+
+
+
+<!-- MY REPORTS -->
+
+<div class="col-md-6 mb-4">
+
+<h4>My Reports</h4>
+
+
+{% for report in reports %}
+
+<div class="border-bottom py-2">
+
+<a href="{{ report.article.get_absolute_url }}">
+{{ report.article.title }}
+</a>
+
+<br>
+
+<span class="badge bg-light text-dark">
+{{ report.get_reason_display }}
+</span>
+
+<span class="badge bg-secondary">
+{{ report.get_status_display }}
+</span>
+
+
+</div>
+
+
+{% empty %}
+
+<p class="text-muted">
+You haven't reported anything.
+</p>
+
+{% endfor %}
+
+
+</div>
+
+
+</div>
+
+
+{% endblock %}
