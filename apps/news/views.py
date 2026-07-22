@@ -16,6 +16,11 @@ class ArticleListView(ListView):
     context_object_name = "articles"
     paginate_by = 10
 
+    def get_queryset(self):
+        return NewsArticle.objects.annotate(
+            average_rating=Avg("votes__rating"),
+            vote_count=Count("votes"),
+        )
 
 class ArticleDetailView(DetailView):
     model = NewsArticle
