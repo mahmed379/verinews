@@ -27,4 +27,6 @@ urlpatterns = [
 
     # Comments
     path("comments/", include("apps.comments.urls")),
+    # reports
+    path("reports/", include("apps.reports.urls")),
 ]

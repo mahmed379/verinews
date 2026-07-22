@@ -27,12 +27,20 @@
     </p>
 
 
-    <a href="{{ article.source_url }}"
-       target="_blank"
-       rel="noopener noreferrer"
-       class="btn btn-outline-secondary">
-        View Original Source
+   <a href="{{ article.source_url }}"
+   target="_blank"
+   rel="noopener noreferrer"
+   class="btn btn-outline-secondary">
+    View Original Source
     </a>
+
+
+    {% if user.is_authenticated %}
+        <a href="{% url 'reports:report_article' article.pk %}"
+            class="btn btn-outline-danger ms-2">
+            Report
+        </a>
+    {% endif %}
 
 
 <hr>
