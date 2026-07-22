@@ -56,3 +56,43 @@ class NewsArticle(models.Model):
 
     def get_absolute_url(self):
         return reverse("news:article_detail", kwargs={"pk": self.pk})
+    
+class CredibilityReview(models.Model):
+    """
+    Stores every status change made by a moderator.
+    """
+
+    article = models.ForeignKey(
+        NewsArticle,
+        on_delete=models.CASCADE,
+        related_name="review_history",
+    )
+
+    reviewed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="reviews_made",
+    )
+
+    previous_status = models.CharField(
+        max_length=20,
+        choices=NewsArticle.Status.choices,
+    )
+
+    new_status = models.CharField(
+        max_length=20,
+        choices=NewsArticle.Status.choices,
+    )
+
+    reason = models.TextField(
+        help_text="Why the status was changed."
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.article.title}: {self.previous_status} → {self.new_status}"

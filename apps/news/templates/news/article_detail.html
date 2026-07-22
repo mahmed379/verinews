@@ -34,6 +34,39 @@
         View Original Source
     </a>
 
+
+    {% if article.review_history.exists %}
+    <hr>
+
+    <h4>Review History</h4>
+
+    {% for review in article.review_history.all %}
+
+    <div class="border-start ps-3 mb-3">
+
+        <p>
+            <strong>
+                {{ review.get_previous_status_display }}
+                →
+                {{ review.get_new_status_display }}
+            </strong>
+        </p>
+
+        <p class="text-muted">
+            Reviewed by {{ review.reviewed_by }}
+            on {{ review.created_at|date:"M d, Y" }}
+        </p>
+
+        <p>
+            {{ review.reason }}
+        </p>
+
+    </div>
+
+    {% endfor %}
+
+    {% endif %}
+
 </article>
 
 {% endblock %}

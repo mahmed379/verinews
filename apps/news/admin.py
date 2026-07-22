@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import NewsArticle
+from .models import NewsArticle, CredibilityReview
 
 
 @admin.register(NewsArticle)
@@ -12,13 +12,24 @@ class NewsArticleAdmin(admin.ModelAdmin):
         "submitted_by",
         "created_at",
     )
+    list_filter = ("category", "status")
+    search_fields = ("title", "description")
 
-    list_filter = (
-        "category",
-        "status",
+
+@admin.register(CredibilityReview)
+class CredibilityReviewAdmin(admin.ModelAdmin):
+    list_display = (
+        "article",
+        "previous_status",
+        "new_status",
+        "reviewed_by",
+        "created_at",
     )
 
-    search_fields = (
-        "title",
-        "description",
-    )
+    list_filter = ("new_status",)
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
