@@ -1,7 +1,10 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 
 from .models import User
 
-# Register our custom User model using Django's built-in admin interface.
-admin.site.register(User, UserAdmin)
+
+@admin.register(User)
+class UserAdmin(DjangoUserAdmin):
+    def has_delete_permission(self, request, obj=None):
+        return request.user.is_superuser
