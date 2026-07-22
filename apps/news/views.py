@@ -9,6 +9,8 @@ from django.db.models import Avg, Count
 
 from .forms import NewsSubmissionForm, StatusChangeForm, VoteForm
 from .models import NewsArticle, CredibilityReview, Vote
+from django.db import models
+from django.db.models import Avg, Count, Q
 
 class ArticleListView(ListView):
     model = NewsArticle
@@ -17,10 +19,60 @@ class ArticleListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return NewsArticle.objects.annotate(
+        queryset = NewsArticle.objects.annotate(
             average_rating=Avg("votes__rating"),
             vote_count=Count("votes"),
         )
+
+        # Keyword search
+        query = self.request.GET.get("q", "").strip()
+        if query:
+            queryset = queryset.filter(
+                Q(title__icontains=query) |
+                Q(description__icontains=query)
+            )
+
+        # Status filter
+        status = self.request.GET.get("status", "")
+        valid_statuses = NewsArticle.Status.values
+        if status in valid_statuses:
+            queryset = queryset.filter(status=status)
+
+        # Category filter
+        category = self.request.GET.get("category", "")
+        valid_categories = NewsArticle.Category.values
+        if category in valid_categories:
+            queryset = queryset.filter(category=category)
+
+        # Sorting
+        sort = self.request.GET.get("sort", "newest")
+
+        if sort == "oldest":
+            queryset = queryset.order_by("created_at")
+        elif sort == "top_rated":
+            queryset = queryset.order_by(
+                models.F("average_rating").desc(nulls_last=True)
+            )
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["current_query"] = self.request.GET.get("q", "")
+        context["current_status"] = self.request.GET.get("status", "")
+        context["current_category"] = self.request.GET.get("category", "")
+        context["current_sort"] = self.request.GET.get("sort", "newest")
+
+        context["status_choices"] = NewsArticle.Status.choices
+        context["category_choices"] = NewsArticle.Category.choices
+
+        # Preserve filters when changing pages
+        querydict = self.request.GET.copy()
+        querydict.pop("page", None)
+        context["querystring"] = querydict.urlencode()
+
+        return context
 
 class ArticleDetailView(DetailView):
     model = NewsArticle
