@@ -1,0 +1,9 @@
+-r base.txt
+
+# PostgreSQL driver — only needed where we actually connect to Postgres.
+psycopg[binary]==3.2.3
+
+# Production WSGI server. Django's runserver is for development only
+# (it's single-threaded and not hardened) — gunicorn is what actually
+# serves traffic in production. Covered in the Deployment milestone.
+gunicorn==23.0.0

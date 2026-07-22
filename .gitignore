@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+vir-env/
+
+# Django
+db.sqlite3
+staticfiles/
+media/
+
+# Secrets — never commit real environment values, only .env.example
+.env
+
+# Editor / OS cruft
+.vscode/
+.idea/
+.DS_Store

@@ -1,0 +1,4 @@
+# Packages needed everywhere (dev AND production).
+# Pinned versions = reproducible installs; nobody gets a surprise
+# breaking change because a package auto-updated.
+Django==5.0.14
