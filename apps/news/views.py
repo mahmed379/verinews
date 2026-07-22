@@ -59,7 +59,7 @@ class ArticleCreateView(LoginRequiredMixin, CreateView):
     model = NewsArticle
     form_class = NewsSubmissionForm
     template_name = "news/article_form.html"
-    login_url = "login"
+    login_url = "accounts:login"
 
     def form_valid(self, form):
         form.instance.submitted_by = self.request.user
