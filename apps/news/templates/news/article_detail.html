@@ -34,7 +34,9 @@
         View Original Source
     </a>
 
+
 <hr>
+
 
 <h4>Credibility Score</h4>
 
@@ -51,13 +53,15 @@
 {% endif %}
 
 
+
 {% if user.is_authenticated %}
 
 <form method="post" action="{% url 'news:article_vote' article.pk %}">
+
     {% csrf_token %}
 
     <div>
-    {{ vote_form.rating }}
+        {{ vote_form.rating }}
     </div>
 
     <button type="submit" class="btn btn-success ms-2">
@@ -70,6 +74,7 @@
 
 </form>
 
+
 {% else %}
 
 <p>
@@ -80,37 +85,147 @@
 </p>
 
 {% endif %}
-    {% if article.review_history.exists %}
-    <hr>
 
-    <h4>Review History</h4>
 
-    {% for review in article.review_history.all %}
 
-    <div class="border-start ps-3 mb-3">
+<!-- COMMENTS SECTION -->
 
-        <p>
-            <strong>
-                {{ review.get_previous_status_display }}
-                →
-                {{ review.get_new_status_display }}
-            </strong>
-        </p>
+<hr>
 
-        <p class="text-muted">
-            Reviewed by {{ review.reviewed_by }}
-            on {{ review.created_at|date:"M d, Y" }}
-        </p>
+<h4>
+    Comments ({{ article.comments.count }})
+</h4>
 
-        <p>
-            {{ review.reason }}
-        </p>
 
-    </div>
+{% if user.is_authenticated %}
 
-    {% endfor %}
+<form method="post" action="{% url 'comments:add_comment' article.pk %}">
+
+    {% csrf_token %}
+
+    <textarea
+        name="body"
+        class="form-control"
+        rows="3"
+        placeholder="Add a comment..."
+        required></textarea>
+
+
+    <button type="submit" class="btn btn-primary mt-2">
+        Post Comment
+    </button>
+
+</form>
+
+
+{% else %}
+
+<p>
+    <a href="{% url 'accounts:login' %}">
+        Log in
+    </a>
+    to comment.
+</p>
+
+{% endif %}
+
+
+
+{% for comment in article.comments.all %}
+
+<div class="border-bottom py-3">
+
+    <strong>
+        {{ comment.author }}
+    </strong>
+
+
+    <small class="text-muted">
+
+        {{ comment.created_at|date:"M d, Y H:i" }}
+
+        {% if comment.created_at != comment.updated_at %}
+            (edited)
+        {% endif %}
+
+    </small>
+
+
+    <p>
+        {{ comment.body }}
+    </p>
+
+
+    {% if comment.author == user %}
+
+    <a href="{% url 'comments:comment_edit' comment.pk %}"
+       class="btn btn-sm btn-outline-secondary">
+        Edit
+    </a>
+
+
+    <a href="{% url 'comments:comment_delete' comment.pk %}"
+       class="btn btn-sm btn-outline-danger">
+        Delete
+    </a>
 
     {% endif %}
+
+</div>
+
+
+{% empty %}
+
+<p class="text-muted">
+    No comments yet.
+</p>
+
+
+{% endfor %}
+
+
+
+<!-- REVIEW HISTORY -->
+
+{% if article.review_history.exists %}
+
+<hr>
+
+<h4>Review History</h4>
+
+
+{% for review in article.review_history.all %}
+
+<div class="border-start ps-3 mb-3">
+
+
+    <p>
+        <strong>
+            {{ review.get_previous_status_display }}
+            →
+            {{ review.get_new_status_display }}
+        </strong>
+    </p>
+
+
+    <p class="text-muted">
+        Reviewed by {{ review.reviewed_by }}
+        on {{ review.created_at|date:"M d, Y" }}
+    </p>
+
+
+    <p>
+        {{ review.reason }}
+    </p>
+
+
+</div>
+
+
+{% endfor %}
+
+{% endif %}
+
 
 </article>
 

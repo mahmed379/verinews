@@ -16,12 +16,15 @@ from django.views.generic import TemplateView
 urlpatterns = [
     path("admin/", admin.site.urls),
 
-    # Accounts app URLs
+    # Homepage
+    path("", TemplateView.as_view(template_name="home.html"), name="home"),
+
+    # Accounts
     path("", include("apps.accounts.urls")),
 
-    # News app URLs
+    # News
     path("news/", include("apps.news.urls")),
 
-    # Temporary homepage
-    path("", TemplateView.as_view(template_name="home.html"), name="home"),
+    # Comments
+    path("comments/", include("apps.comments.urls")),
 ]
