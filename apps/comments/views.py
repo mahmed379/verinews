@@ -7,7 +7,11 @@ from apps.news.models import NewsArticle
 
 from .forms import CommentForm
 from .models import Comment
+from rest_framework import permissions, viewsets
 
+from apps.api.permissions import IsOwnerOrReadOnly
+
+from .serializers import CommentSerializer
 
 @login_required
 def add_comment(request, article_pk):
@@ -47,3 +51,17 @@ class CommentDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_success_url(self):
         return self.object.article.get_absolute_url()
+
+class CommentViewSet(viewsets.ModelViewSet):
+    serializer_class = CommentSerializer
+
+    permission_classes = [
+        permissions.IsAuthenticatedOrReadOnly,
+        IsOwnerOrReadOnly,
+    ]
+
+    def get_queryset(self):
+        return Comment.objects.all()
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)

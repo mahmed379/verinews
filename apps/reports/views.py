@@ -6,7 +6,11 @@ from django.shortcuts import get_object_or_404, redirect, render
 from apps.news.models import NewsArticle
 
 from .forms import ReportForm
+from rest_framework import permissions, viewsets
+from rest_framework.exceptions import ValidationError
 
+from .models import Report
+from .serializers import ReportSerializer
 
 @login_required
 def report_article(request, article_pk):
@@ -50,3 +54,26 @@ def report_article(request, article_pk):
             "article": article,
         },
     )
+
+class ReportViewSet(viewsets.ModelViewSet):
+    serializer_class = ReportSerializer
+
+    permission_classes = [
+        permissions.IsAuthenticated
+    ]
+
+    def get_queryset(self):
+        return Report.objects.filter(
+            reported_by=self.request.user
+        )
+
+    def perform_create(self, serializer):
+        try:
+            serializer.save(
+                reported_by=self.request.user
+            )
+
+        except IntegrityError:
+            raise ValidationError(
+                "You already have an open report on this article."
+            )

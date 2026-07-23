@@ -5,12 +5,29 @@ from django.contrib.auth.decorators import login_required
 
 from django.views.generic import ListView, DetailView, CreateView
 
-from django.db.models import Avg, Count
 
 from .forms import NewsSubmissionForm, StatusChangeForm, VoteForm
 from .models import NewsArticle, CredibilityReview, Vote
 from django.db import models
 from django.db.models import Avg, Count, Q
+
+
+from rest_framework import (
+    mixins,
+    permissions,
+    viewsets,
+)
+from rest_framework.decorators import action
+from rest_framework.response import Response
+
+from api.permissions import IsStaffOrReadOnly, IsSuperUser
+
+from .serializers import (
+    NewsArticleSerializer,
+    StatusChangeSerializer,
+    VoteSerializer,
+)
+
 
 class ArticleListView(ListView):
     model = NewsArticle
@@ -198,3 +215,92 @@ def cast_vote(request, pk):
             )
 
     return redirect(article.get_absolute_url())
+
+
+class ArticleViewSet(viewsets.ModelViewSet):
+
+    serializer_class = NewsArticleSerializer
+
+    permission_classes = [
+        permissions.IsAuthenticatedOrReadOnly
+    ]
+
+    def get_queryset(self):
+        return NewsArticle.objects.annotate(
+            average_rating=Avg("votes__rating"),
+            vote_count=Count("votes"),
+        )
+
+    def perform_create(self, serializer):
+        serializer.save(
+            submitted_by=self.request.user
+        )
+
+    def get_permissions(self):
+
+        if self.action == "destroy":
+            return [IsSuperUser()]
+
+        return super().get_permissions()
+
+
+    @action(
+        detail=True,
+        methods=["post"],
+        permission_classes=[IsStaffOrReadOnly]
+    )
+    def review(self, request, pk=None):
+
+        article = self.get_object()
+
+        serializer = StatusChangeSerializer(
+            data=request.data,
+            context={
+                "current_status": article.status
+            }
+        )
+
+        serializer.is_valid(
+            raise_exception=True
+        )
+
+        CredibilityReview.objects.create(
+            article=article,
+            reviewed_by=request.user,
+            previous_status=article.status,
+            new_status=serializer.validated_data["new_status"],
+            reason=serializer.validated_data["reason"],
+        )
+
+        article.status = serializer.validated_data["new_status"]
+        article.save()
+
+        return Response(
+            NewsArticleSerializer(article).data
+        )
+
+class VoteViewSet(
+    viewsets.GenericViewSet,
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+):
+    serializer_class = VoteSerializer
+
+    permission_classes = [
+        permissions.IsAuthenticated
+    ]
+
+    def get_queryset(self):
+        return Vote.objects.filter(
+            user=self.request.user
+        )
+
+    def perform_create(self, serializer):
+        Vote.objects.update_or_create(
+            article=serializer.validated_data["article"],
+            user=self.request.user,
+            defaults={
+                "rating": serializer.validated_data["rating"]
+            },
+        )
+    

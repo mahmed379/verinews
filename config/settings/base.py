@@ -58,6 +58,8 @@ DJANGO_APPS = [
 
 THIRD_PARTY_APPS = [
     # We'll add "rest_framework" here in the REST API milestone.
+    "rest_framework",
+    "rest_framework.authtoken",
 ]
 
 LOCAL_APPS = [
@@ -67,6 +69,7 @@ LOCAL_APPS = [
       "apps.comments",
       "apps.reports",
       "apps.dashboard",
+      "apps.api"
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -134,3 +137,19 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "accounts.User"
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.TokenAuthentication",
+    ],
+
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+
+    "DEFAULT_PAGINATION_CLASS":
+        "rest_framework.pagination.PageNumberPagination",
+
+    "PAGE_SIZE": 10,
+}
