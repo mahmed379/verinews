@@ -60,6 +60,7 @@ THIRD_PARTY_APPS = [
     # We'll add "rest_framework" here in the REST API milestone.
     "rest_framework",
     "rest_framework.authtoken",
+    "drf_spectacular",
 ]
 
 LOCAL_APPS = [
@@ -152,4 +153,19 @@ REST_FRAMEWORK = {
         "rest_framework.pagination.PageNumberPagination",
 
     "PAGE_SIZE": 10,
+
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+
+    "EXCEPTION_HANDLER": "api.exceptions.verinews_exception_handler",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "VeriNews API",
+    "DESCRIPTION": (
+        "Community-driven news credibility platform. Submit articles, "
+        "rate their credibility, comment, and report problems — all "
+        "available both through the website and this API."
+    ),
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
 }

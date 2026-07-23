@@ -11,6 +11,11 @@ from .models import NewsArticle, CredibilityReview, Vote
 from django.db import models
 from django.db.models import Avg, Count, Q
 
+from drf_spectacular.utils import (
+    OpenApiExample,
+    extend_schema,
+    extend_schema_view,
+)
 
 from rest_framework import (
     mixins,
@@ -216,6 +221,29 @@ def cast_vote(request, pk):
 
     return redirect(article.get_absolute_url())
 
+@extend_schema_view(
+    list=extend_schema(
+        description="List all news articles."
+    ),
+    retrieve=extend_schema(
+        description="Retrieve a single news article with credibility information."
+    ),
+    create=extend_schema(
+        description="Submit a new article. Authentication required.",
+        examples=[
+            OpenApiExample(
+                "Article submission example",
+                value={
+                    "title": "City council approves new park funding",
+                    "description": "The council approved funding for new parks.",
+                    "category": "politics",
+                    "source_url": "https://example.com/news"
+                },
+                request_only=True,
+            )
+        ],
+    ),
+)
 
 class ArticleViewSet(viewsets.ModelViewSet):
 
@@ -243,6 +271,22 @@ class ArticleViewSet(viewsets.ModelViewSet):
 
         return super().get_permissions()
 
+    @extend_schema(
+        description=(
+        "Staff-only action. Changes article credibility status "
+        "and records the reason in review history."
+        ),
+        examples=[
+            OpenApiExample(
+            "Mark article as verified",
+                value={
+                    "new_status": "verified",
+                    "reason": "Confirmed using multiple independent sources."
+                 },
+             request_only=True,
+            )
+        ],
+    )
 
     @action(
         detail=True,
@@ -278,6 +322,25 @@ class ArticleViewSet(viewsets.ModelViewSet):
         return Response(
             NewsArticleSerializer(article).data
         )
+
+@extend_schema_view(
+    list=extend_schema(
+        description="List credibility votes."
+    ),
+    create=extend_schema(
+        description="Submit or update your credibility rating for an article.",
+        examples=[
+            OpenApiExample(
+                "Vote example",
+                value={
+                    "article": 1,
+                    "rating": 5
+                },
+                request_only=True,
+            )
+        ],
+    ),
+)
 
 class VoteViewSet(
     viewsets.GenericViewSet,

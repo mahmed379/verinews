@@ -12,6 +12,11 @@ from rest_framework import permissions, viewsets
 from apps.api.permissions import IsOwnerOrReadOnly
 
 from .serializers import CommentSerializer
+from drf_spectacular.utils import (
+    OpenApiExample,
+    extend_schema,
+    extend_schema_view,
+)
 
 @login_required
 def add_comment(request, article_pk):
@@ -51,6 +56,25 @@ class CommentDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_success_url(self):
         return self.object.article.get_absolute_url()
+
+@extend_schema_view(
+    list=extend_schema(
+        description="List comments for news articles."
+    ),
+    create=extend_schema(
+        description="Create a comment on an article.",
+        examples=[
+            OpenApiExample(
+                "Comment example",
+                value={
+                    "article": 1,
+                    "body": "This article provides useful information."
+                },
+                request_only=True,
+            )
+        ],
+    ),
+)
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer

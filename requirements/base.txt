@@ -3,3 +3,4 @@
 # breaking change because a package auto-updated.
 Django==5.0.14
 djangorestframework==3.15.2
+drf-spectacular==0.30.0

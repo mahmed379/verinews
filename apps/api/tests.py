@@ -3,6 +3,8 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 
 from rest_framework.test import APIClient
+from rest_framework.test import APITestCase, APIClient
+from rest_framework.authtoken.models import Token
 
 from apps.news.models import NewsArticle
 from apps.comments.models import Comment
@@ -150,3 +152,69 @@ class ArticlePermissionTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 204)
+
+class ErrorResponseShapeTests(APITestCase):
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="erruser",
+            password="password123"
+        )
+
+        self.token = Token.objects.create(
+            user=self.user
+        )
+
+
+    def test_schema_endpoint_is_publicly_accessible(self):
+        response = self.client.get(
+            "/api/schema/"
+        )
+
+        self.assertEqual(
+            response.status_code,
+            200
+        )
+
+
+    def test_unauthenticated_error_has_consistent_shape(self):
+        response = self.client.post(
+            "/api/articles/",
+            {
+                "title": "Test Article"
+            }
+        )
+
+        self.assertTrue(
+            response.data["error"]
+        )
+
+        self.assertIn(
+            "detail",
+            response.data
+        )
+
+
+    def test_validation_error_includes_fields_key(self):
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f"Token {self.token.key}"
+        )
+
+        response = self.client.post(
+            "/api/articles/",
+            {}
+        )
+
+        self.assertTrue(
+            response.data["error"]
+        )
+
+        self.assertIn(
+            "fields",
+            response.data
+        )
+
+        self.assertIn(
+            "title",
+            response.data["fields"]
+        )

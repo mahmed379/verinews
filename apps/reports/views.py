@@ -12,6 +12,12 @@ from rest_framework.exceptions import ValidationError
 from .models import Report
 from .serializers import ReportSerializer
 
+from drf_spectacular.utils import (
+    OpenApiExample,
+    extend_schema,
+    extend_schema_view,
+)
+
 @login_required
 def report_article(request, article_pk):
     article = get_object_or_404(NewsArticle, pk=article_pk)
@@ -55,8 +61,40 @@ def report_article(request, article_pk):
         },
     )
 
+@extend_schema_view(
+    list=extend_schema(
+        description="List reports submitted by the authenticated user."
+    ),
+    retrieve=extend_schema(
+        description="Retrieve a single report."
+    ),
+    create=extend_schema(
+        description="Report a news article with a reason.",
+        examples=[
+            OpenApiExample(
+                "Report example",
+                value={
+                    "article": 1,
+                    "reason": "misleading"
+                },
+                request_only=True,
+            )
+        ],
+    ),
+    update=extend_schema(
+        description="Update a report."
+    ),
+    partial_update=extend_schema(
+        description="Partially update a report."
+    ),
+    destroy=extend_schema(
+        description="Delete a report."
+    ),
+)
+
 class ReportViewSet(viewsets.ModelViewSet):
     serializer_class = ReportSerializer
+    queryset = Report.objects.all()
 
     permission_classes = [
         permissions.IsAuthenticated
