@@ -89,7 +89,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
         article_id = self.request.query_params.get("article")
 
-        if article_id:
+        if article_id is not None and article_id.isdigit():
             queryset = queryset.filter(article_id=article_id)
 
         return queryset

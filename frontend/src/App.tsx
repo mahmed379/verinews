@@ -1,6 +1,10 @@
 import { Routes, Route } from "react-router-dom";
 
+import { Toaster } from "react-hot-toast";
+
 import MainLayout from "./Layouts/MainLayout";
+
+import LoadingSpinner from "./Components/ui/LoadingSpinner";
 
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -13,23 +17,35 @@ import useAuth from "./hooks/useAuth";
 
 function App() {
   const { loading } = useAuth();
+
   if (loading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        Loading...
-      </div>
-    );
+  return <LoadingSpinner />;
   }
+
   return (
-    <Routes>
-      <Route element={<MainLayout />}>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-      </Route>
-      <Route path="/articles/:id" element={<ArticleDetailPage />} />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+    <>
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 3000,
+        }}
+      />
+
+      <Routes>
+        <Route element={<MainLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Route>
+
+        <Route
+          path="/articles/:id"
+          element={<ArticleDetailPage />}
+        />
+
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </>
   );
 }
 

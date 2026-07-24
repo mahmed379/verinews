@@ -3,7 +3,11 @@ import { useNavigate } from "react-router-dom";
 
 import useAuth from "../../hooks/useAuth";
 
-import axios from "axios";
+import toast from "react-hot-toast";
+
+import { getErrorMessage } from "../../api/errors";
+
+
 
 function LoginForm() {
   const { login } = useAuth();
@@ -26,18 +30,15 @@ function LoginForm() {
 
     try {
       await login(username, password);
+
+      toast.success("Logged in successfully.");
+
       navigate("/");
     } 
     catch (error) {
-      if (axios.isAxiosError(error)) {
-        const message =
-          error.response?.data?.detail ??
-          "Invalid username or password.";
-
-        setError(message);
-      } else {
-        setError("Something went wrong.");
-      }
+      const message = getErrorMessage(error);
+      setError(message);
+      toast.error(message);
     }
      finally {
       setLoading(false);

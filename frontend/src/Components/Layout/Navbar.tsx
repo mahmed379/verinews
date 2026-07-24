@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 import useAuth from "../../hooks/useAuth";
 
+import toast from "react-hot-toast";
 
 function Navbar() {
   const { user, logout } = useAuth();
@@ -10,8 +11,11 @@ function Navbar() {
 
   async function handleLogout() {
     await logout();
+
+    toast.success("Logged out successfully.");
+
     navigate("/login");
-  }
+    }
 
 
   return (

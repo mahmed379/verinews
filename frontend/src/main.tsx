@@ -1,6 +1,8 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
+import ErrorBoundary from "./Components/ErrorBoundary";
+
 import { BrowserRouter } from "react-router-dom";
 
 import {
@@ -23,11 +25,11 @@ createRoot(document.getElementById("root")!).render(
     <BrowserRouter>
 
       <QueryClientProvider client={queryClient}>
-
-        <AuthProvider>
-          <App />
-        </AuthProvider>
-
+        <ErrorBoundary>
+          <AuthProvider>
+            <App />
+          </AuthProvider>
+        </ErrorBoundary>
       </QueryClientProvider>
 
     </BrowserRouter>

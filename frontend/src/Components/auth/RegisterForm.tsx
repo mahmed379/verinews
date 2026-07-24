@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import toast from "react-hot-toast";
+
 import useAuth from "../../hooks/useAuth";
 
-import axios from "axios";
+import { getErrorMessage } from "../../api/errors";
 
 function RegisterForm() {
   const { register } = useAuth();
@@ -35,26 +37,14 @@ function RegisterForm() {
         password2,
       });
 
-      navigate("/");
+      toast.success("Account created successfully.");
+
+    navigate("/");
     } 
     catch (error) {
-      if (axios.isAxiosError(error)) {
-        const data = error.response?.data;
-
-        if (typeof data === "object" && data !== null) {
-          const firstError = Object.values(data)[0];
-
-          if (Array.isArray(firstError)) {
-            setError(firstError[0]);
-          } else {
-            setError("Registration failed.");
-          }
-        } else {
-          setError("Registration failed.");
-        }
-      } else {
-        setError("Something went wrong.");
-      }
+      const message = getErrorMessage(error);
+      setError(message);
+      toast.error(message);
     }
      finally {
       setLoading(false);
