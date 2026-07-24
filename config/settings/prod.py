@@ -1,42 +1,67 @@
 """
-Production settings.
-
-Everything here is driven by environment variables, because production
-config should never be hardcoded into source control. We'll walk
-through actually deploying with these in the Deployment milestone —
-for now, this file just establishes the pattern.
+Production settings — configured for deployment on Render,
+with managed PostgreSQL.
 """
 
 import os
+from urllib.parse import urlparse
 
 from .base import *  # noqa: F401,F403
 
+
 DEBUG = False
 
-# No fallback here on purpose: if DJANGO_SECRET_KEY isn't set in the
-# production environment, we WANT the app to crash on startup rather
-# than silently run with the insecure dev key from base.py.
 SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
 
-# Comma-separated list in the environment, e.g. "verinews.com,www.verinews.com"
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(",")
+
+# Render hostname + optional custom domains
+ALLOWED_HOSTS = [
+    h for h in [
+        os.environ.get("RENDER_EXTERNAL_HOSTNAME"),
+        *os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(","),
+    ]
+    if h
+]
+
+
+# Render provides one DATABASE_URL string.
+db_url = urlparse(os.environ["DATABASE_URL"])
 
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ["DB_NAME"],
-        "USER": os.environ["DB_USER"],
-        "PASSWORD": os.environ["DB_PASSWORD"],
-        "HOST": os.environ.get("DB_HOST", "localhost"),
-        "PORT": os.environ.get("DB_PORT", "5432"),
+        "NAME": db_url.path.lstrip("/"),
+        "USER": db_url.username,
+        "PASSWORD": db_url.password,
+        "HOST": db_url.hostname,
+        "PORT": db_url.port or "5432",
     }
 }
 
-# --- Production hardening (Django's built-in security middleware reads these) ---
+
+# WhiteNoise static files
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
+
+
+# HTTPS / proxy configuration for Render
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
+
 SECURE_HSTS_SECONDS = 31536000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
+
 X_FRAME_OPTIONS = "DENY"
+
+
+# Allow POST requests from deployed domain
+CSRF_TRUSTED_ORIGINS = [
+    f"https://{h}" for h in ALLOWED_HOSTS
+]
