@@ -25,12 +25,13 @@ interface AuthContextType {
     password: string
   ) => Promise<void>;
   register: (
-    data: {
-      username: string;
-      email: string;
-      password: string;
-    }
-  ) => Promise<void>;
+  data: {
+    username: string;
+    email: string;
+    password: string;
+    password2: string;
+  }
+) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -97,6 +98,7 @@ export function AuthProvider({
     username: string;
     email: string;
     password: string;
+    password2: string;
   }) {
     const response = await registerRequest(data);
 
