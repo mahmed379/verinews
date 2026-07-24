@@ -10,13 +10,13 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
-
 import ArticleDetailPage from "./pages/ArticleDetailPage";
-
 
 import { ModeratorDashboardPage } from "./pages/ModeratorDashboardPage";
 import { ModerationQueuePage } from "./pages/ModerationQueuePage";
 import { ReportManagementPage } from "./pages/ReportManagementPage";
+
+import RequireAuth from "./routes/RequireAuth";
 
 import useAuth from "./hooks/useAuth";
 
@@ -24,7 +24,7 @@ function App() {
   const { loading } = useAuth();
 
   if (loading) {
-  return <LoadingSpinner />;
+    return <LoadingSpinner />;
   }
 
   return (
@@ -37,44 +37,41 @@ function App() {
       />
 
       <Routes>
-
         <Route element={<MainLayout />}>
-
           <Route path="/" element={<Home />} />
 
           <Route path="/login" element={<Login />} />
 
           <Route path="/register" element={<Register />} />
 
-          <Route
-            path="/moderation"
-            element={<ModeratorDashboardPage />}
-          />
+          {/* Staff-only moderator routes */}
+          <Route element={<RequireAuth staffOnly />}>
+            <Route
+              path="/moderation"
+              element={<ModeratorDashboardPage />}
+            />
 
-          <Route
-            path="/moderation/queue"
-            element={<ModerationQueuePage />}
-          />
+            <Route
+              path="/moderation/queue"
+              element={<ModerationQueuePage />}
+            />
 
-          <Route
-            path="/moderation/reports"
-            element={<ReportManagementPage />}
-          />
-
+            <Route
+              path="/moderation/reports"
+              element={<ReportManagementPage />}
+            />
+          </Route>
         </Route>
-
 
         <Route
           path="/articles/:id"
           element={<ArticleDetailPage />}
         />
 
-
         <Route
           path="*"
           element={<NotFound />}
         />
-
       </Routes>
     </>
   );
