@@ -13,6 +13,11 @@ import NotFound from "./pages/NotFound";
 
 import ArticleDetailPage from "./pages/ArticleDetailPage";
 
+
+import { ModeratorDashboardPage } from "./pages/ModeratorDashboardPage";
+import { ModerationQueuePage } from "./pages/ModerationQueuePage";
+import { ReportManagementPage } from "./pages/ReportManagementPage";
+
 import useAuth from "./hooks/useAuth";
 
 function App() {
@@ -32,18 +37,44 @@ function App() {
       />
 
       <Routes>
+
         <Route element={<MainLayout />}>
+
           <Route path="/" element={<Home />} />
+
           <Route path="/login" element={<Login />} />
+
           <Route path="/register" element={<Register />} />
+
+          <Route
+            path="/moderation"
+            element={<ModeratorDashboardPage />}
+          />
+
+          <Route
+            path="/moderation/queue"
+            element={<ModerationQueuePage />}
+          />
+
+          <Route
+            path="/moderation/reports"
+            element={<ReportManagementPage />}
+          />
+
         </Route>
+
 
         <Route
           path="/articles/:id"
           element={<ArticleDetailPage />}
         />
 
-        <Route path="*" element={<NotFound />} />
+
+        <Route
+          path="*"
+          element={<NotFound />}
+        />
+
       </Routes>
     </>
   );

@@ -16,3 +16,16 @@ export interface NewsArticle {
   average_rating: number | null;
   vote_count: number;
 }
+export type ReportStatus =
+  | "open"
+  | "resolved"
+  | "dismissed";
+
+export interface Report {
+  id: number;
+  article: number;
+  reason: string;
+  status: ReportStatus;
+  reported_by: string;
+  created_at: string;
+}
