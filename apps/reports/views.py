@@ -41,13 +41,13 @@ def report_article(request, article_pk):
                 messages.warning(
                     request,
                     "You already have an open report on this article. "
-        "            A moderator will review it.",
+                    "A moderator will review it.",
                 )
 
             else:
                 messages.success(
                     request,
-                    "Thanks — this article has been reported for review."
+                    "Thanks - this article has been reported for review."
                 )
 
             return redirect(article.get_absolute_url())

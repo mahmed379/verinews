@@ -56,9 +56,9 @@ urlpatterns = [
     ),
 
     path(
-            "auth/logout/",
-            LogoutAPIView.as_view(),
-            name="api_logout",
+        "auth/logout/",
+        LogoutAPIView.as_view(),
+        name="api_logout",
     ),
     
     path(
