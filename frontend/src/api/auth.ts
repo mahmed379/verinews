@@ -45,6 +45,7 @@ export async function register(
     username: string;
     email: string;
     password: string;
+    password2: string;
   }
 ): Promise<RegisterResponse> {
   const response = await apiClient.post<RegisterResponse>(

@@ -6,7 +6,11 @@ from apps.comments.views import CommentViewSet
 from apps.news.views import ArticleViewSet, VoteViewSet
 from apps.reports.views import ReportViewSet
 
-from apps.accounts.views import RegisterAPIView, MeAPIView
+from apps.accounts.views import (
+    RegisterAPIView,
+    MeAPIView,
+    LogoutAPIView,
+)
 
 router = DefaultRouter()
 
@@ -34,6 +38,8 @@ router.register(
     basename="report",
 )
 
+
+
 urlpatterns = [
     path("", include(router.urls)),
 
@@ -50,8 +56,15 @@ urlpatterns = [
     ),
 
     path(
+            "auth/logout/",
+            LogoutAPIView.as_view(),
+            name="api_logout",
+    ),
+    
+    path(
         "users/me/",
         MeAPIView.as_view(),
         name="api_me",
     ),
+  
 ]
