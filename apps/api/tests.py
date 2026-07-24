@@ -46,7 +46,6 @@ class ArticleAPITests(APITestSetup):
             }
         )
 
-        print(response.data)
         self.assertEqual(response.status_code, 201)
 
 
@@ -68,7 +67,6 @@ class CommentAPITests(APITestSetup):
             }
         )
 
-        print(response.data)
         self.assertEqual(response.status_code, 201)
 
 
@@ -90,7 +88,7 @@ class ReportAPITests(APITestSetup):
             }
         )
 
-        print(response.data)
+
         self.assertEqual(response.status_code, 201)
 
 class ArticlePermissionTests(TestCase):
@@ -223,4 +221,96 @@ class ErrorResponseShapeTests(APITestCase):
         self.assertIn(
             "title",
             response.data["fields"]
+        )
+
+from apps.api.permissions import (
+    IsOwnerOrReadOnly,
+    IsStaffOrReadOnly,
+    IsSuperUser,
+)
+
+
+class PermissionClassTests(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="normal",
+            password="password123"
+        )
+
+        self.staff = User.objects.create_user(
+            username="staff",
+            password="password123",
+            is_staff=True
+        )
+
+        self.admin = User.objects.create_superuser(
+            username="admin",
+            password="password123"
+        )
+
+
+    def test_staff_permission_allows_staff(self):
+        permission = IsStaffOrReadOnly()
+
+        request = type(
+            "Request",
+            (),
+            {
+                "user": self.staff,
+                "method": "POST"
+            }
+        )()
+
+        self.assertTrue(
+            permission.has_permission(request, None)
+        )
+
+
+    def test_staff_permission_blocks_normal_user(self):
+        permission = IsStaffOrReadOnly()
+
+        request = type(
+            "Request",
+            (),
+            {
+                "user": self.user,
+                "method": "POST"
+            }
+        )()
+
+        self.assertFalse(
+            permission.has_permission(request, None)
+        )
+
+
+    def test_superuser_permission_allows_admin(self):
+        permission = IsSuperUser()
+
+        request = type(
+            "Request",
+            (),
+            {
+                "user": self.admin
+            }
+        )()
+
+        self.assertTrue(
+            permission.has_permission(request, None)
+        )
+
+
+    def test_superuser_permission_blocks_normal_user(self):
+        permission = IsSuperUser()
+
+        request = type(
+            "Request",
+            (),
+            {
+                "user": self.user
+            }
+        )()
+
+        self.assertFalse(
+            permission.has_permission(request, None)
         )
