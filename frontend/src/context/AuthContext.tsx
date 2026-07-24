@@ -16,6 +16,8 @@ import {
 
 import type { User } from "../api/auth";
 
+import { TOKEN_KEY } from "../constants/auth";
+
 
 interface AuthContextType {
   user: User | null;
@@ -53,7 +55,7 @@ export function AuthProvider({
   useEffect(() => {
     async function loadUser() {
       const token = localStorage.getItem(
-        "verinews_token"
+        TOKEN_KEY
       );
 
       if (token) {
@@ -62,7 +64,7 @@ export function AuthProvider({
           setUser(currentUser);
         } catch {
           localStorage.removeItem(
-            "verinews_token"
+            TOKEN_KEY
           );
         }
       }
@@ -84,7 +86,7 @@ export function AuthProvider({
     );
 
     localStorage.setItem(
-      "verinews_token",
+      TOKEN_KEY,
       response.token
     );
 
@@ -103,7 +105,7 @@ export function AuthProvider({
     const response = await registerRequest(data);
 
     localStorage.setItem(
-      "verinews_token",
+      TOKEN_KEY,
       response.token
     );
 
@@ -119,7 +121,7 @@ export function AuthProvider({
       // clear local authentication.
     } finally {
       localStorage.removeItem(
-        "verinews_token"
+        TOKEN_KEY
       );
 
       setUser(null);

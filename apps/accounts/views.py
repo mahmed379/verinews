@@ -15,6 +15,8 @@ from rest_framework.views import APIView
 
 from .serializers import RegisterSerializer, UserSerializer
 
+from drf_spectacular.utils import extend_schema
+
 def register(request):
     if request.method == "POST":
         form = CustomUserCreationForm(request.POST)
@@ -90,6 +92,11 @@ class MeAPIView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         return self.request.user
 
+@extend_schema(
+    request=None,
+    responses={200: None},
+    description="Logs out the current authenticated user."
+)
 class LogoutAPIView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]

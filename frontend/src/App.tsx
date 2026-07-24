@@ -9,7 +9,17 @@ import NotFound from "./pages/NotFound";
 
 import ArticleDetailPage from "./pages/ArticleDetailPage";
 
+import useAuth from "./hooks/useAuth";
+
 function App() {
+  const { loading } = useAuth();
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        Loading...
+      </div>
+    );
+  }
   return (
     <Routes>
       <Route element={<MainLayout />}>

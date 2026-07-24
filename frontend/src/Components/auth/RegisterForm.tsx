@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import useAuth from "../../hooks/useAuth";
 
+import axios from "axios";
 
 function RegisterForm() {
   const { register } = useAuth();
@@ -35,9 +36,27 @@ function RegisterForm() {
       });
 
       navigate("/");
-    } catch {
-      setError("Registration failed. Check your details.");
-    } finally {
+    } 
+    catch (error) {
+      if (axios.isAxiosError(error)) {
+        const data = error.response?.data;
+
+        if (typeof data === "object" && data !== null) {
+          const firstError = Object.values(data)[0];
+
+          if (Array.isArray(firstError)) {
+            setError(firstError[0]);
+          } else {
+            setError("Registration failed.");
+          }
+        } else {
+          setError("Registration failed.");
+        }
+      } else {
+        setError("Something went wrong.");
+      }
+    }
+     finally {
       setLoading(false);
     }
   }

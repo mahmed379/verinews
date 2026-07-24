@@ -96,7 +96,7 @@ class CredibilityReview(models.Model):
         ordering = ["-created_at"]
 
     def __str__(self):
-        return f"{self.article.title}: {self.previous_status} -> {self.new_status}"
+        return f"{self.article.title}: {self.previous_status} → {self.new_status}"
 
 class Vote(models.Model):
     """

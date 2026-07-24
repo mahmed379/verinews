@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import useAuth from "../../hooks/useAuth";
 
+import axios from "axios";
 
 function LoginForm() {
   const { login } = useAuth();
@@ -26,9 +27,19 @@ function LoginForm() {
     try {
       await login(username, password);
       navigate("/");
-    } catch {
-      setError("Invalid username or password.");
-    } finally {
+    } 
+    catch (error) {
+      if (axios.isAxiosError(error)) {
+        const message =
+          error.response?.data?.detail ??
+          "Invalid username or password.";
+
+        setError(message);
+      } else {
+        setError("Something went wrong.");
+      }
+    }
+     finally {
       setLoading(false);
     }
   }
