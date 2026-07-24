@@ -6,8 +6,12 @@ from rest_framework.test import APIClient
 from rest_framework.test import APITestCase, APIClient
 from rest_framework.authtoken.models import Token
 
-from apps.news.models import NewsArticle
-from apps.comments.models import Comment
+from apps.accounts.factories import (
+    UserFactory,
+    SuperUserFactory,
+)
+from apps.news.factories import NewsArticleFactory
+
 from apps.reports.models import Report
 
 
@@ -17,7 +21,7 @@ User = get_user_model()
 class APITestSetup(TestCase):
 
     def setUp(self):
-        self.user = User.objects.create_user(
+        self.user = UserFactory(
             username="apiuser",
             password="test-password-123"
         )
@@ -49,7 +53,7 @@ class ArticleAPITests(APITestSetup):
 class CommentAPITests(APITestSetup):
 
     def test_create_comment(self):
-        article = NewsArticle.objects.create(
+        article = NewsArticleFactory(
             title="Test Article",
             description="Test",
             category="technology",
@@ -71,7 +75,7 @@ class CommentAPITests(APITestSetup):
 class ReportAPITests(APITestSetup):
 
     def test_create_report(self):
-        article = NewsArticle.objects.create(
+        article = NewsArticleFactory(
             title="Test Article",
             description="Test",
             category="technology",
@@ -92,17 +96,19 @@ class ReportAPITests(APITestSetup):
 class ArticlePermissionTests(TestCase):
 
     def setUp(self):
-        self.user = User.objects.create_user(
+        self.user = UserFactory(
             username="normaluser",
             password="password123"
         )
 
-        self.admin = User.objects.create_superuser(
+        self.admin = UserFactory(
             username="admin",
-            password="password123"
+            password="password123",
+            is_staff=True,
+            is_superuser=True,
         )
 
-        self.article = NewsArticle.objects.create(
+        self.article = NewsArticleFactory(
             title="Delete Test",
             description="Testing permissions",
             category="technology",
@@ -156,7 +162,7 @@ class ArticlePermissionTests(TestCase):
 class ErrorResponseShapeTests(APITestCase):
 
     def setUp(self):
-        self.user = User.objects.create_user(
+        self.user = UserFactory(
             username="erruser",
             password="password123"
         )

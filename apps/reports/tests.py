@@ -2,10 +2,16 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
-from apps.news.models import NewsArticle
+from apps.accounts.factories import UserFactory
+from apps.news.factories import NewsArticleFactory
+from apps.reports.factories import ReportFactory
+
+from django.contrib.admin.sites import AdminSite
+from .admin import ReportAdmin
 
 from .models import Report
 
+from unittest.mock import patch
 
 User = get_user_model()
 
@@ -13,17 +19,17 @@ User = get_user_model()
 class ReportTests(TestCase):
 
     def setUp(self):
-        self.reporter = User.objects.create_user(
+        self.reporter = UserFactory(
             username="reporter",
             password="a-strong-test-password-1"
         )
 
-        submitter = User.objects.create_user(
+        submitter = UserFactory(
             username="submitter",
             password="a-strong-test-password-1"
         )
 
-        self.article = NewsArticle.objects.create(
+        self.article = NewsArticleFactory(
             title="Reportable Article",
             source_url="https://example.com",
             description="Example description",
@@ -131,3 +137,35 @@ class ReportTests(TestCase):
             Report.objects.count(),
             2
         )
+
+class ReportAdminActionTests(TestCase):
+
+    def setUp(self):
+        self.admin = ReportAdmin(
+            model=Report,
+            admin_site=AdminSite(),
+        )
+
+    @patch.object(ReportAdmin, "message_user")
+    def test_mark_resolved_action_updates_status(self, mock_message_user):
+        report = ReportFactory(
+            status=Report.Status.OPEN,
+        )
+
+        queryset = Report.objects.filter(
+            pk=report.pk,
+        )
+
+        self.admin.mark_resolved(
+            request=None,
+            queryset=queryset,
+        )
+
+        report.refresh_from_db()
+
+        self.assertEqual(
+            report.status,
+            Report.Status.RESOLVED,
+        )
+
+        mock_message_user.assert_called_once()

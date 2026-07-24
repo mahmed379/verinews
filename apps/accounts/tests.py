@@ -1,6 +1,8 @@
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
-from django.contrib.auth import get_user_model
+
+from apps.accounts.factories import UserFactory
 
 User = get_user_model()
 
@@ -21,16 +23,16 @@ class RegistrationTests(TestCase):
 
 class LoginTests(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(
+        self.user = UserFactory(
             username="testuser",
             email="test@example.com",
-            password="test-password-123"
+            password="test-password-123",
         )
 
     def test_login_success(self):
         response = self.client.post(reverse("accounts:login"), {
             "username": "testuser",
-            "password": "test-password-123"
+            "password": "test-password-123",
         })
 
         self.assertRedirects(response, reverse("home"))
@@ -39,15 +41,15 @@ class LoginTests(TestCase):
 
 class LogoutTests(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(
+        self.user = UserFactory(
             username="testuser",
-            password="test-password-123"
+            password="test-password-123",
         )
 
     def test_logout_success(self):
         self.client.login(
             username="testuser",
-            password="test-password-123"
+            password="test-password-123",
         )
 
         response = self.client.get(reverse("accounts:logout"))

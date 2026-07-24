@@ -2,7 +2,10 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
-from apps.news.models import NewsArticle
+from apps.accounts.factories import UserFactory
+from apps.news.factories import NewsArticleFactory
+from apps.reports.factories import ReportFactory
+
 from apps.reports.models import Report
 
 User = get_user_model()
@@ -10,18 +13,18 @@ User = get_user_model()
 
 class DashboardTests(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(
+        self.user = UserFactory(
             username="dashuser",
             password="testpassword123",
         )
 
-        self.staff = User.objects.create_user(
+        self.staff = UserFactory(
             username="staffuser",
             password="testpassword123",
             is_staff=True,
         )
 
-        self.article = NewsArticle.objects.create(
+        self.article = NewsArticleFactory(
             title="Dashboard Test Article",
             source_url="https://example.com",
             description="Test article",
@@ -56,7 +59,7 @@ class DashboardTests(TestCase):
         self.assertContains(response, "Staff Overview")
 
     def test_dashboard_shows_report(self):
-        Report.objects.create(
+        ReportFactory(
             article=self.article,
             reported_by=self.user,
             reason=Report.Reason.SPAM,

@@ -2,10 +2,11 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
-from apps.news.models import NewsArticle
+from apps.accounts.factories import UserFactory
+from apps.news.factories import NewsArticleFactory
+from apps.comments.factories import CommentFactory
 
 from .models import Comment
-
 
 User = get_user_model()
 
@@ -13,22 +14,22 @@ User = get_user_model()
 class CommentTests(TestCase):
 
     def setUp(self):
-        self.author = User.objects.create_user(
+        self.author = UserFactory(
             username="commenter",
-            password="testpassword123"
+            password="testpassword123",
         )
 
-        self.other_user = User.objects.create_user(
+        self.other_user = UserFactory(
             username="other",
-            password="testpassword123"
+            password="testpassword123",
         )
 
-        submitter = User.objects.create_user(
+        submitter = UserFactory(
             username="submitter",
             password="testpassword123"
         )
 
-        self.article = NewsArticle.objects.create(
+        self.article = NewsArticleFactory(
             title="Test Article",
             source_url="https://example.com",
             description="Testing comments",
@@ -58,7 +59,7 @@ class CommentTests(TestCase):
 
 
     def test_author_can_edit_comment(self):
-        comment = Comment.objects.create(
+        comment = CommentFactory(
             article=self.article,
             author=self.author,
             body="Old comment"
@@ -89,7 +90,7 @@ class CommentTests(TestCase):
 
     def test_other_user_cannot_edit_comment(self):
 
-        comment = Comment.objects.create(
+        comment = CommentFactory(
             article=self.article,
             author=self.author,
             body="Private comment"
@@ -112,7 +113,7 @@ class CommentTests(TestCase):
 
     def test_author_can_delete_comment(self):
 
-        comment = Comment.objects.create(
+        comment = CommentFactory(
             article=self.article,
             author=self.author,
             body="Delete me"

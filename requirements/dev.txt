@@ -2,3 +2,7 @@
 
 # Nothing dev-only yet. Later we may add things like django-debug-toolbar
 # here — tools useful while coding but that must NEVER run in production.
+-r base.txt
+
+coverage==7.6.4
+factory_boy==3.3.1

@@ -1,0 +1,19 @@
+[run]
+source = apps
+
+omit =
+    */migrations/*
+    */tests.py
+    */factories.py
+    */admin.py
+    */apps.py
+    manage.py
+    config/*
+
+[report]
+exclude_lines =
+    pragma: no cover
+    def __str__
+    raise NotImplementedError
+
+fail_under = 80

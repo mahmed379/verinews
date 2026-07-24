@@ -66,7 +66,7 @@ class ArticleListView(ListView):
         if category in valid_categories:
             queryset = queryset.filter(category=category)
 
-        # Sorting
+       # Sorting
         sort = self.request.GET.get("sort", "newest")
 
         if sort == "oldest":
@@ -75,6 +75,8 @@ class ArticleListView(ListView):
             queryset = queryset.order_by(
                 models.F("average_rating").desc(nulls_last=True)
             )
+        else:
+            queryset = queryset.order_by("-created_at")
 
         return queryset
 

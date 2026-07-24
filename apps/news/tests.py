@@ -2,17 +2,18 @@ from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 
+from apps.accounts.factories import StaffUserFactory, UserFactory
+from apps.news.factories import NewsArticleFactory
+
 from .models import NewsArticle
-
-User = get_user_model()
-
 
 class NewsArticleTests(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(
+        self.user = UserFactory(
             username="reporter",
-            password="a-strong-test-password-1"
+            password="a-strong-test-password-1",
         )
+        
 
     def test_anonymous_user_cannot_submit(self):
         response = self.client.get(reverse("news:article_submit"))
@@ -41,12 +42,13 @@ class NewsArticleTests(TestCase):
         self.assertEqual(article.status, NewsArticle.Status.PENDING)
 
     def test_article_list_shows_submitted_article(self):
-        NewsArticle.objects.create(
+        NewsArticleFactory(
             title="Visible Article",
             source_url="https://example.com",
             description="desc",
             submitted_by=self.user,
         )
+        
 
         response = self.client.get(reverse("news:article_list"))
 
@@ -54,23 +56,22 @@ class NewsArticleTests(TestCase):
 
 class CredibilityWorkflowTests(TestCase):
     def setUp(self):
-        self.author = User.objects.create_user(
-            username="author",
-            password="a-strong-test-password-1"
-        )
+        self.author = UserFactory(
+        username="author",
+        password="a-strong-test-password-1",
+    )
 
-        self.moderator = User.objects.create_user(
+        self.moderator = StaffUserFactory(
             username="mod",
             password="a-strong-test-password-1",
-            is_staff=True
         )
 
-        self.article = NewsArticle.objects.create(
-            title="Needs Review",
-            source_url="https://example.com",
-            description="desc",
-            submitted_by=self.author,
-        )
+        self.article = NewsArticleFactory(
+        title="Needs Review",
+        source_url="https://example.com",
+        description="desc",
+        submitted_by=self.author,
+    )
 
     def test_non_staff_cannot_review(self):
         self.client.login(
@@ -138,12 +139,12 @@ class CredibilityWorkflowTests(TestCase):
 
 class SearchAndFilterTests(TestCase):
     def setUp(self):
-        self.submitter = User.objects.create_user(
+        self.submitter = UserFactory(
             username="filteruser",
             password="a-strong-test-password-1",
         )
 
-        self.article_a = NewsArticle.objects.create(
+        self.article_a = NewsArticleFactory(
             title="Climate summit concludes",
             source_url="https://example.com/a",
             description="Leaders agreed on new targets.",
@@ -152,7 +153,7 @@ class SearchAndFilterTests(TestCase):
             status=NewsArticle.Status.VERIFIED,
         )
 
-        self.article_b = NewsArticle.objects.create(
+        self.article_b = NewsArticleFactory(
             title="New smartphone released",
             source_url="https://example.com/b",
             description="Tech company unveils new device.",
@@ -217,3 +218,42 @@ class SearchAndFilterTests(TestCase):
 
         self.assertContains(response, "New smartphone released")
         self.assertNotContains(response, "Climate summit concludes")
+
+
+class ModerationQueueViewTests(TestCase):
+    def test_non_staff_cannot_view_queue(self):
+        user = UserFactory()
+        self.client.force_login(user)
+
+        response = self.client.get(
+            reverse("news:moderation_queue")
+        )
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_queue_excludes_non_pending_articles(self):
+        staff = StaffUserFactory()
+
+        pending = NewsArticleFactory(
+            status=NewsArticle.Status.PENDING
+        )
+
+        NewsArticleFactory(
+            status=NewsArticle.Status.VERIFIED
+        )
+
+        self.client.force_login(staff)
+
+        response = self.client.get(
+            reverse("news:moderation_queue")
+        )
+
+        self.assertIn(
+            pending,
+            response.context["articles"],
+        )
+
+        self.assertEqual(
+            len(response.context["articles"]),
+            1,
+        )
