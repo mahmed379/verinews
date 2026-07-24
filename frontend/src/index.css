@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  /* Glass surfaces */
+  .glass-card {
+    @apply bg-white/60 backdrop-blur-glass border border-white/30
+           shadow-glass rounded-2xl;
+  }
+
+  /* Standard readable surfaces */
+  .solid-card {
+    @apply bg-white border border-slate-200 rounded-xl shadow-sm;
+  }
+}
+
+body {
+  @apply bg-surface text-ink;
+}

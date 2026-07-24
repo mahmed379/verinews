@@ -85,7 +85,14 @@ class CommentViewSet(viewsets.ModelViewSet):
     ]
 
     def get_queryset(self):
-        return Comment.objects.all()
+        queryset = Comment.objects.all()
+
+        article_id = self.request.query_params.get("article")
+
+        if article_id:
+            queryset = queryset.filter(article_id=article_id)
+
+        return queryset
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)

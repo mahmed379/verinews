@@ -27,3 +27,8 @@ DATABASES = {
 # slow, which makes test suites sluggish. This is fine for a small
 # project; we leave it as-is so dev behaves like prod. (If VeriNews's
 # test suite grows large later, a faster hasher can be added here.)
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]

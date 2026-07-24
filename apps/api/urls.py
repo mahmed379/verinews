@@ -6,6 +6,8 @@ from apps.comments.views import CommentViewSet
 from apps.news.views import ArticleViewSet, VoteViewSet
 from apps.reports.views import ReportViewSet
 
+from apps.accounts.views import RegisterAPIView, MeAPIView
+
 router = DefaultRouter()
 
 router.register(
@@ -34,9 +36,22 @@ router.register(
 
 urlpatterns = [
     path("", include(router.urls)),
+
     path(
         "auth-token/",
         obtain_auth_token,
         name="api_token_auth",
+    ),
+
+    path(
+        "auth/register/",
+        RegisterAPIView.as_view(),
+        name="api_register",
+    ),
+
+    path(
+        "users/me/",
+        MeAPIView.as_view(),
+        name="api_me",
     ),
 ]

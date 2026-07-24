@@ -8,8 +8,12 @@ class NewsArticleSerializer(serializers.ModelSerializer):
     submitted_by = serializers.StringRelatedField(read_only=True)
     status = serializers.CharField(read_only=True)
 
+    average_rating = serializers.FloatField(read_only=True)
+    vote_count = serializers.IntegerField(read_only=True)
+
     class Meta:
         model = NewsArticle
+
         fields = [
             "id",
             "title",
@@ -19,13 +23,16 @@ class NewsArticleSerializer(serializers.ModelSerializer):
             "status",
             "submitted_by",
             "created_at",
+            "average_rating",
+            "vote_count",
         ]
 
         read_only_fields = [
             "id",
             "created_at",
+            "average_rating",
+            "vote_count",
         ]
-
 
 class CredibilityReviewSerializer(serializers.ModelSerializer):
 

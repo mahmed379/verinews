@@ -46,35 +46,34 @@ class ArticleListView(ListView):
             vote_count=Count("votes"),
         )
 
-        # Keyword search
         query = self.request.GET.get("q", "").strip()
+
         if query:
             queryset = queryset.filter(
                 Q(title__icontains=query) |
                 Q(description__icontains=query)
             )
 
-        # Status filter
         status = self.request.GET.get("status", "")
-        valid_statuses = NewsArticle.Status.values
-        if status in valid_statuses:
+
+        if status in NewsArticle.Status.values:
             queryset = queryset.filter(status=status)
 
-        # Category filter
         category = self.request.GET.get("category", "")
-        valid_categories = NewsArticle.Category.values
-        if category in valid_categories:
+
+        if category in NewsArticle.Category.values:
             queryset = queryset.filter(category=category)
 
-       # Sorting
         sort = self.request.GET.get("sort", "newest")
 
         if sort == "oldest":
             queryset = queryset.order_by("created_at")
+
         elif sort == "top_rated":
             queryset = queryset.order_by(
                 models.F("average_rating").desc(nulls_last=True)
             )
+
         else:
             queryset = queryset.order_by("-created_at")
 
@@ -246,7 +245,6 @@ def cast_vote(request, pk):
         ],
     ),
 )
-
 class ArticleViewSet(viewsets.ModelViewSet):
 
     serializer_class = NewsArticleSerializer
@@ -256,15 +254,72 @@ class ArticleViewSet(viewsets.ModelViewSet):
     ]
 
     def get_queryset(self):
-        return NewsArticle.objects.annotate(
+
+        queryset = NewsArticle.objects.annotate(
             average_rating=Avg("votes__rating"),
             vote_count=Count("votes"),
         )
 
+        # Search
+        query = self.request.GET.get("q", "").strip()
+
+        if query:
+            queryset = queryset.filter(
+                Q(title__icontains=query) |
+                Q(description__icontains=query)
+            )
+
+        # Status filter
+        status = self.request.GET.get("status", "")
+
+        if status in NewsArticle.Status.values:
+            queryset = queryset.filter(
+                status=status
+            )
+
+        # Category filter
+        category = self.request.GET.get("category", "")
+
+        if category in NewsArticle.Category.values:
+            queryset = queryset.filter(
+                category=category
+            )
+
+        # Sorting
+        sort = self.request.GET.get(
+            "sort",
+            "newest"
+        )
+
+        if sort == "oldest":
+
+            queryset = queryset.order_by(
+                "created_at"
+            )
+
+        elif sort == "top_rated":
+
+            queryset = queryset.order_by(
+                models.F("average_rating").desc(
+                    nulls_last=True
+                )
+            )
+
+        else:
+
+            queryset = queryset.order_by(
+                "-created_at"
+            )
+
+        return queryset
+
+
     def perform_create(self, serializer):
+
         serializer.save(
             submitted_by=self.request.user
         )
+
 
     def get_permissions(self):
 
@@ -273,23 +328,23 @@ class ArticleViewSet(viewsets.ModelViewSet):
 
         return super().get_permissions()
 
+
     @extend_schema(
         description=(
-        "Staff-only action. Changes article credibility status "
-        "and records the reason in review history."
+            "Staff-only action. Changes article credibility status "
+            "and records the reason in review history."
         ),
         examples=[
             OpenApiExample(
-            "Mark article as verified",
+                "Mark article as verified",
                 value={
                     "new_status": "verified",
                     "reason": "Confirmed using multiple independent sources."
-                 },
-             request_only=True,
+                },
+                request_only=True,
             )
         ],
     )
-
     @action(
         detail=True,
         methods=["post"],
@@ -321,6 +376,10 @@ class ArticleViewSet(viewsets.ModelViewSet):
         article.status = serializer.validated_data["new_status"]
         article.save()
 
+        article = self.get_queryset().get(
+            pk=article.pk
+        )
+
         return Response(
             NewsArticleSerializer(article).data
         )
@@ -343,12 +402,12 @@ class ArticleViewSet(viewsets.ModelViewSet):
         ],
     ),
 )
-
 class VoteViewSet(
     viewsets.GenericViewSet,
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
 ):
+
     serializer_class = VoteSerializer
 
     permission_classes = [
@@ -361,6 +420,7 @@ class VoteViewSet(
         )
 
     def perform_create(self, serializer):
+
         Vote.objects.update_or_create(
             article=serializer.validated_data["article"],
             user=self.request.user,
@@ -368,4 +428,3 @@ class VoteViewSet(
                 "rating": serializer.validated_data["rating"]
             },
         )
-    

@@ -18,6 +18,9 @@ from drf_spectacular.utils import (
     extend_schema_view,
 )
 
+from rest_framework.decorators import action
+from rest_framework.response import Response
+
 @login_required
 def report_article(request, article_pk):
     article = get_object_or_404(NewsArticle, pk=article_pk)
@@ -101,8 +104,46 @@ class ReportViewSet(viewsets.ModelViewSet):
     ]
 
     def get_queryset(self):
+        if self.request.user.is_staff:
+            return Report.objects.all()
+
         return Report.objects.filter(
             reported_by=self.request.user
+        )
+
+    @action(
+    detail=True,
+    methods=["post"],
+    permission_classes=[permissions.IsAdminUser],
+)
+    def resolve(self, request, pk=None):
+        report = self.get_object()
+
+        report.status = "resolved"
+        report.save()
+
+        return Response(
+            {
+                "detail": "Report resolved."
+            }
+        )
+
+
+    @action(
+        detail=True,
+        methods=["post"],
+        permission_classes=[permissions.IsAdminUser],
+    )
+    def dismiss(self, request, pk=None):
+        report = self.get_object()
+
+        report.status = "dismissed"
+        report.save()
+
+        return Response(
+            {
+                "detail": "Report dismissed."
+            }
         )
 
     def perform_create(self, serializer):
