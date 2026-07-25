@@ -17,8 +17,7 @@ const FEATURES = [
   {
     title: "AI Verification",
     description:
-      "AI-assisted credibility signals and source analysis to support human review.",
-    comingSoon: true,
+      "Automated credibility signals — source reputation and writing-pattern analysis — support every submission.",
   },
 ];
 
@@ -48,11 +47,7 @@ export function FeatureGrid() {
               </h3>
 
 
-              {feature.comingSoon && (
-                <span className="text-xs font-medium bg-secondary/10 text-secondary px-2 py-0.5 rounded-full">
-                  Coming Soon
-                </span>
-              )}
+              
 
             </div>
 

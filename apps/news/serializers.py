@@ -2,9 +2,14 @@ from rest_framework import serializers
 
 from .models import CredibilityReview, NewsArticle, Vote
 
+from apps.ai.serializers import AIAnalysisSerializer
 
 class NewsArticleSerializer(serializers.ModelSerializer):
-
+    ai_analysis = AIAnalysisSerializer(
+    read_only=True,
+    required=False,
+    allow_null=True,
+    )
     submitted_by = serializers.StringRelatedField(read_only=True)
     status = serializers.CharField(read_only=True)
 
@@ -15,17 +20,18 @@ class NewsArticleSerializer(serializers.ModelSerializer):
         model = NewsArticle
 
         fields = [
-            "id",
-            "title",
-            "source_url",
-            "description",
-            "category",
-            "status",
-            "submitted_by",
-            "created_at",
-            "average_rating",
-            "vote_count",
-        ]
+        "id",
+        "title",
+        "source_url",
+        "description",
+        "category",
+        "status",
+        "submitted_by",
+        "average_rating",
+        "vote_count",
+        "ai_analysis",
+        "created_at",
+    ]
 
         read_only_fields = [
             "id",

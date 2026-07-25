@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from apps.accounts.factories import StaffUserFactory, UserFactory
 from apps.news.factories import NewsArticleFactory
 
-from .models import NewsArticle
+from apps.news.models import NewsArticle
 
 class NewsArticleTests(TestCase):
     def setUp(self):

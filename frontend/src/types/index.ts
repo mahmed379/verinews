@@ -1,3 +1,19 @@
+export interface AIFactor {
+  label: string;
+  impact: "positive" | "negative" | "neutral";
+  detail: string;
+  points: number;
+}
+
+export interface AIAnalysis {
+  score: number;
+  risk_level: "low" | "medium" | "high";
+  factors: AIFactor[];
+  suggested_steps: string[];
+  analyzer_version: string;
+  created_at: string;
+}
+
 export type ArticleStatus =
   | "pending"
   | "verified"
@@ -15,6 +31,7 @@ export interface NewsArticle {
   created_at: string;
   average_rating: number | null;
   vote_count: number;
+  ai_analysis: AIAnalysis | null;
 }
 export type ReportStatus =
   | "open"
@@ -30,3 +47,4 @@ export interface Report {
   reported_by: string;
   created_at: string;
 }
+

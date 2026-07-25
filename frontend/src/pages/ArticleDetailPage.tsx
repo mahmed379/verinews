@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { useArticle } from "../hooks/useArticles";
 import { StatusBadge } from "../Components/ui/StatusBadge";
 import { GlassCard } from "../Components/ui/GlassCard";
-
+import { CredibilitySignalsCard } from "../Components/ai/CredibilitySignalsCard";
 
 export default function ArticleDetailPage() {
 
@@ -137,6 +137,11 @@ export default function ArticleDetailPage() {
 
 
       </GlassCard>
+
+
+      <div className="mt-4">
+        <CredibilitySignalsCard analysis={article.ai_analysis} />
+      </div>
 
 
 
