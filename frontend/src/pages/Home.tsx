@@ -1,13 +1,16 @@
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 
 import { useArticles } from "../hooks/useArticles";
 import { ArticleCard } from "../Components/articles/ArticleCard";
 import { ArticleFilterBar } from "../Components/articles/ArticleFilters";
+import useAuth from "../hooks/useAuth";
 
 
 export default function Home() {
 
   const [searchParams, setSearchParams] = useSearchParams();
+
+  const { user } = useAuth();
 
 
   const filters = {
@@ -50,9 +53,25 @@ export default function Home() {
 
     <div className="max-w-3xl mx-auto px-4 py-8">
 
-      <h1 className="text-2xl font-bold text-ink mb-6">
-        Latest Submissions
-      </h1>
+
+      <div className="flex justify-between items-center mb-6">
+
+        <h1 className="text-2xl font-bold text-ink">
+          Latest Submissions
+        </h1>
+
+
+        {user && (
+          <Link
+            to="/articles/submit"
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium"
+          >
+            Submit News
+          </Link>
+        )}
+
+      </div>
+
 
 
       <ArticleFilterBar />
@@ -95,6 +114,7 @@ export default function Home() {
 
 
 
+
       {data && (data.next || data.previous) && (
 
         <div className="flex gap-2 mt-4">
@@ -126,6 +146,7 @@ export default function Home() {
         </div>
 
       )}
+
 
     </div>
 

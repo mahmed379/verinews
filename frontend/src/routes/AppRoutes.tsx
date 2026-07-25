@@ -19,6 +19,8 @@ import { AdminArticlesPage } from "../pages/AdminArticlesPage";
 import LandingPage from "../pages/LandingPage";
 
 import AboutPage from "../pages/AboutPage";
+import { SubmitArticlePage } from "../pages/SubmitArticlePage";
+import { FlaggedCommentsPage } from "../pages/FlaggedCommentsPage";
 
 export function AppRoutes() {
   return (
@@ -39,6 +41,15 @@ export function AppRoutes() {
 
         <Route path="/register" element={<Register />} />
 
+        {/* Authenticated user routes */}
+        <Route element={<RequireAuth />}>
+
+          <Route
+            path="/articles/submit"
+            element={<SubmitArticlePage />}
+          />
+
+        </Route>
 
         {/* Moderator routes */}
         <Route element={<RequireAuth staffOnly />}>
@@ -56,6 +67,11 @@ export function AppRoutes() {
           <Route
             path="/moderation/reports"
             element={<ReportManagementPage />}
+          />
+
+          <Route
+            path="/moderation/comments"
+            element={<FlaggedCommentsPage />}
           />
 
         </Route>

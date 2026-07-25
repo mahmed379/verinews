@@ -54,3 +54,48 @@ def run_summarization(article) -> ArticleSummary:
     )
 
     return summary
+
+from .models import (
+    CommentModerationFlag,
+    ReportModerationFlag,
+)
+
+from .moderation import (
+    CommentSpamAnalyzer,
+    ReportSuspicionAnalyzer,
+)
+
+
+def run_comment_moderation(comment):
+
+    result = CommentSpamAnalyzer().analyze(comment)
+
+    flag, _ = CommentModerationFlag.objects.update_or_create(
+        comment=comment,
+        defaults={
+            "is_flagged": result.is_flagged,
+            "score": result.score,
+            "reasons": result.reasons,
+            "flagger_version": result.version,
+        },
+    )
+
+    return flag
+
+
+
+def run_report_moderation(report):
+
+    result = ReportSuspicionAnalyzer().analyze(report)
+
+    flag, _ = ReportModerationFlag.objects.update_or_create(
+        report=report,
+        defaults={
+            "is_flagged": result.is_flagged,
+            "score": result.score,
+            "reasons": result.reasons,
+            "flagger_version": result.version,
+        },
+    )
+
+    return flag

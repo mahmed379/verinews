@@ -2,6 +2,10 @@ from django.contrib import admin
 
 from .models import AIAnalysis, ArticleSummary
 
+from .models import (
+    CommentModerationFlag,
+    ReportModerationFlag,
+)
 
 @admin.register(AIAnalysis)
 class AIAnalysisAdmin(admin.ModelAdmin):
@@ -55,6 +59,52 @@ class ArticleSummaryAdmin(admin.ModelAdmin):
 
     def has_add_permission(self, request):
         return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+@admin.register(CommentModerationFlag)
+class CommentModerationFlagAdmin(admin.ModelAdmin):
+
+    list_display = (
+        "comment",
+        "is_flagged",
+        "score",
+        "created_at",
+    )
+
+    list_filter = (
+        "is_flagged",
+    )
+
+
+    def has_add_permission(self, request):
+        return False
+
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+
+
+@admin.register(ReportModerationFlag)
+class ReportModerationFlagAdmin(admin.ModelAdmin):
+
+    list_display = (
+        "report",
+        "is_flagged",
+        "score",
+        "created_at",
+    )
+
+    list_filter = (
+        "is_flagged",
+    )
+
+
+    def has_add_permission(self, request):
+        return False
+
 
     def has_change_permission(self, request, obj=None):
         return False

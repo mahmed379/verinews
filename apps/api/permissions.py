@@ -45,3 +45,26 @@ class IsSuperUser(permissions.BasePermission):
             request.user.is_authenticated
             and request.user.is_superuser
         )
+
+class IsOwnerOrStaffOrReadOnly(permissions.BasePermission):
+    """
+    Allows:
+    - Anyone to read
+    - Owners to edit/delete their objects
+    - Staff users to moderate other users' objects
+    """
+
+    def has_object_permission(self, request, view, obj):
+
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        if request.user and request.user.is_staff:
+            return True
+
+        owner = (
+            getattr(obj, "author", None)
+            or getattr(obj, "user", None)
+        )
+
+        return owner == request.user

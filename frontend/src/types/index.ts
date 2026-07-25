@@ -33,19 +33,31 @@ export interface NewsArticle {
   vote_count: number;
   ai_analysis: AIAnalysis | null;
   ai_summary: ArticleSummary | null;
+  moderation_flag: ModerationFlag | null;
 }
 export type ReportStatus =
   | "open"
   | "resolved"
   | "dismissed";
 
+
+
+export interface ModerationFlag {
+  is_flagged: boolean;
+  score: number;
+  reasons: string[];
+  flagger_version: string;
+}
+
 export interface Report {
   id: number;
   article: number;
   article_title: string;
   reason: string;
+  details: string;
   status: ReportStatus;
   reported_by: string;
+  moderation_flag: ModerationFlag | null;
   created_at: string;
 }
 
@@ -57,3 +69,17 @@ export interface ArticleSummary {
   created_at: string;
 }
 
+export interface CommentModerationFlag {
+  is_flagged: boolean;
+  reasons: string[];
+}
+
+export interface Comment {
+  id: number;
+  article: number;
+  author: string;
+  body: string;
+  moderation_flag: CommentModerationFlag | null;
+  created_at: string;
+  updated_at: string;
+}

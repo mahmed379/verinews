@@ -3,12 +3,10 @@ import { StatCard } from "../Components/ui/StatCard";
 import { usePendingCount } from "../hooks/useModeration";
 import { useOpenReportCount } from "../hooks/useReports";
 
-
 export function ModeratorDashboardPage() {
 
   const pendingCount = usePendingCount();
   const openReportCount = useOpenReportCount();
-
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
@@ -16,7 +14,6 @@ export function ModeratorDashboardPage() {
       <h1 className="text-2xl font-bold text-ink mb-6">
         Moderator Dashboard
       </h1>
-
 
       <div className="grid grid-cols-2 gap-4 mb-8">
 
@@ -32,7 +29,6 @@ export function ModeratorDashboardPage() {
 
       </div>
 
-
       <div className="flex gap-4">
 
         <Link
@@ -42,12 +38,18 @@ export function ModeratorDashboardPage() {
           Go to Moderation Queue →
         </Link>
 
-
         <Link
           to="/moderation/reports"
           className="text-primary font-medium hover:underline"
         >
           Go to Report Management →
+        </Link>
+
+        <Link
+          to="/moderation/comments"
+          className="text-primary font-medium hover:underline"
+        >
+          Flagged Comments →
         </Link>
 
       </div>

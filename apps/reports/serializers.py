@@ -5,11 +5,15 @@ from .models import Report
 
 class ReportSerializer(serializers.ModelSerializer):
     reported_by = serializers.StringRelatedField(read_only=True)
+
     article_title = serializers.CharField(
-    source="article.title",
-    read_only=True,
-)
+        source="article.title",
+        read_only=True,
+    )
+
     status = serializers.CharField(read_only=True)
+
+    moderation_flag = serializers.SerializerMethodField()
 
     class Meta:
         model = Report
@@ -22,6 +26,7 @@ class ReportSerializer(serializers.ModelSerializer):
             "details",
             "status",
             "reported_by",
+            "moderation_flag",
             "created_at",
         ]
 
@@ -29,5 +34,17 @@ class ReportSerializer(serializers.ModelSerializer):
             "id",
             "status",
             "reported_by",
+            "moderation_flag",
             "created_at",
         ]
+
+    def get_moderation_flag(self, obj):
+
+        flag = getattr(obj, "moderation_flag", None)
+
+        if not flag:
+            return None
+
+        from apps.ai.serializers import ReportModerationFlagSerializer
+
+        return ReportModerationFlagSerializer(flag).data

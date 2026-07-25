@@ -102,7 +102,6 @@ export function ReportsTable() {
         <table className="w-full solid-card">
 
           <thead className="border-b border-slate-200 text-left text-sm text-slate-500">
-
             <tr>
               <th className="p-3">
                 Article
@@ -120,10 +119,12 @@ export function ReportsTable() {
                 Status
               </th>
 
+              <th className="p-3">
+                Flag
+              </th>
+
               <th className="p-3"></th>
-
             </tr>
-
           </thead>
 
 
@@ -160,6 +161,14 @@ export function ReportsTable() {
 
                 <td className="p-3 text-slate-600 capitalize">
                   {report.status}
+                </td>
+
+                <td className="p-3">
+                  {report.moderation_flag?.is_flagged && (
+                    <span className="text-xs font-medium bg-danger/10 text-danger px-2 py-1 rounded-full">
+                      Suspicious
+                    </span>
+                  )}
                 </td>
 
 

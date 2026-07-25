@@ -1,11 +1,24 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
+
+import toast from "react-hot-toast";
+
 import {
   fetchReports,
   resolveReport,
   dismissReport,
 } from "../api/reports";
+
+import {
+  fetchFlaggedComments,
+  deleteCommentAsStaff,
+} from "../api/moderation";
+
 import type { ReportStatus } from "../types";
-import toast from "react-hot-toast";
+
 import { getErrorMessage } from "../api/errors";
 
 
@@ -61,4 +74,32 @@ export function useDismissReport() {
     dismissReport,
     "Report dismissed."
   );
+}
+export function useFlaggedComments() {
+  return useQuery({
+    queryKey: ["comments", { flagged: true }],
+    queryFn: fetchFlaggedComments,
+  });
+}
+
+
+export function useDeleteCommentAsStaff() {
+
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: deleteCommentAsStaff,
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["comments"],
+      });
+
+      toast.success("Comment removed.");
+    },
+
+    onError: (err) => {
+      toast.error(getErrorMessage(err));
+    },
+  });
 }

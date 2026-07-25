@@ -8,6 +8,12 @@ export interface ArticleFilters {
   sort?: string;
   page?: number;
 }
+export interface SubmitArticlePayload {
+  title: string;
+  source_url: string;
+  description: string;
+  category: string;
+}
 
 interface PaginatedResponse<T> {
   count: number;
@@ -34,6 +40,17 @@ export async function fetchArticle(
 ): Promise<NewsArticle> {
   const response = await apiClient.get<NewsArticle>(
     `/articles/${id}/`
+  );
+
+  return response.data;
+}
+
+export async function submitArticle(
+  payload: SubmitArticlePayload
+): Promise<NewsArticle> {
+  const response = await apiClient.post<NewsArticle>(
+    "/articles/",
+    payload
   );
 
   return response.data;

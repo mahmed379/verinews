@@ -2,6 +2,10 @@ from rest_framework import serializers
 
 from .models import AIAnalysis, ArticleSummary
 
+from .models import (
+    CommentModerationFlag,
+    ReportModerationFlag,
+)
 
 class AIAnalysisSerializer(serializers.ModelSerializer):
     class Meta:
@@ -24,4 +28,29 @@ class ArticleSummarySerializer(serializers.ModelSerializer):
             "claims",
             "summarizer_version",
             "created_at",
+        ]
+
+
+class CommentModerationFlagSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CommentModerationFlag
+        fields = [
+            "is_flagged",
+            "score",
+            "reasons",
+            "flagger_version",
+        ]
+
+
+
+class ReportModerationFlagSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ReportModerationFlag
+        fields = [
+            "is_flagged",
+            "score",
+            "reasons",
+            "flagger_version",
         ]

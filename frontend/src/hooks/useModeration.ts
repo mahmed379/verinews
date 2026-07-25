@@ -1,6 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchArticles } from "../api/articles";
-import { reviewArticle, type ReviewPayload } from "../api/moderation";
+import {
+  fetchFlaggedComments,
+  deleteCommentAsStaff,
+  reviewArticle,
+  type ReviewPayload,
+} from "../api/moderation";
+
 import toast from "react-hot-toast";
 import { getErrorMessage } from "../api/errors";
 
@@ -45,6 +51,35 @@ export function useReviewArticle() {
       });
 
       toast.success("Article status updated.");
+    },
+
+    onError: (error) => {
+      toast.error(getErrorMessage(error));
+    },
+  });
+}
+
+
+export function useFlaggedComments() {
+  return useQuery({
+    queryKey: ["flagged-comments"],
+    queryFn: fetchFlaggedComments,
+  });
+}
+
+
+export function useDeleteCommentAsStaff() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: deleteCommentAsStaff,
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["flagged-comments"],
+      });
+
+      toast.success("Comment deleted.");
     },
 
     onError: (error) => {

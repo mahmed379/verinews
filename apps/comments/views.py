@@ -9,7 +9,7 @@ from .forms import CommentForm
 from .models import Comment
 from rest_framework import permissions, viewsets
 
-from apps.api.permissions import IsOwnerOrReadOnly
+from apps.api.permissions import IsOwnerOrStaffOrReadOnly
 
 from .serializers import CommentSerializer
 from drf_spectacular.utils import (
@@ -80,17 +80,31 @@ class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
 
     permission_classes = [
-        permissions.IsAuthenticatedOrReadOnly,
-        IsOwnerOrReadOnly,
-    ]
-
+    permissions.IsAuthenticatedOrReadOnly,
+    IsOwnerOrStaffOrReadOnly,
+]
     def get_queryset(self):
-        queryset = Comment.objects.all()
+        queryset = Comment.objects.select_related(
+            "article",
+            "author",
+            "moderation_flag",
+        )
 
         article_id = self.request.query_params.get("article")
 
         if article_id is not None and article_id.isdigit():
             queryset = queryset.filter(article_id=article_id)
+
+        flagged_param = self.request.query_params.get("flagged")
+
+        if flagged_param == "true":
+            if (
+                self.request.user.is_authenticated
+                and self.request.user.is_staff
+            ):
+                queryset = queryset.filter(
+                    moderation_flag__is_flagged=True
+                )
 
         return queryset
 
