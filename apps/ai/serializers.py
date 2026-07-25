@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import AIAnalysis
+from .models import AIAnalysis, ArticleSummary
 
 
 class AIAnalysisSerializer(serializers.ModelSerializer):
@@ -12,5 +12,16 @@ class AIAnalysisSerializer(serializers.ModelSerializer):
             "factors",
             "suggested_steps",
             "analyzer_version",
+            "created_at",
+        ]
+
+class ArticleSummarySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArticleSummary
+        fields = [
+            "summary",
+            "key_points",
+            "claims",
+            "summarizer_version",
             "created_at",
         ]

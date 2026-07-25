@@ -2,7 +2,10 @@ from rest_framework import serializers
 
 from .models import CredibilityReview, NewsArticle, Vote
 
-from apps.ai.serializers import AIAnalysisSerializer
+from apps.ai.serializers import (
+    AIAnalysisSerializer,
+    ArticleSummarySerializer,
+)
 
 class NewsArticleSerializer(serializers.ModelSerializer):
     ai_analysis = AIAnalysisSerializer(
@@ -10,11 +13,18 @@ class NewsArticleSerializer(serializers.ModelSerializer):
     required=False,
     allow_null=True,
     )
+
     submitted_by = serializers.StringRelatedField(read_only=True)
     status = serializers.CharField(read_only=True)
 
     average_rating = serializers.FloatField(read_only=True)
     vote_count = serializers.IntegerField(read_only=True)
+
+    ai_summary = ArticleSummarySerializer(
+        read_only=True,
+        required=False,
+        allow_null=True,
+        )
 
     class Meta:
         model = NewsArticle
@@ -30,6 +40,7 @@ class NewsArticleSerializer(serializers.ModelSerializer):
         "average_rating",
         "vote_count",
         "ai_analysis",
+        "ai_summary",
         "created_at",
     ]
 

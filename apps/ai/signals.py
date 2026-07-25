@@ -3,7 +3,7 @@ from django.dispatch import receiver
 
 from apps.news.models import NewsArticle
 
-from .services import run_analysis
+from .services import run_analysis, run_summarization
 
 
 @receiver(post_save, sender=NewsArticle)
@@ -14,3 +14,4 @@ def analyze_on_creation(sender, instance, created, **kwargs):
     """
     if created:
         run_analysis(instance)
+        run_summarization(instance)

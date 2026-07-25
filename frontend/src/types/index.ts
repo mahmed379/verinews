@@ -32,6 +32,7 @@ export interface NewsArticle {
   average_rating: number | null;
   vote_count: number;
   ai_analysis: AIAnalysis | null;
+  ai_summary: ArticleSummary | null;
 }
 export type ReportStatus =
   | "open"
@@ -45,6 +46,14 @@ export interface Report {
   reason: string;
   status: ReportStatus;
   reported_by: string;
+  created_at: string;
+}
+
+export interface ArticleSummary {
+  summary: string;
+  key_points: string[];
+  claims: string[];
+  summarizer_version: string;
   created_at: string;
 }
 

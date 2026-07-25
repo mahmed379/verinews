@@ -35,3 +35,24 @@ class AIAnalysis(models.Model):
             f"AI analysis for {self.article} — "
             f"{self.score}/100 ({self.risk_level})"
         )
+
+
+class ArticleSummary(models.Model):
+    article = models.OneToOneField(
+        NewsArticle,
+        on_delete=models.CASCADE,
+        related_name="ai_summary",
+    )
+
+    summary = models.TextField()
+
+    key_points = models.JSONField(default=list)
+
+    claims = models.JSONField(default=list)
+
+    summarizer_version = models.CharField(max_length=50)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Summary for {self.article}"

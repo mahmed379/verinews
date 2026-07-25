@@ -4,6 +4,7 @@ import { useArticle } from "../hooks/useArticles";
 import { StatusBadge } from "../Components/ui/StatusBadge";
 import { GlassCard } from "../Components/ui/GlassCard";
 import { CredibilitySignalsCard } from "../Components/ai/CredibilitySignalsCard";
+import { ArticleSummaryCard } from "../Components/ai/ArticleSummaryCard";
 
 export default function ArticleDetailPage() {
 
@@ -90,6 +91,10 @@ export default function ArticleDetailPage() {
 
 
       </div>
+
+      <div className="mt-4">
+        <ArticleSummaryCard summary={article.ai_summary} />
+    </div>
 
 
 
