@@ -3,7 +3,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from .forms import RegisterForm
 
+from .models import User
+
 from .forms import CustomUserCreationForm
+
+from api.permissions import IsSuperUser
 
 from rest_framework import generics, permissions
 from rest_framework.authtoken.models import Token
@@ -104,3 +108,16 @@ class LogoutAPIView(APIView):
     def post(self, request):
         request.auth.delete()
         return Response(status=204)
+
+@extend_schema(
+    description="Superuser only. List all registered users. Read-only — role changes are managed via Django admin."
+)
+class UserListAPIView(generics.ListAPIView):
+    """
+    GET /api/users/
+    Superuser only.
+    Read-only by design.
+    """
+    queryset = User.objects.all().order_by("-date_joined")
+    serializer_class = UserSerializer
+    permission_classes = [IsSuperUser]

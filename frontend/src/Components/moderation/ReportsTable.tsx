@@ -142,7 +142,7 @@ export function ReportsTable() {
                     to={`/articles/${report.article}`}
                     className="text-primary hover:underline"
                   >
-                    Article #{report.article}
+                    {report.article_title}
                   </Link>
 
                 </td>

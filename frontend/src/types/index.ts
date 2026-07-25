@@ -5,7 +5,7 @@ export type ArticleStatus =
   | "false";
 
 export interface NewsArticle {
-  id: string;
+  id: number;
   title: string;
   source_url: string;
   description: string;
@@ -24,6 +24,7 @@ export type ReportStatus =
 export interface Report {
   id: number;
   article: number;
+  article_title: string;
   reason: string;
   status: ReportStatus;
   reported_by: string;

@@ -17,10 +17,12 @@ class UserSerializer(serializers.ModelSerializer):
             "last_name",
             "is_staff",
             "date_joined",
+            "is_superuser",
         ]
         read_only_fields = [
             "id",
             "is_staff",
+            "is_superuser",
             "date_joined",
         ]
 

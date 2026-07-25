@@ -5,6 +5,10 @@ from .models import Report
 
 class ReportSerializer(serializers.ModelSerializer):
     reported_by = serializers.StringRelatedField(read_only=True)
+    article_title = serializers.CharField(
+    source="article.title",
+    read_only=True,
+)
     status = serializers.CharField(read_only=True)
 
     class Meta:
@@ -13,6 +17,7 @@ class ReportSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "article",
+            "article_title",
             "reason",
             "details",
             "status",

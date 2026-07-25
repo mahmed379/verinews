@@ -3,10 +3,12 @@ import useAuth from "../hooks/useAuth";
 
 interface RequireAuthProps {
   staffOnly?: boolean;
+  superuserOnly?: boolean;
 }
 
 export default function RequireAuth({
   staffOnly = false,
+  superuserOnly = false,
 }: RequireAuthProps) {
   const { user, loading } = useAuth();
   const location = useLocation();
@@ -21,6 +23,15 @@ export default function RequireAuth({
         to="/login"
         replace
         state={{ from: location }}
+      />
+    );
+  }
+
+  if (superuserOnly && !user.is_superuser) {
+    return (
+      <Navigate
+        to="/"
+        replace
       />
     );
   }

@@ -109,7 +109,8 @@ export function AuthProvider({
       response.token
     );
 
-    setUser(response.user);
+    const currentUser = await getMe();
+    setUser(currentUser);
   }
 
 

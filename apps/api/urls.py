@@ -6,6 +6,7 @@ from apps.comments.views import CommentViewSet
 from apps.news.views import ArticleViewSet, VoteViewSet
 from apps.reports.views import ReportViewSet
 
+from apps.accounts.views import UserListAPIView
 from apps.accounts.views import (
     RegisterAPIView,
     MeAPIView,
@@ -66,5 +67,7 @@ urlpatterns = [
         MeAPIView.as_view(),
         name="api_me",
     ),
+
+    path("users/", UserListAPIView.as_view(), name="api_user_list"),
   
 ]

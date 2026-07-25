@@ -1,8 +1,10 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
+from rest_framework.authtoken.models import Token
 
 from apps.accounts.factories import UserFactory
+from rest_framework.test import APITestCase
 
 User = get_user_model()
 
@@ -152,3 +154,68 @@ def test_user_can_register(self):
     self.assertTrue(
         User.objects.filter(username="newuser").exists()
     )
+
+class UserListAPITests(APITestCase):
+    def setUp(self):
+        self.superuser = User.objects.create_superuser(
+            username="admin",
+            email="admin@example.com",
+            password="admin12345",
+        )
+
+        self.staff = User.objects.create_user(
+            username="staff",
+            email="staff@example.com",
+            password="staff12345",
+            is_staff=True,
+        )
+
+        self.regular = User.objects.create_user(
+            username="user",
+            email="user@example.com",
+            password="user12345",
+        )
+
+    def authenticate(self, user):
+        token, _ = Token.objects.get_or_create(user=user)
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f"Token {token.key}"
+        )
+
+    def test_superuser_can_list_users(self):
+        self.authenticate(self.superuser)
+
+        response = self.client.get("/api/users/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertGreaterEqual(response.data["count"], 3)
+
+    def test_staff_non_superuser_cannot_list_users(self):
+        self.authenticate(self.staff)
+
+        response = self.client.get("/api/users/")
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_regular_user_cannot_list_users(self):
+        self.authenticate(self.regular)
+
+        response = self.client.get("/api/users/")
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_anonymous_cannot_list_users(self):
+        response = self.client.get("/api/users/")
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_user_list_has_no_write_methods(self):
+        self.authenticate(self.superuser)
+
+        response = self.client.patch(
+            "/api/users/",
+            {"is_staff": True},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 405)

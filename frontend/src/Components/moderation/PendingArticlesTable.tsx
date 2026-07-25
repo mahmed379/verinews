@@ -14,7 +14,7 @@ export function PendingArticlesTable() {
   } = usePendingArticles();
 
   const [reviewingId, setReviewingId] =
-    useState<string | null>(null);
+    useState<number | null>(null);
 
 
   if (isLoading) {

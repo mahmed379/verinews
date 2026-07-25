@@ -16,6 +16,10 @@ import { ModeratorDashboardPage } from "./pages/ModeratorDashboardPage";
 import { ModerationQueuePage } from "./pages/ModerationQueuePage";
 import { ReportManagementPage } from "./pages/ReportManagementPage";
 
+import { AdminDashboardPage } from "./pages/AdminDashboardPage";
+import { AdminUsersPage } from "./pages/AdminUsersPage";
+import { AdminArticlesPage } from "./pages/AdminArticlesPage";
+
 import RequireAuth from "./routes/RequireAuth";
 
 import useAuth from "./hooks/useAuth";
@@ -61,6 +65,25 @@ function App() {
               element={<ReportManagementPage />}
             />
           </Route>
+
+          {/* Superuser-only admin routes */}
+          <Route element={<RequireAuth superuserOnly />}>
+            <Route
+              path="/admin"
+              element={<AdminDashboardPage />}
+            />
+
+            <Route
+              path="/admin/users"
+              element={<AdminUsersPage />}
+            />
+
+            <Route
+              path="/admin/articles"
+              element={<AdminArticlesPage />}
+            />
+          </Route>
+
         </Route>
 
         <Route

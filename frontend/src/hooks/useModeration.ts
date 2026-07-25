@@ -31,7 +31,7 @@ export function useReviewArticle() {
       id,
       payload,
     }: {
-      id: string;
+      id: number;
       payload: ReviewPayload;
     }) => reviewArticle(Number(id), payload),
 
