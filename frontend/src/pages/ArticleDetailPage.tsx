@@ -144,7 +144,7 @@ export default function ArticleDetailPage() {
       <div className="mt-6">
 
         <Link
-          to="/"
+          to="/articles"
           className="text-primary hover:underline"
         >
           ← Back to feed

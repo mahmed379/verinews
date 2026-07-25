@@ -1,103 +1,28 @@
-import { Routes, Route } from "react-router-dom";
 
-import { Toaster } from "react-hot-toast";
-
-import MainLayout from "./Layouts/MainLayout";
 
 import LoadingSpinner from "./Components/ui/LoadingSpinner";
 
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import NotFound from "./pages/NotFound";
-import ArticleDetailPage from "./pages/ArticleDetailPage";
-
-import { ModeratorDashboardPage } from "./pages/ModeratorDashboardPage";
-import { ModerationQueuePage } from "./pages/ModerationQueuePage";
-import { ReportManagementPage } from "./pages/ReportManagementPage";
-
-import { AdminDashboardPage } from "./pages/AdminDashboardPage";
-import { AdminUsersPage } from "./pages/AdminUsersPage";
-import { AdminArticlesPage } from "./pages/AdminArticlesPage";
-
-import RequireAuth from "./routes/RequireAuth";
+import { AppRoutes } from "./routes/AppRoutes";
 
 import useAuth from "./hooks/useAuth";
 
+
 function App() {
+
   const { loading } = useAuth();
+
 
   if (loading) {
     return <LoadingSpinner />;
   }
 
+
   return (
     <>
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          duration: 3000,
-        }}
-      />
-
-      <Routes>
-        <Route element={<MainLayout />}>
-          <Route path="/" element={<Home />} />
-
-          <Route path="/login" element={<Login />} />
-
-          <Route path="/register" element={<Register />} />
-
-          {/* Staff-only moderator routes */}
-          <Route element={<RequireAuth staffOnly />}>
-            <Route
-              path="/moderation"
-              element={<ModeratorDashboardPage />}
-            />
-
-            <Route
-              path="/moderation/queue"
-              element={<ModerationQueuePage />}
-            />
-
-            <Route
-              path="/moderation/reports"
-              element={<ReportManagementPage />}
-            />
-          </Route>
-
-          {/* Superuser-only admin routes */}
-          <Route element={<RequireAuth superuserOnly />}>
-            <Route
-              path="/admin"
-              element={<AdminDashboardPage />}
-            />
-
-            <Route
-              path="/admin/users"
-              element={<AdminUsersPage />}
-            />
-
-            <Route
-              path="/admin/articles"
-              element={<AdminArticlesPage />}
-            />
-          </Route>
-
-        </Route>
-
-        <Route
-          path="/articles/:id"
-          element={<ArticleDetailPage />}
-        />
-
-        <Route
-          path="*"
-          element={<NotFound />}
-        />
-      </Routes>
+      <AppRoutes />
     </>
   );
 }
+
 
 export default App;
