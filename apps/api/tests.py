@@ -69,6 +69,75 @@ class CommentAPITests(APITestSetup):
 
         self.assertEqual(response.status_code, 201)
 
+class VoteAPITests(APITestSetup):
+
+    def test_filter_votes_by_article(self):
+        article1 = NewsArticleFactory(
+            submitted_by=self.user
+        )
+
+        article2 = NewsArticleFactory(
+            submitted_by=self.user
+        )
+
+        self.client.post(
+            "/api/votes/",
+            {
+                "article": article1.id,
+                "rating": 5,
+            },
+        )
+
+        self.client.post(
+            "/api/votes/",
+            {
+                "article": article2.id,
+                "rating": 3,
+            },
+        )
+
+        response = self.client.get(
+            "/api/votes/",
+            {
+                "article": article1.id,
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["count"], 1)
+
+        self.assertEqual(
+            len(response.data["results"]),
+            1,
+        )
+
+        self.assertEqual(
+            response.data["results"][0]["article"],
+            article1.id,
+        )
+
+    def test_invalid_article_filter_returns_all_votes(self):
+        article = NewsArticleFactory(
+            submitted_by=self.user
+        )
+
+        self.client.post(
+            "/api/votes/",
+            {
+                "article": article.id,
+                "rating": 5,
+            },
+        )
+
+        response = self.client.get(
+            "/api/votes/",
+            {
+                "article": "abc",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["count"], 1)
 
 class ReportAPITests(APITestSetup):
 
@@ -84,11 +153,12 @@ class ReportAPITests(APITestSetup):
             "/api/reports/",
             {
                 "article": article.id,
-                "reason": "misleading"
+                "reason": "harassment"
             }
         )
 
 
+        print(response.data)
         self.assertEqual(response.status_code, 201)
 
 class ArticlePermissionTests(TestCase):

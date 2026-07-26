@@ -90,7 +90,7 @@ class ReportTests(TestCase):
                 args=[self.article.pk]
             ),
             {
-                "reason": Report.Reason.OFFENSIVE,
+                "reason": Report.Reason.HARASSMENT,
                 "details": "",
             },
         )
@@ -128,7 +128,7 @@ class ReportTests(TestCase):
                 args=[self.article.pk]
             ),
             {
-                "reason": Report.Reason.DUPLICATE,
+                "reason": Report.Reason.FALSE_INFORMATION,
                 "details": "",
             },
         )

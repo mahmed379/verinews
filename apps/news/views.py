@@ -415,9 +415,21 @@ class VoteViewSet(
     ]
 
     def get_queryset(self):
-        return Vote.objects.filter(
+        queryset = Vote.objects.filter(
             user=self.request.user
         )
+
+        article = self.request.query_params.get("article")
+
+        if article:
+            try:
+                queryset = queryset.filter(
+                    article_id=int(article)
+                )
+            except ValueError:
+                pass
+
+        return queryset
 
     def perform_create(self, serializer):
 
