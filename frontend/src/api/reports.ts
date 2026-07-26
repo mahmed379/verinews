@@ -38,3 +38,20 @@ export async function dismissReport(id: number): Promise<Report> {
 
   return response.data;
 }
+
+export async function createReport(
+  article: number,
+  reason: string,
+  details: string
+): Promise<Report> {
+  const response = await apiClient.post<Report>(
+    "/reports/",
+    {
+      article,
+      reason,
+      details,
+    }
+  );
+
+  return response.data;
+}

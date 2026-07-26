@@ -1,3 +1,5 @@
+import { ModerationFlagCard } from "../Components/ai/ModerationFlagCard";
+
 import { Link, useParams } from "react-router-dom";
 
 import { useArticle } from "../hooks/useArticles";
@@ -6,9 +8,31 @@ import { GlassCard } from "../Components/ui/GlassCard";
 import { CredibilitySignalsCard } from "../Components/ai/CredibilitySignalsCard";
 import { ArticleSummaryCard } from "../Components/ai/ArticleSummaryCard";
 
+import { RatingWidget } from "../Components/votes/RatingWidget";
+
+import { CommentForm } from "../Components/comments/CommentForm";
+import { CommentList } from "../Components/comments/CommentList";
+
+import { useState } from "react";
+import { ReportModal } from "../Components/reports/ReportModal";
+import { useCreateReport } from "../hooks/useReports";
+
+
+
+import useAuth from "../hooks/useAuth";
+
+import {
+  useComments,
+  useCreateComment,
+  useUpdateComment,
+  useDeleteComment,
+} from "../hooks/useComments";
+
 export default function ArticleDetailPage() {
 
   const { id } = useParams<{ id: string }>();
+  const { user } = useAuth();
+  const [reportOpen, setReportOpen] = useState(false);
 
   const {
     data: article,
@@ -16,7 +40,20 @@ export default function ArticleDetailPage() {
     isError,
   } = useArticle(id);
 
+  const articleId = article?.id ?? 0;
 
+  const { data: comments = [] } = useComments(articleId);
+
+  const createCommentMutation =
+    useCreateComment(articleId);
+
+  const updateCommentMutation =
+    useUpdateComment(articleId);
+
+  const deleteCommentMutation =
+    useDeleteComment(articleId);
+  const createReportMutation =
+    useCreateReport();
 
   if (isLoading) {
     return (
@@ -29,14 +66,54 @@ export default function ArticleDetailPage() {
 
 
   if (isError || !article) {
+
     return (
       <p className="text-danger p-8">
         Article not found.
       </p>
     );
   }
+  function handleCreateComment(body: string) {
+  createCommentMutation.mutate(body);
+}
 
+  function handleUpdateComment(
+    commentId: number,
+    body: string
+  ) {
+    updateCommentMutation.mutate({
+      id: commentId,
+      body,
+    });
+  }
 
+  function handleDeleteComment(commentId: number) {
+    if (
+      window.confirm(
+        "Are you sure you want to delete this comment?"
+      )
+    ) {
+      deleteCommentMutation.mutate(commentId);
+    }
+  }
+
+  function handleReport(
+    reason: string,
+    details: string
+  ) {
+    createReportMutation.mutate(
+      {
+        article: articleId,
+        reason,
+        details,
+      },
+      {
+        onSuccess: () => {
+          setReportOpen(false);
+        },
+      }
+    );
+  }
 
   return (
 
@@ -92,9 +169,28 @@ export default function ArticleDetailPage() {
 
       </div>
 
+      {user && (
+        <div className="mt-4 flex justify-end">
+          <button
+            type="button"
+            onClick={() => setReportOpen(true)}
+            className="rounded-lg border border-red-500 px-4 py-2 text-red-600 hover:bg-red-50"
+          >
+            Report Article
+          </button>
+        </div>
+      )}
+
       <div className="mt-4">
         <ArticleSummaryCard summary={article.ai_summary} />
-    </div>
+
+      </div>
+      <div className="mt-4">
+        <ModerationFlagCard
+          flag={article.moderation_flag}
+        />
+      </div>
+
 
 
 
@@ -144,6 +240,43 @@ export default function ArticleDetailPage() {
       </GlassCard>
 
 
+
+      <GlassCard className="mt-6">
+        <h2 className="mb-4 text-lg font-semibold text-ink">
+          Comments
+        </h2>
+
+        {user ? (
+          <CommentForm
+            isSubmitting={createCommentMutation.isPending}
+            onSubmit={handleCreateComment}
+          />
+        ) : (
+          <p className="mb-4 text-slate-500">
+            Log in to leave a comment.
+          </p>
+        )}
+
+        <div className="mt-6">
+          <CommentList
+            comments={comments}
+            currentUsername={user?.username}
+            isStaff={user?.is_staff}
+            onUpdate={handleUpdateComment}
+            onDelete={handleDeleteComment}
+          />
+        </div>
+      </GlassCard>
+
+      <GlassCard className="mt-4">
+        <h2 className="font-semibold text-ink mb-2">
+          Rate This Article
+        </h2>
+
+        <RatingWidget articleId={article.id} />
+      </GlassCard>
+
+
       <div className="mt-4">
         <CredibilitySignalsCard analysis={article.ai_analysis} />
       </div>
@@ -162,7 +295,12 @@ export default function ArticleDetailPage() {
 
       </div>
 
-
+      <ReportModal
+        open={reportOpen}
+        isSubmitting={createReportMutation.isPending}
+        onClose={() => setReportOpen(false)}
+        onSubmit={handleReport}
+      />
     </div>
 
   );

@@ -164,9 +164,23 @@ export function ReportsTable() {
                 </td>
 
                 <td className="p-3">
-                  {report.moderation_flag?.is_flagged && (
-                    <span className="text-xs font-medium bg-danger/10 text-danger px-2 py-1 rounded-full">
-                      Suspicious
+                  {report.moderation_flag?.is_flagged ? (
+                    <div className="space-y-2">
+                      <span className="inline-block rounded-full border border-yellow-300 bg-yellow-50 px-2 py-1 text-xs font-semibold text-yellow-800">
+                        ⚠ AI Flagged
+                      </span>
+
+                      <ul className="ml-4 list-disc text-xs text-yellow-700">
+                        {report.moderation_flag.reasons.map((reason, index) => (
+                          <li key={index}>
+                            {reason}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : (
+                    <span className="text-xs text-slate-400">
+                      —
                     </span>
                   )}
                 </td>

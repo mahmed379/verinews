@@ -83,3 +83,11 @@ export interface Comment {
   created_at: string;
   updated_at: string;
 }
+
+export interface Vote {
+  id: number;
+  article: number;
+  rating: 1 | 2 | 3 | 4 | 5;
+  voter: string;
+  created_at: string;
+}

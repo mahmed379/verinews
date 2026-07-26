@@ -7,10 +7,10 @@ from apps.news.models import NewsArticle
 
 class Report(models.Model):
     class Reason(models.TextChoices):
+        FALSE_INFORMATION = "false_information", "False information"
         SPAM = "spam", "Spam"
-        MISLEADING = "misleading", "Misleading"
-        DUPLICATE = "duplicate", "Duplicate"
-        OFFENSIVE = "offensive", "Offensive"
+        HARASSMENT = "harassment", "Harassment"
+        COPYRIGHT = "copyright", "Copyright"
         OTHER = "other", "Other"
 
     class Status(models.TextChoices):

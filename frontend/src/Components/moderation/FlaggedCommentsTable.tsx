@@ -38,13 +38,13 @@ export function FlaggedCommentsTable() {
             {comment.body}
           </p>
 
-          {comment.moderation_flag && (
-            <div className="mt-3 text-sm text-danger">
-              <p className="font-medium">
-                Reasons:
+          {comment.moderation_flag?.is_flagged && (
+            <div className="mt-3 rounded-lg border border-yellow-300 bg-yellow-50 p-3">
+              <p className="font-semibold text-yellow-800">
+                ⚠ AI Moderation Flag
               </p>
 
-              <ul className="list-disc ml-5">
+              <ul className="mt-2 ml-5 list-disc text-sm text-yellow-700">
                 {comment.moderation_flag.reasons.map(
                   (reason: string, index: number) => (
                     <li key={index}>

@@ -10,6 +10,7 @@ import {
   fetchReports,
   resolveReport,
   dismissReport,
+  createReport,
 } from "../api/reports";
 
 import {
@@ -100,6 +101,42 @@ export function useDeleteCommentAsStaff() {
 
     onError: (err) => {
       toast.error(getErrorMessage(err));
+    },
+  });
+}
+
+
+export function useCreateReport() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      article,
+      reason,
+      details,
+    }: {
+      article: number;
+      reason: string;
+      details: string;
+    }) =>
+      createReport(
+        article,
+        reason,
+        details
+      ),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["reports"],
+      });
+
+      toast.success(
+        "Report submitted successfully."
+      );
+    },
+
+    onError: (error) => {
+      toast.error(getErrorMessage(error));
     },
   });
 }
