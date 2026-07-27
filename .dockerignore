@@ -1,0 +1,14 @@
+.git
+.venv
+venv/
+__pycache__/
+*.pyc
+db.sqlite3
+htmlcov/
+.coverage
+staticfiles/
+media/
+frontend/node_modules/
+frontend/dist/
+.env
+.env.local
