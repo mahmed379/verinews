@@ -33,7 +33,13 @@ const STATUS_FILTERS: {
 ];
 
 
-export function ReportsTable() {
+interface ReportsTableProps {
+  showActions?: boolean;
+}
+
+export function ReportsTable({
+  showActions = true,
+}: ReportsTableProps) {
 
   const [statusFilter, setStatusFilter] =
     useState<ReportStatus | "">("open");
@@ -111,9 +117,11 @@ export function ReportsTable() {
                 Reason
               </th>
 
-              <th className="p-3">
-                Reported By
-              </th>
+              {showActions && (
+                <th className="p-3">
+                  Reported By
+                </th>
+              )}
 
               <th className="p-3">
                 Status
@@ -123,7 +131,9 @@ export function ReportsTable() {
                 Flag
               </th>
 
-              <th className="p-3"></th>
+              {showActions && (
+                <th className="p-3"></th>
+              )}
             </tr>
           </thead>
 
@@ -154,9 +164,11 @@ export function ReportsTable() {
                 </td>
 
 
-                <td className="p-3 text-slate-600">
-                  {report.reported_by}
-                </td>
+                {showActions && (
+                  <td className="p-3 text-slate-600">
+                    {report.reported_by}
+                  </td>
+                )}
 
 
                 <td className="p-3 text-slate-600 capitalize">
@@ -186,44 +198,35 @@ export function ReportsTable() {
                 </td>
 
 
-                <td className="p-3 text-right space-x-2">
+                {showActions && (
+                  <td className="p-3 text-right space-x-2">
 
-                  {report.status === "open" && (
+                    {report.status === "open" && (
+                      <>
+                        <button
+                          onClick={() =>
+                            resolveMutation.mutate(report.id)
+                          }
+                          disabled={resolveMutation.isPending}
+                          className="text-sm font-medium text-secondary hover:underline"
+                        >
+                          Resolve
+                        </button>
 
-                    <>
-                      <button
-                        onClick={() =>
-                          resolveMutation.mutate(
-                            report.id
-                          )
-                        }
-                        disabled={
-                          resolveMutation.isPending
-                        }
-                        className="text-sm font-medium text-secondary hover:underline"
-                      >
-                        Resolve
-                      </button>
+                        <button
+                          onClick={() =>
+                            dismissMutation.mutate(report.id)
+                          }
+                          disabled={dismissMutation.isPending}
+                          className="text-sm font-medium text-slate-500 hover:underline"
+                        >
+                          Dismiss
+                        </button>
+                      </>
+                    )}
 
-
-                      <button
-                        onClick={() =>
-                          dismissMutation.mutate(
-                            report.id
-                          )
-                        }
-                        disabled={
-                          dismissMutation.isPending
-                        }
-                        className="text-sm font-medium text-slate-500 hover:underline"
-                      >
-                        Dismiss
-                      </button>
-                    </>
-
-                  )}
-
-                </td>
+                  </td>
+                )}
 
               </tr>
 

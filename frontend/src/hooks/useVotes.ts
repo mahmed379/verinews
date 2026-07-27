@@ -1,8 +1,30 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+
 import toast from "react-hot-toast";
 
-import { castVote } from "../api/votes";
+import {
+  castVote,
+  fetchMyVoteForArticle,
+} from "../api/votes";
+
 import { getErrorMessage } from "../api/errors";
+import useAuth from "./useAuth";
+
+
+export function useMyVote(articleId: number) {
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: ["my-vote", articleId],
+    queryFn: () => fetchMyVoteForArticle(articleId),
+    enabled: !!user,
+  });
+}
+
 
 export function useCastVote(articleId: number) {
   const queryClient = useQueryClient();
@@ -14,6 +36,10 @@ export function useCastVote(articleId: number) {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["article", String(articleId)],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["my-vote", articleId],
       });
 
       toast.success("Rating submitted.");

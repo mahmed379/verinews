@@ -40,6 +40,12 @@ function Navbar() {
             About
           </NavLink>
 
+          {user && (
+            <NavLink to="/dashboard" className={navLinkClass}>
+              Dashboard
+            </NavLink>
+          )}
+
           {user?.is_staff && (
             <NavLink to="/moderation" className={navLinkClass}>
               Moderation

@@ -22,6 +22,8 @@ import AboutPage from "../pages/AboutPage";
 import { SubmitArticlePage } from "../pages/SubmitArticlePage";
 import { FlaggedCommentsPage } from "../pages/FlaggedCommentsPage";
 
+import { DashboardPage } from "../pages/DashboardPage";
+
 export function AppRoutes() {
   return (
     <Routes>
@@ -45,11 +47,18 @@ export function AppRoutes() {
         <Route element={<RequireAuth />}>
 
           <Route
+            path="/dashboard"
+            element={<DashboardPage />}
+          />
+
+          <Route
             path="/articles/submit"
             element={<SubmitArticlePage />}
           />
 
         </Route>
+
+
 
         {/* Moderator routes */}
         <Route element={<RequireAuth staffOnly />}>

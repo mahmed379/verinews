@@ -1,23 +1,46 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-import { useCastVote } from "../../hooks/useVotes";
+import {
+  useCastVote,
+  useMyVote,
+} from "../../hooks/useVotes";
 import useAuth from "../../hooks/useAuth";
 
 interface RatingWidgetProps {
   articleId: number;
 }
 
-export function RatingWidget({ articleId }: RatingWidgetProps) {
-  const { user } = useAuth();
-  const [selected, setSelected] = useState<number | null>(null);
+export function RatingWidget({
+  articleId,
+}: RatingWidgetProps) {
 
-  const { mutate, isPending } = useCastVote(articleId);
+  const { user } = useAuth();
+
+  const { data: myVote } =
+    useMyVote(articleId);
+
+  const [selected, setSelected] =
+    useState<number | null>(null);
+
+  const {
+    mutate,
+    isPending,
+  } = useCastVote(articleId);
+
+  useEffect(() => {
+    if (myVote) {
+      setSelected(myVote.rating);
+    }
+  }, [myVote]);
 
   if (!user) {
     return (
       <p className="text-sm text-slate-500">
-        <Link to="/login" className="text-primary hover:underline">
+        <Link
+          to="/login"
+          className="text-primary hover:underline"
+        >
           Log in
         </Link>{" "}
         to rate this article.
@@ -27,7 +50,9 @@ export function RatingWidget({ articleId }: RatingWidgetProps) {
 
   return (
     <div className="flex items-center gap-2">
+
       {[1, 2, 3, 4, 5].map((value) => (
+
         <button
           key={value}
           type="button"
@@ -44,11 +69,17 @@ export function RatingWidget({ articleId }: RatingWidgetProps) {
         >
           {value}
         </button>
+
       ))}
 
       <span className="ml-2 text-sm text-slate-500">
-        {isPending ? "Saving..." : "Rate 1–5"}
+        {isPending
+          ? "Saving..."
+          : myVote
+          ? "Update your rating"
+          : "Rate 1–5"}
       </span>
+
     </div>
   );
 }
