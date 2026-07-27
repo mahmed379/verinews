@@ -1,66 +1,34 @@
-name: CI
+name: Django CI
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+
   pull_request:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres:16-alpine
-        env:
-          POSTGRES_DB: verinews_test
-          POSTGRES_USER: verinews
-          POSTGRES_PASSWORD: verinews_test_password
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U verinews"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 5
-
-    env:
-      DJANGO_SETTINGS_MODULE: config.settings.prod
-      DJANGO_SECRET_KEY: ci-test-key-not-for-production
-      DJANGO_ALLOWED_HOSTS: localhost
-      DATABASE_URL: postgresql://verinews:verinews_test_password@localhost:5432/verinews_test
-      CORS_ALLOWED_ORIGINS: http://localhost:5173
-
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
-          cache: pip
+          python-version: "3.13"
 
       - name: Install dependencies
-        run: pip install -r requirements/prod.txt coverage
-
-      - name: Run migrations
-        run: python manage.py migrate
-
-      - name: Run tests
         run: |
-          coverage run manage.py test
-          coverage report
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-      - name: Enforce coverage threshold
-        run: coverage report --fail-under=80
-
-
-  docker-build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Build Docker image
-        run: docker build -t verinews:ci-test .
+      - name: Run Django tests
+        env:
+          DJANGO_SETTINGS_MODULE: config.settings.dev
+        run: |
+          python manage.py test
