@@ -90,6 +90,15 @@ class CommentViewSet(viewsets.ModelViewSet):
             "moderation_flag",
         )
 
+        # My comments filter
+        if (
+            self.request.query_params.get("mine") == "true"
+            and self.request.user.is_authenticated
+        ):
+            queryset = queryset.filter(
+                author=self.request.user
+            )
+
         article_id = self.request.query_params.get("article")
 
         if article_id is not None and article_id.isdigit():

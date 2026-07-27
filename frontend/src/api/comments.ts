@@ -1,6 +1,13 @@
 import apiClient from "./client";
 import type { Comment } from "../types";
 
+interface PaginatedResponse<T> {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: T[];
+}
+
 export async function getComments(articleId: number) {
   const response = await apiClient.get("/comments/", {
     params: {
@@ -41,4 +48,17 @@ export async function deleteComment(
   commentId: number
 ): Promise<void> {
   await apiClient.delete(`/comments/${commentId}/`);
+}
+
+export async function fetchMyComments(): Promise<PaginatedResponse<Comment>> {
+  const response = await apiClient.get<PaginatedResponse<Comment>>(
+    "/comments/",
+    {
+      params: {
+        mine: "true",
+      },
+    }
+  );
+
+  return response.data;
 }

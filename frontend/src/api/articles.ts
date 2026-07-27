@@ -7,6 +7,7 @@ export interface ArticleFilters {
   category?: string;
   sort?: string;
   page?: number;
+  mine?: boolean;
 }
 export interface SubmitArticlePayload {
   title: string;

@@ -254,11 +254,21 @@ class ArticleViewSet(viewsets.ModelViewSet):
     ]
 
     def get_queryset(self):
+          
 
         queryset = NewsArticle.objects.annotate(
             average_rating=Avg("votes__rating"),
             vote_count=Count("votes"),
         )
+
+        # My articles filter
+        if (
+            self.request.query_params.get("mine") == "true"
+            and self.request.user.is_authenticated
+        ):
+            queryset = queryset.filter(
+                submitted_by=self.request.user
+            )
 
         # Search
         query = self.request.GET.get("q", "").strip()
