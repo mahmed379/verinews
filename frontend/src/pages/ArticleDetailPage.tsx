@@ -57,9 +57,9 @@ export default function ArticleDetailPage() {
 
   if (isLoading) {
     return (
-      <p className="text-slate-500 p-8">
+      <div className="glass-card max-w-xl mx-auto mt-10 p-6 text-center">
         Loading...
-      </p>
+      </div>
     );
   }
 
@@ -68,9 +68,9 @@ export default function ArticleDetailPage() {
   if (isError || !article) {
 
     return (
-      <p className="text-danger p-8">
+      <div className="glass-card max-w-xl mx-auto mt-10 p-6 text-center">
         Article not found.
-      </p>
+      </div>
     );
   }
   function handleCreateComment(body: string) {
@@ -117,87 +117,115 @@ export default function ArticleDetailPage() {
 
   return (
 
-    <div className="max-w-2xl mx-auto px-4 py-8">
+    <div className="max-w-4xl mx-auto px-4 py-8">
 
 
-      <div className="flex justify-between items-start gap-3">
+      <GlassCard className="mb-6 p-6">
 
-        <h1 className="text-2xl font-bold text-ink">
-          {article.title}
-        </h1>
+        <div className="
+          flex
+          flex-col
+          gap-4
+          sm:flex-row
+          sm:justify-between
+          sm:items-start
+        ">
 
+          <h1 className="text-3xl font-bold text-white">
+            {article.title}
+          </h1>
 
-        <StatusBadge status={article.status} />
+          <StatusBadge status={article.status} />
 
-      </div>
-
-
-
-      <p className="text-sm text-slate-500 mt-1">
-
-        {article.category} · submitted by{" "}
-        {article.submitted_by}
-
-        {" on "}
-
-        {new Date(
-          article.created_at
-        ).toLocaleDateString()}
-
-      </p>
+        </div>
 
 
+        <p className="text-sm text-slate-500 mt-3">
 
+          {article.category} · submitted by{" "}
+          {article.submitted_by}
 
-      <div className="solid-card p-5 mt-4">
+          {" on "}
 
-        <p className="text-slate-800 whitespace-pre-line">
-          {article.description}
+          {new Date(
+            article.created_at
+          ).toLocaleDateString()}
+
         </p>
 
+      </GlassCard>
+
+      <GlassCard className="p-6">
+
+        <p className="text-slate-200 whitespace-pre-line">
+          {article.description}
+        </p>
 
 
         <a
           href={article.source_url}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-block mt-3 text-primary font-medium hover:underline"
+          className="
+            mt-6
+            inline-flex
+            items-center
+            rounded-xl
+            border
+            border-blue-400/30
+            bg-blue-500/10
+            px-4
+            py-2
+            text-sm
+            font-medium
+            text-blue-300
+            transition
+            hover:bg-blue-500/20
+          "
         >
           View Original Source →
         </a>
 
 
-      </div>
+      </GlassCard>
 
       {user && (
         <div className="mt-4 flex justify-end">
           <button
             type="button"
             onClick={() => setReportOpen(true)}
-            className="rounded-lg border border-red-500 px-4 py-2 text-red-600 hover:bg-red-50"
+           className="
+            rounded-xl
+            border
+            border-red-400/30
+            bg-red-500/10
+            px-4
+            py-2
+            text-red-600
+            hover:bg-red-500/20
+            transition
+            "
           >
             Report Article
           </button>
         </div>
       )}
 
-      <div className="mt-4">
+      <div className="mt-8 space-y-6">
         <ArticleSummaryCard summary={article.ai_summary} />
 
-      </div>
-      <div className="mt-4">
         <ModerationFlagCard
           flag={article.moderation_flag}
         />
+
+        <CredibilitySignalsCard
+          analysis={article.ai_analysis}
+        />
       </div>
 
+      <GlassCard className="mt-6 p-6">
 
-
-
-
-      <GlassCard className="mt-4">
-
-        <h2 className="font-semibold text-ink mb-1">
+        <h2 className="font-semibold text-white mb-1">
           Credibility Score
         </h2>
 
@@ -242,7 +270,7 @@ export default function ArticleDetailPage() {
 
 
       <GlassCard className="mt-6">
-        <h2 className="mb-4 text-lg font-semibold text-ink">
+        <h2 className="mb-4 text-lg font-semibold text-white">
           Comments
         </h2>
 
@@ -268,27 +296,25 @@ export default function ArticleDetailPage() {
         </div>
       </GlassCard>
 
-      <GlassCard className="mt-4">
-        <h2 className="font-semibold text-ink mb-2">
+      <GlassCard className="mt-6 p-6">
+        <h2 className="font-semibold text-white mb-2">
           Rate This Article
         </h2>
 
         <RatingWidget articleId={article.id} />
       </GlassCard>
 
-
-      <div className="mt-4">
-        <CredibilitySignalsCard analysis={article.ai_analysis} />
-      </div>
-
-
-
-
       <div className="mt-6">
 
         <Link
           to="/articles"
-          className="text-primary hover:underline"
+          className="
+            inline-flex
+            items-center
+            text-blue-300
+            transition
+            hover:text-white
+          "
         >
           ← Back to feed
         </Link>

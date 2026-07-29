@@ -51,12 +51,22 @@ export default function Home() {
 
   return (
 
-    <div className="max-w-3xl mx-auto px-4 py-8">
+    <div className="max-w-7xl mx-auto px-4 py-8">
 
 
-      <div className="flex justify-between items-center mb-6">
+      <div
+        className="
+          flex
+          flex-col
+          gap-4
+          mb-6
+          sm:flex-row
+          sm:items-center
+          sm:justify-between
+        "
+      >
 
-        <h1 className="text-2xl font-bold text-ink">
+        <h1 className="text-3xl font-bold tracking-tight text-white">
           Latest Submissions
         </h1>
 
@@ -64,7 +74,9 @@ export default function Home() {
         {user && (
           <Link
             to="/articles/submit"
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium"
+            className="
+            glass-button px-5 py-2.5 text-sm font-semibold text-white
+            "
           >
             Submit News
           </Link>
@@ -79,37 +91,54 @@ export default function Home() {
 
 
       {isLoading && (
-        <p className="text-slate-500">
+        <div className="
+          glass-card
+          p-6
+          text-center
+          text-slate-300
+        ">
           Loading articles...
-        </p>
+        </div>
       )}
 
 
 
       {isError && (
-        <p className="text-danger">
+        <div className="
+          glass-card
+          p-6
+          text-center
+          text-slate-300
+        ">
           Failed to load articles.
-        </p>
+        </div>
       )}
 
 
 
       {data?.results.length === 0 && (
-        <p className="text-slate-500">
-          No articles match your filters.
-        </p>
+        <div className="
+          glass-card
+          p-6
+          text-center
+          text-slate-300
+        ">
+          No article match your filters.
+        </div>
       )}
 
 
 
-      {data?.results.map((article) => (
+      <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
 
-        <ArticleCard
-          key={article.id}
-          article={article}
-        />
+        {data?.results.map((article) => (
+          <ArticleCard
+            key={article.id}
+            article={article}
+          />
+        ))}
 
-      ))}
+      </div>
 
 
 
@@ -117,7 +146,12 @@ export default function Home() {
 
       {data && (data.next || data.previous) && (
 
-        <div className="flex gap-2 mt-4">
+        <div className="
+          flex
+          justify-center
+          gap-3
+          mt-8
+        ">
 
 
           <button
@@ -125,7 +159,17 @@ export default function Home() {
             onClick={() =>
               goToPage(filters.page - 1)
             }
-            className="px-3 py-1.5 border border-slate-300 rounded-lg disabled:opacity-40"
+            className="
+            px-3 py-1.5
+            rounded-xl
+            border
+            border-white/20
+            bg-white/5
+            text-white
+            backdrop-blur-xl
+            disabled:opacity-40
+            hover:bg-white/10
+            "
           >
             Previous
           </button>
@@ -137,7 +181,17 @@ export default function Home() {
             onClick={() =>
               goToPage(filters.page + 1)
             }
-            className="px-3 py-1.5 border border-slate-300 rounded-lg disabled:opacity-40"
+            className="
+            px-3 py-1.5
+            rounded-xl
+            border
+            border-white/20
+            bg-white/5
+            text-white
+            backdrop-blur-xl
+            disabled:opacity-40
+            hover:bg-white/10
+            "
           >
             Next
           </button>

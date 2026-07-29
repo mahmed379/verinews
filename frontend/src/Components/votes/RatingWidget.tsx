@@ -61,10 +61,16 @@ export function RatingWidget({
             setSelected(value);
             mutate(value as 1 | 2 | 3 | 4 | 5);
           }}
-          className={`h-10 w-10 rounded-lg border font-medium transition ${
+          className={`h-10 w-10 rounded-xl border font-semibold transition ${
             selected === value
-              ? "bg-primary border-primary text-white"
-              : "border-slate-300 bg-white hover:border-primary"
+              ? "border-blue-500 bg-blue-600 text-white shadow-lg"
+              : `
+                border-white/15
+                bg-white/5
+                text-slate-200
+                hover:border-blue-400/40
+                hover:bg-white/10
+              `
           }`}
         >
           {value}
@@ -72,7 +78,7 @@ export function RatingWidget({
 
       ))}
 
-      <span className="ml-2 text-sm text-slate-500">
+      <span className="ml-3 text-sm text-slate-400">
         {isPending
           ? "Saving..."
           : myVote

@@ -35,14 +35,31 @@ export function ArticleSubmitForm() {
   }
 
 
+  const inputClass = `
+    w-full
+    rounded-xl
+    border
+    border-white/20
+    bg-white/10
+    px-4
+    py-3
+    text-white
+    placeholder:text-slate-400
+    backdrop-blur
+    focus:outline-none
+    focus:ring-2
+    focus:ring-primary/40
+  `;
+
+
   return (
     <form
       onSubmit={handleSubmit}
-      className="solid-card p-6 space-y-4"
+      className="space-y-5"
     >
 
       <div>
-        <label className="block mb-1">
+        <label className="block mb-2 font-medium text-white">
           Title
         </label>
 
@@ -50,13 +67,14 @@ export function ArticleSubmitForm() {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
-          className="w-full border rounded-lg px-3 py-2"
+          className={inputClass}
+          placeholder="Enter article title"
         />
       </div>
 
 
       <div>
-        <label className="block mb-1">
+        <label className="block mb-2 font-medium text-white">
           Source URL
         </label>
 
@@ -65,21 +83,21 @@ export function ArticleSubmitForm() {
           value={sourceUrl}
           onChange={(e) => setSourceUrl(e.target.value)}
           required
-          className="w-full border rounded-lg px-3 py-2"
+          className={inputClass}
           placeholder="https://example.com/news"
         />
       </div>
 
 
       <div>
-        <label className="block mb-1">
+        <label className="block mb-2 font-medium text-white">
           Category
         </label>
 
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          className="w-full border rounded-lg px-3 py-2"
+          className={inputClass}
         >
           <option value="politics">Politics</option>
           <option value="technology">Technology</option>
@@ -91,7 +109,7 @@ export function ArticleSubmitForm() {
 
 
       <div>
-        <label className="block mb-1">
+        <label className="block mb-2 font-medium text-white">
           Description
         </label>
 
@@ -100,7 +118,8 @@ export function ArticleSubmitForm() {
           onChange={(e) => setDescription(e.target.value)}
           required
           rows={6}
-          className="w-full border rounded-lg px-3 py-2"
+          className={inputClass}
+          placeholder="Briefly describe the news..."
         />
       </div>
 
@@ -108,11 +127,22 @@ export function ArticleSubmitForm() {
       <button
         type="submit"
         disabled={isPending}
-        className="bg-primary text-white px-6 py-2 rounded-lg"
+        className="
+          w-full
+          rounded-xl
+          bg-primary
+          px-6
+          py-3
+          font-semibold
+          text-white
+          transition
+          hover:opacity-90
+          disabled:opacity-50
+        "
       >
         {isPending ? "Submitting..." : "Submit Article"}
       </button>
 
     </form>
   );
-}   
+}

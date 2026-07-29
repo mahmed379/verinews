@@ -1,10 +1,17 @@
 import type { ArticleStatus } from "../../types";
 
 const STATUS_STYLES: Record<ArticleStatus, string> = {
-  pending: "bg-warning/10 text-warning border-warning/30",
-  verified: "bg-secondary/10 text-secondary border-secondary/30",
-  disputed: "bg-warning/10 text-warning border-warning/30",
-  false: "bg-danger/10 text-danger border-danger/30",
+  pending:
+    "bg-amber-500/15 text-amber-300 border-amber-400/30",
+
+  verified:
+    "bg-emerald-500/15 text-emerald-300 border-emerald-400/30",
+
+  disputed:
+    "bg-orange-500/15 text-orange-300 border-orange-400/30",
+
+  false:
+    "bg-red-500/15 text-red-300 border-red-400/30",
 };
 
 const STATUS_LABELS: Record<ArticleStatus, string> = {
@@ -21,7 +28,7 @@ interface StatusBadgeProps {
 export function StatusBadge({ status }: StatusBadgeProps) {
   return (
     <span
-      className={`inline-block px-2.5 py-1 text-xs font-medium rounded-full border ${STATUS_STYLES[status]}`}
+      className={`inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full border backdrop-blur-sm shadow-sm ${STATUS_STYLES[status]}`}
     >
       {STATUS_LABELS[status]}
     </span>

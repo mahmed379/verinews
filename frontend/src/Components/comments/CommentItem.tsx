@@ -25,10 +25,19 @@ export function CommentItem({
   const [editing, setEditing] = useState(false);
 
   return (
-    <div className="rounded-lg border border-slate-200 p-4">
+    <div
+      className="
+        rounded-xl
+        border
+        border-white/15
+        bg-slate-800/30
+        p-4
+        backdrop-blur-xl
+      "
+    >
       <div className="mb-2 flex items-center justify-between">
         <div>
-          <p className="font-medium text-ink">
+          <p className="font-semibold text-white">
             {comment.author}
           </p>
 
@@ -43,7 +52,16 @@ export function CommentItem({
               <button
                 type="button"
                 onClick={() => setEditing(!editing)}
-                className="text-sm text-primary hover:underline"
+                className="
+                  rounded-lg
+                  px-3
+                  py-1
+                  text-sm
+                  text-blue-300
+                  transition
+                  hover:bg-blue-500/10
+                  hover:text-blue-200
+                "
               >
                 {editing ? "Cancel" : "Edit"}
               </button>
@@ -54,7 +72,16 @@ export function CommentItem({
                 type="button"
                 disabled={isDeleting}
                 onClick={onDelete}
-                className="text-sm text-danger hover:underline"
+                className="
+                  rounded-lg
+                  px-3
+                  py-1
+                  text-sm
+                  text-red-300
+                  transition
+                  hover:bg-red-500/10
+                  hover:text-red-200
+                "
               >
                 Delete
               </button>
@@ -74,7 +101,7 @@ export function CommentItem({
           }}
         />
       ) : (
-        <p className="whitespace-pre-line text-slate-700">
+        <p className="whitespace-pre-line leading-relaxed text-slate-300">
           {comment.body}
         </p>
       )}

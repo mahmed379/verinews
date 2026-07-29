@@ -22,6 +22,18 @@ const CATEGORY_OPTIONS = [
   { value: "other", label: "Other" },
 ];
 
+const selectClass = `
+  rounded-xl
+  border
+  border-white/20
+  bg-white/5
+  px-3
+  py-2
+  text-white
+  backdrop-blur-xl
+  outline-none
+  focus:border-blue-400/50
+`;
 
 export function ArticleFilterBar() {
 
@@ -83,7 +95,18 @@ export function ArticleFilterBar() {
 
   return (
 
-    <div className="solid-card p-4 mb-6 flex flex-wrap gap-3">
+    <div
+      className="
+        glass-card
+        p-4
+        mb-6
+        flex
+        flex-col
+        gap-3
+        sm:flex-row
+        sm:flex-wrap
+      "
+    >
 
       <input
         value={searchInput}
@@ -91,7 +114,21 @@ export function ArticleFilterBar() {
           setSearchInput(e.target.value)
         }
         placeholder="Search title or description..."
-        className="flex-1 min-w-[200px] border border-slate-300 rounded-lg px-3 py-2"
+        className="
+          flex-1
+          min-w-[200px]
+          rounded-xl
+          border
+          border-white/20
+          bg-white/5
+          px-3
+          py-2
+          text-white
+          placeholder:text-slate-400
+          outline-none
+          backdrop-blur-xl
+          focus:border-blue-400/50
+        "
       />
 
 
@@ -100,13 +137,14 @@ export function ArticleFilterBar() {
         onChange={(e) =>
           updateParam("status", e.target.value)
         }
-        className="border border-slate-300 rounded-lg px-3 py-2"
+        className={selectClass}
       >
 
         {STATUS_OPTIONS.map((option) => (
           <option
             key={option.value}
             value={option.value}
+            className="bg-slate-900 text-white"
           >
             {option.label}
           </option>
@@ -121,13 +159,14 @@ export function ArticleFilterBar() {
         onChange={(e) =>
           updateParam("category", e.target.value)
         }
-        className="border border-slate-300 rounded-lg px-3 py-2"
+        className={selectClass}
       >
 
         {CATEGORY_OPTIONS.map((option) => (
           <option
             key={option.value}
             value={option.value}
+            className="bg-slate-900 text-white"
           >
             {option.label}
           </option>
@@ -142,21 +181,28 @@ export function ArticleFilterBar() {
         onChange={(e) =>
           updateParam("sort", e.target.value)
         }
-        className="border border-slate-300 rounded-lg px-3 py-2"
+        className={selectClass}
       >
-
-        <option value="newest">
+        <option
+          value="newest"
+          className="bg-slate-900 text-white"
+        >
           Newest first
         </option>
 
-        <option value="oldest">
+        <option
+          value="oldest"
+          className="bg-slate-900 text-white"
+        >
           Oldest first
         </option>
 
-        <option value="top_rated">
+        <option
+          value="top_rated"
+          className="bg-slate-900 text-white"
+        >
           Highest rated
         </option>
-
       </select>
 
     </div>

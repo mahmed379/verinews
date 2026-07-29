@@ -3,18 +3,54 @@
 @tailwind utilities;
 
 @layer components {
-  /* Glass surfaces */
   .glass-card {
-    @apply bg-white/60 backdrop-blur-glass border border-white/30
-           shadow-glass rounded-2xl;
+    @apply bg-white/10 backdrop-blur-xl border border-white/20
+           rounded-2xl shadow-xl;
   }
 
-  /* Standard readable surfaces */
   .solid-card {
     @apply bg-white border border-slate-200 rounded-xl shadow-sm;
   }
-}
 
+  .glass-button {
+    @apply inline-flex items-center justify-center
+           px-4 py-2 rounded-xl
+           bg-blue-600 text-white
+           hover:bg-blue-700
+           transition-all duration-200
+           shadow-lg;
+  }
+
+  .glass-input {
+    @apply w-full rounded-xl
+           bg-white/10
+           border border-white/20
+           px-4 py-3
+           text-slate-900
+           outline-none
+           focus:ring-2
+           focus:ring-blue-500;
+  }
+
+  .page-container {
+    @apply min-h-screen;
+  }
+
+  .section-title {
+    @apply text-2xl font-bold tracking-tight;
+  }
+}
 body {
   @apply bg-surface text-ink;
+}
+
+/* Chrome autofill fix */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: #ffffff;
+  -webkit-box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0.08) inset;
+  transition: background-color 9999s ease-in-out 0s;
 }

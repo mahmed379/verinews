@@ -1,5 +1,15 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import {
+  User,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+} from "lucide-react";
+import {
+  Link,
+  useNavigate,
+} from "react-router-dom";
 
 import toast from "react-hot-toast";
 
@@ -16,6 +26,9 @@ function RegisterForm() {
 
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -59,57 +72,115 @@ function RegisterForm() {
     >
 
       <div>
-        <label>Username</label>
-        <input
-          value={username}
-          onChange={(e) =>
-            setUsername(e.target.value)
-          }
-          className="border p-2 w-full"
-          required
-        />
+        <label className="mb-2 block text-sm font-medium text-slate-200">
+          Username
+        </label>
+
+        <div className="relative">
+
+          <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+
+          <input
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Choose a username"
+            className="w-full rounded-xl border border-white/20 bg-white/10 py-3 pl-12 pr-4 text-white placeholder:text-slate-400 backdrop-blur-md focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+            required
+          />
+
+        </div>
       </div>
 
 
       <div>
-        <label>Email</label>
-        <input
-          type="email"
-          value={email}
-          onChange={(e) =>
-            setEmail(e.target.value)
-          }
-          className="border p-2 w-full"
-          required
-        />
+        <label className="mb-2 block text-sm font-medium text-slate-200">
+          Email
+        </label>
+
+        <div className="relative">
+
+          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Enter your email"
+            className="w-full rounded-xl border border-white/20 bg-white/10 py-3 pl-12 pr-4 text-white placeholder:text-slate-400 backdrop-blur-md focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+            required
+          />
+
+        </div>
       </div>
 
 
       <div>
-        <label>Password</label>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) =>
-            setPassword(e.target.value)
-          }
-          className="border p-2 w-full"
-          required
-        />
+        <label className="mb-2 block text-sm font-medium text-slate-200">
+          Password
+        </label>
+
+        <div className="relative">
+
+          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+
+          <input
+            type={showPassword ? "text" : "password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Create a password"
+            className="w-full rounded-xl border border-white/20 bg-white/10 py-3 pl-12 pr-12 text-white placeholder:text-slate-400 backdrop-blur-md focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+            required
+          />
+
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
+          >
+            {showPassword ? (
+              <EyeOff className="h-5 w-5" />
+            ) : (
+              <Eye className="h-5 w-5" />
+            )}
+          </button>
+
+        </div>
       </div>
 
 
       <div>
-        <label>Confirm Password</label>
-        <input
-          type="password"
-          value={password2}
-          onChange={(e) =>
-            setPassword2(e.target.value)
-          }
-          className="border p-2 w-full"
-          required
-        />
+        <label className="mb-2 block text-sm font-medium text-slate-200">
+          Confirm Password
+        </label>
+
+        <div className="relative">
+
+          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+
+          <input
+            type={showConfirmPassword ? "text" : "password"}
+            value={password2}
+            onChange={(e) => setPassword2(e.target.value)}
+            placeholder="Confirm your password"
+            className="w-full rounded-xl border border-white/20 bg-white/10 py-3 pl-12 pr-12 text-white placeholder:text-slate-400 backdrop-blur-md focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+            required
+          />
+
+          <button
+            type="button"
+            onClick={() =>
+              setShowConfirmPassword(!showConfirmPassword)
+            }
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
+          >
+            {showConfirmPassword ? (
+              <EyeOff className="h-5 w-5" />
+            ) : (
+              <Eye className="h-5 w-5" />
+            )}
+          </button>
+
+        </div>
       </div>
 
 
@@ -123,10 +194,26 @@ function RegisterForm() {
       <button
         type="submit"
         disabled={loading}
-        className="border px-4 py-2"
+        className="group w-full rounded-xl bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 px-4 py-3 font-semibold text-white shadow-lg shadow-blue-900/30 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-blue-900/40 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {loading ? "Creating..." : "Register"}
+        {loading ? (
+          <span className="flex items-center justify-center gap-2">
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+            Creating Account...
+          </span>
+        ) : (
+          "Create Account"
+        )}
       </button>
+      <p className="pt-2 text-center text-sm text-slate-300">
+        Already have an account?{" "}
+        <Link
+            to="/login"
+            className="font-semibold text-blue-400 transition-colors hover:text-blue-300"
+          >
+            Sign In
+          </Link>
+      </p>
 
     </form>
   );

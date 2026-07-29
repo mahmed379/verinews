@@ -6,49 +6,104 @@ export function HeroSection() {
   const { user } = useAuth();
 
   return (
-    <section className="bg-gradient-to-br from-primary/10 via-surface to-secondary/10 px-4 py-20">
-      <div className="max-w-3xl mx-auto text-center">
+    <section className="relative overflow-hidden py-28">
 
-        <GlassCard className="inline-block px-10 py-12">
+      {/* Background glow */}
+      <div className="absolute inset-0 -z-10">
+        <div className="absolute left-1/2 top-0 h-72 w-72 -translate-x-1/2 rounded-full bg-blue-500/20 blur-3xl" />
+        <div className="absolute right-0 top-40 h-64 w-64 rounded-full bg-emerald-500/20 blur-3xl" />
+      </div>
 
-          <h1 className="text-4xl sm:text-5xl font-bold text-ink">
+
+      <div className="mx-auto max-w-4xl px-4 text-center">
+
+
+        <GlassCard className="px-8 py-14 sm:px-12">
+
+
+          <div className="mb-6 inline-flex rounded-full border border-emerald-400/30 bg-emerald-400/10 px-4 py-1 text-sm font-medium text-emerald-300">
+            AI-powered News Verification Platform
+          </div>
+
+
+          <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
+
             News you can{" "}
-            <span className="text-secondary">
+
+            <span className="bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">
               verify
-            </span>.
+            </span>
+
           </h1>
 
 
-          <p className="text-lg text-slate-600 mt-4 max-w-xl mx-auto">
-            VeriNews is a community-driven platform where articles are rated,
-            reviewed, and moderated for credibility — transparently, by real people.
+          <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-slate-300">
+
+            VeriNews is a community-driven platform where articles are
+            analyzed, reviewed, and moderated to improve trust and transparency
+            in online news.
+
           </p>
 
 
-          <div className="flex flex-wrap justify-center gap-4 mt-8">
+
+          <div className="mt-10 flex flex-wrap justify-center gap-4">
+
 
             <Link
               to="/articles"
-              className="bg-primary text-white font-medium px-6 py-3 rounded-lg hover:bg-primary/90"
+              className="
+              rounded-xl
+              bg-primary
+              px-7
+              py-3
+              font-semibold
+              text-white
+              shadow-lg
+              shadow-blue-600/30
+              transition
+              hover:-translate-y-1
+              hover:bg-blue-500
+              "
             >
               Browse Articles
             </Link>
 
 
+
             {!user && (
+
               <Link
                 to="/register"
-                className="bg-white border border-slate-300 text-ink font-medium px-6 py-3 rounded-lg hover:border-primary"
+                className="
+                rounded-xl
+                border
+                border-white/20
+                bg-white/10
+                px-7
+                py-3
+                font-semibold
+                text-white
+                backdrop-blur
+                transition
+                hover:-translate-y-1
+                hover:bg-white/20
+                "
               >
-                Login / Register
+                Get Started
               </Link>
+
             )}
+
 
           </div>
 
+
         </GlassCard>
 
+
       </div>
+
     </section>
   );
 }

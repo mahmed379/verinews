@@ -30,22 +30,50 @@ export function CommentForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <textarea
         value={body}
         onChange={(e) => setBody(e.target.value)}
         rows={4}
         placeholder="Write a comment..."
-        className="w-full rounded-lg border border-slate-300 p-3 focus:border-primary focus:outline-none"
+        className="
+          w-full
+          rounded-xl
+          border
+          border-white/15
+          bg-white/5
+          p-3
+          text-white
+          placeholder:text-slate-400
+          backdrop-blur-xl
+          transition
+          focus:border-blue-400/40
+          focus:bg-white/10
+          focus:outline-none
+        "
       />
 
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="rounded-lg bg-primary px-4 py-2 text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
-      >
-        {isSubmitting ? "Saving..." : submitLabel}
-      </button>
+      <div className="flex justify-end">
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="
+            rounded-xl
+            bg-blue-600
+            px-5
+            py-2.5
+            text-sm
+            font-semibold
+            text-white
+            transition
+            hover:bg-blue-500
+            disabled:cursor-not-allowed
+            disabled:opacity-60
+          "
+        >
+          {isSubmitting ? "Saving..." : submitLabel}
+        </button>
+      </div>
     </form>
   );
 }
