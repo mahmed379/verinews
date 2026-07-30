@@ -41,6 +41,11 @@ export default function ArticleDetailPage() {
   } = useArticle(id);
 
   const articleId = article?.id ?? 0;
+  const averageRating = article?.average_rating ?? 0;
+  const filledStars = Math.floor(averageRating);
+  const stars =
+    "★".repeat(filledStars) +
+    "☆".repeat(5 - filledStars);
 
   const { data: comments = [] } = useComments(articleId);
 
@@ -117,10 +122,14 @@ export default function ArticleDetailPage() {
 
   return (
 
-    <div className="max-w-4xl mx-auto px-4 py-8">
+    <div className="max-w-5xl mx-auto px-4 py-10">
 
 
       <GlassCard className="mb-6 p-6">
+
+        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.3em] text-secondary">
+          Article
+        </p>
 
         <div className="
           flex
@@ -131,7 +140,7 @@ export default function ArticleDetailPage() {
           sm:items-start
         ">
 
-          <h1 className="text-3xl font-bold text-white">
+          <h1 className="text-4xl md:text-5xl font-bold leading-tight text-white">
             {article.title}
           </h1>
 
@@ -140,18 +149,21 @@ export default function ArticleDetailPage() {
         </div>
 
 
-        <p className="text-sm text-slate-500 mt-3">
+        <div className="mt-4 flex flex-wrap gap-4 text-sm text-slate-400">
+            
+          <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
+            {article.category}
+          </span>
 
-          {article.category} · submitted by{" "}
-          {article.submitted_by}
+          <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
+            Submitted by {article.submitted_by}
+          </span>
 
-          {" on "}
+          <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
+            {new Date(article.created_at).toLocaleDateString()}
+          </span>
 
-          {new Date(
-            article.created_at
-          ).toLocaleDateString()}
-
-        </p>
+        </div>
 
       </GlassCard>
 
@@ -170,17 +182,17 @@ export default function ArticleDetailPage() {
             mt-6
             inline-flex
             items-center
-            rounded-xl
+            rounded-2xl
             border
             border-blue-400/30
             bg-blue-500/10
-            px-4
-            py-2
+            px-5
+            py-3
             text-sm
-            font-medium
+            font-semibold
             text-blue-300
             transition
-            hover:bg-blue-500/20
+            hover:bg-blue-500/20 hover:-translate-y-0.5
           "
         >
           View Original Source →
@@ -211,7 +223,7 @@ export default function ArticleDetailPage() {
         </div>
       )}
 
-      <div className="mt-8 space-y-6">
+      <div className="mt-8 space-y-8">
         <ArticleSummaryCard summary={article.ai_summary} />
 
         <ModerationFlagCard
@@ -225,7 +237,7 @@ export default function ArticleDetailPage() {
 
       <GlassCard className="mt-6 p-6">
 
-        <h2 className="font-semibold text-white mb-1">
+        <h2 className="text-xl font-bold text-white text-center">
           Credibility Score
         </h2>
 
@@ -233,32 +245,33 @@ export default function ArticleDetailPage() {
         {
           article.vote_count > 0 ? (
 
-            <p className="text-2xl font-bold text-secondary">
+            <div className="mt-5 flex flex-col items-center text-center">
 
-              {article.average_rating?.toFixed(1)}
-              {" / 5 "}
+              <div className="mb-3 text-3xl tracking-wide text-yellow-400">
+                {stars}
+              </div>
 
+              <p className="text-5xl font-bold text-secondary">
+                {article.average_rating?.toFixed(1)}
+                <span className="text-2xl text-slate-400"> / 5</span>
+              </p>
 
-              <span className="text-sm font-normal text-slate-500">
+              <p className="mt-3 text-lg font-medium text-slate-300">
+                {Math.round(((article.average_rating ?? 0) / 5) * 100)}% Credibility
+              </p>
 
-                (
-                {
-                  Math.round(
-                    ((article.average_rating ?? 0) / 5) * 100
-                  )
-                }%
-                )
-                {" · "}
-                {article.vote_count} votes
+              <p className="mt-1 text-sm text-slate-500">
+                {article.vote_count} Community Votes
+              </p>
 
-              </span>
-
-            </p>
+            </div>
 
           ) : (
 
-            <p className="text-slate-500">
-              No votes yet.
+            <p className="mt-6 text-center text-slate-400">
+              No community ratings yet.
+              <br />
+              Be the first to rate this article.
             </p>
 
           )
@@ -269,8 +282,8 @@ export default function ArticleDetailPage() {
 
 
 
-      <GlassCard className="mt-6">
-        <h2 className="mb-4 text-lg font-semibold text-white">
+      <GlassCard className="mt-6 p-6">
+        <h2 className="mb-4 text-xl font-bold text-white">
           Comments
         </h2>
 
@@ -285,7 +298,7 @@ export default function ArticleDetailPage() {
           </p>
         )}
 
-        <div className="mt-6">
+        <div className="mt-8 border-t border-white/10 pt-6">
           <CommentList
             comments={comments}
             currentUsername={user?.username}
@@ -297,9 +310,13 @@ export default function ArticleDetailPage() {
       </GlassCard>
 
       <GlassCard className="mt-6 p-6">
-        <h2 className="font-semibold text-white mb-2">
-          Rate This Article
+        <h2 className="mb-2 text-2xl font-bold text-white">
+          Share Your Rating
         </h2>
+
+        <p className="mb-5 text-sm text-slate-400">
+          Your rating helps other readers judge the credibility of this article.
+        </p>
 
         <RatingWidget articleId={article.id} />
       </GlassCard>
@@ -311,8 +328,19 @@ export default function ArticleDetailPage() {
           className="
             inline-flex
             items-center
+            gap-2
+            rounded-xl
+            border
+            border-white/20
+            bg-white/5
+            px-5
+            py-2
+            font-medium
             text-blue-300
-            transition
+            transition-all
+            duration-200
+            hover:-translate-y-0.5
+            hover:bg-white/10
             hover:text-white
           "
         >

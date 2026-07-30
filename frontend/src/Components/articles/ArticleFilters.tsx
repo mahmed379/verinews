@@ -2,6 +2,7 @@ import { useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
+import { GlassSelect } from "../ui/GlassSelect";
 
 
 const STATUS_OPTIONS = [
@@ -22,18 +23,11 @@ const CATEGORY_OPTIONS = [
   { value: "other", label: "Other" },
 ];
 
-const selectClass = `
-  rounded-xl
-  border
-  border-white/20
-  bg-white/5
-  px-3
-  py-2
-  text-white
-  backdrop-blur-xl
-  outline-none
-  focus:border-blue-400/50
-`;
+const SORT_OPTIONS = [
+  { value: "newest", label: "Newest first" },
+  { value: "oldest", label: "Oldest first" },
+  { value: "top_rated", label: "Highest rated" },
+];
 
 export function ArticleFilterBar() {
 
@@ -98,6 +92,9 @@ export function ArticleFilterBar() {
     <div
       className="
         glass-card
+        relative
+        z-20
+        overflow-visible
         p-4
         mb-6
         flex
@@ -132,78 +129,33 @@ export function ArticleFilterBar() {
       />
 
 
-      <select
+      <GlassSelect
         value={searchParams.get("status") ?? ""}
-        onChange={(e) =>
-          updateParam("status", e.target.value)
-        }
-        className={selectClass}
-      >
-
-        {STATUS_OPTIONS.map((option) => (
-          <option
-            key={option.value}
-            value={option.value}
-            className="bg-slate-900 text-white"
-          >
-            {option.label}
-          </option>
-        ))}
-
-      </select>
+        onChange={(value) => updateParam("status", value)}
+        options={STATUS_OPTIONS}
+        aria-label="Filter by status"
+        className="sm:w-48"
+      />
 
 
 
-      <select
+      <GlassSelect
         value={searchParams.get("category") ?? ""}
-        onChange={(e) =>
-          updateParam("category", e.target.value)
-        }
-        className={selectClass}
-      >
-
-        {CATEGORY_OPTIONS.map((option) => (
-          <option
-            key={option.value}
-            value={option.value}
-            className="bg-slate-900 text-white"
-          >
-            {option.label}
-          </option>
-        ))}
-
-      </select>
+        onChange={(value) => updateParam("category", value)}
+        options={CATEGORY_OPTIONS}
+        aria-label="Filter by category"
+        className="sm:w-48"
+      />
 
 
 
-      <select
+      <GlassSelect
         value={searchParams.get("sort") ?? "newest"}
-        onChange={(e) =>
-          updateParam("sort", e.target.value)
-        }
-        className={selectClass}
-      >
-        <option
-          value="newest"
-          className="bg-slate-900 text-white"
-        >
-          Newest first
-        </option>
-
-        <option
-          value="oldest"
-          className="bg-slate-900 text-white"
-        >
-          Oldest first
-        </option>
-
-        <option
-          value="top_rated"
-          className="bg-slate-900 text-white"
-        >
-          Highest rated
-        </option>
-      </select>
+        onChange={(value) => updateParam("sort", value)}
+        options={SORT_OPTIONS}
+        aria-label="Sort by"
+        className="sm:w-48"
+      />
 
     </div>
 

@@ -8,11 +8,10 @@ const RISK_STYLES: Record<AIAnalysis["risk_level"], string> = {
 };
 
 const IMPACT_ICON: Record<string, string> = {
-  positive: "▲",
-  negative: "▼",
-  neutral: "•",
+  positive: "✅",
+  negative: "⚠️",
+  neutral: "ℹ️",
 };
-
 export function CredibilitySignalsCard({
   analysis,
 }: {
@@ -21,7 +20,7 @@ export function CredibilitySignalsCard({
 
   if (!analysis) {
     return (
-      <GlassCard>
+      <GlassCard className="p-6">
         <h2 className="font-semibold text-ink mb-1">
           Automated Credibility Signals
         </h2>
@@ -35,10 +34,10 @@ export function CredibilitySignalsCard({
 
 
   return (
-    <GlassCard>
+    <GlassCard className="p-6">
 
       <div className="flex items-center justify-between mb-2">
-        <h2 className="font-semibold text-ink">
+        <h2 className="text-xl font-bold text-white">
           Automated Credibility Signals
         </h2>
 
@@ -57,17 +56,25 @@ export function CredibilitySignalsCard({
       </p>
 
 
-      <p className="text-xs text-slate-500 mt-1 mb-3">
+      <p className="mt-2 mb-4 text-sm text-slate-400">
         Rule-based signals to support review — not a verdict. See factors below.
       </p>
 
 
-      <ul className="space-y-1.5">
-
+      <ul className="space-y-3">
         {analysis.factors.map((factor, i) => (
-
-          <li key={i} className="text-sm flex gap-2">
-
+          <li
+            key={i}
+            className="
+              flex
+              gap-3
+              rounded-xl
+              border
+              border-white/10
+              bg-white/5
+              p-3
+            "
+          >
             <span
               className={
                 factor.impact === "positive"
@@ -80,18 +87,14 @@ export function CredibilitySignalsCard({
               {IMPACT_ICON[factor.impact]}
             </span>
 
-
-            <span className="text-slate-700">
+            <span className="text-slate-200">
               <span className="font-medium">
                 {factor.label}:
               </span>{" "}
               {factor.detail}
             </span>
-
           </li>
-
         ))}
-
       </ul>
 
 
@@ -99,15 +102,18 @@ export function CredibilitySignalsCard({
 
         <div className="mt-4 pt-3 border-t border-white/40">
 
-          <h3 className="text-sm font-medium text-ink mb-1">
+          <h3 className="mb-2 text-sm font-semibold text-white">
             Suggested verification steps
           </h3>
 
 
-          <ul className="list-disc list-inside text-sm text-slate-600 space-y-0.5">
+          <ul className="mt-3 space-y-2 text-sm text-slate-200">
 
             {analysis.suggested_steps.map((step, i) => (
-              <li key={i}>
+              <li
+                key={i}
+                className="rounded-lg bg-white/5 px-3 py-2"
+              >
                 {step}
               </li>
             ))}

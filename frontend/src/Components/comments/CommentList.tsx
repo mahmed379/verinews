@@ -22,14 +22,20 @@ export function CommentList({
 }: CommentListProps) {
   if (comments.length === 0) {
     return (
-      <p className="text-slate-500">
-        No comments yet. Be the first to comment!
-      </p>
+      <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-center">
+        <p className="text-lg font-semibold text-white">
+          No comments yet
+        </p>
+
+        <p className="mt-2 text-sm text-slate-400">
+          Start the discussion by posting the first comment.
+        </p>
+      </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {comments.map((comment) => (
         <CommentItem
           key={comment.id}

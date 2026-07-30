@@ -4,11 +4,21 @@ import { PendingArticlesTable } from "../Components/moderation/PendingArticlesTa
 export function ModerationQueuePage() {
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
+    <div className="max-w-6xl mx-auto px-4 py-10">
 
-      <h1 className="text-2xl font-bold text-ink mb-6">
-        Moderation Queue
-      </h1>
+      <div className="mb-8">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.3em] text-secondary">
+          Moderator Panel
+        </p>
+
+        <h1 className="text-4xl font-bold text-white">
+          Moderation Queue
+        </h1>
+
+        <p className="mt-2 text-slate-400">
+          Review newly submitted articles and decide whether to verify or dispute them.
+        </p>
+      </div>
 
 
       <PendingArticlesTable />

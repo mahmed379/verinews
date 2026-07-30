@@ -23,8 +23,18 @@ export function UserTable() {
 
   return (
     <div>
-      <table className="w-full solid-card">
-        <thead className="border-b border-slate-200 text-left text-sm text-slate-500">
+      <table
+        className="
+          w-full
+          overflow-hidden
+          rounded-2xl
+          border
+          border-white/10
+          bg-white/5
+          backdrop-blur-xl
+        "
+      >
+        <thead className="border-b border-white/10 text-left text-sm text-slate-400">
           <tr>
             <th className="p-3">Username</th>
             <th className="p-3">Email</th>
@@ -37,29 +47,52 @@ export function UserTable() {
           {data.results.map((user) => (
             <tr
               key={user.id}
-              className="border-b border-slate-100 last:border-0"
+              className="border-b border-white/10 last:border-0"
             >
-              <td className="p-3 font-medium text-ink">
+              <td className="p-3 font-medium text-white">
                 {user.username}
               </td>
 
-              <td className="p-3 text-slate-600">
+              <td className="p-3 text-slate-300">
                 {user.email || "—"}
               </td>
 
               <td className="p-3">
                 {user.is_staff ? (
-                  <span className="text-xs font-medium bg-primary/10 text-primary px-2 py-1 rounded-full">
-                    Staff
-                  </span>
+                <span
+                  className="
+                    text-xs
+                    font-medium
+                    rounded-full
+                    border
+                    border-blue-400/20
+                    bg-blue-500/10
+                    px-3
+                    py-1
+                    text-blue-300
+                  "
+                >
+                  Staff
+                </span>
                 ) : (
-                  <span className="text-xs text-slate-400">
+                  <span
+                    className="
+                      text-xs
+                      rounded-full
+                      border
+                      border-white/10
+                      bg-white/5
+                      px-3
+                      py-1
+                      text-slate-300
+                    "
+                  >
                     Member
                   </span>
                 )}
               </td>
 
-              <td className="p-3 text-slate-500 text-sm">
+              <td className="p-3 text-slate-400 text-sm">
                 {new Date(user.date_joined).toLocaleDateString()}
               </td>
             </tr>
@@ -71,7 +104,18 @@ export function UserTable() {
         <button
           disabled={!data.previous}
           onClick={() => setPage((p) => p - 1)}
-          className="px-3 py-1.5 border border-slate-300 rounded-lg disabled:opacity-40"
+          className="
+          px-4
+          py-2
+          rounded-xl
+          border
+          border-white/20
+          bg-white/5
+          text-slate-300
+          transition
+          hover:bg-white/10
+          disabled:opacity-40
+          "
         >
           Previous
         </button>
@@ -79,7 +123,18 @@ export function UserTable() {
         <button
           disabled={!data.next}
           onClick={() => setPage((p) => p + 1)}
-          className="px-3 py-1.5 border border-slate-300 rounded-lg disabled:opacity-40"
+          className="
+          px-4
+          py-2
+          rounded-xl
+          border
+          border-white/20
+          bg-white/5
+          text-slate-300
+          transition
+          hover:bg-white/10
+          disabled:opacity-40
+          "
         >
           Next
         </button>

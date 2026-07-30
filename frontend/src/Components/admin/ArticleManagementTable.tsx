@@ -22,8 +22,18 @@ export function ArticleManagementTable() {
   }
 
   return (
-    <table className="w-full solid-card">
-      <thead className="border-b border-slate-200 text-left text-sm text-slate-500">
+    <table
+      className="
+        w-full
+        overflow-hidden
+        rounded-2xl
+        border
+        border-white/10
+        bg-white/5
+        backdrop-blur-xl
+      "
+    >
+      <thead className="border-b border-white/10 text-left text-sm text-slate-400">
         <tr>
           <th className="p-3">Title</th>
           <th className="p-3">Status</th>
@@ -35,12 +45,18 @@ export function ArticleManagementTable() {
         {data?.results.map((article) => (
           <tr
             key={article.id}
-            className="border-b border-slate-100 last:border-0"
+            className="border-b border-white/10 last:border-0"
           >
             <td className="p-3">
               <Link
                 to={`/articles/${article.id}`}
-                className="text-primary hover:underline"
+                className="
+                  font-medium
+                  text-blue-300
+                  transition
+                  hover:text-white
+                  hover:underline
+                "
               >
                 {article.title}
               </Link>
@@ -54,7 +70,20 @@ export function ArticleManagementTable() {
               <button
                 onClick={() => handleDelete(article.id, article.title)}
                 disabled={deleteMutation.isPending}
-                className="text-sm font-medium text-danger hover:underline"
+                className="
+                rounded-xl
+                border
+                border-red-400/20
+                bg-red-500/10
+                px-4
+                py-2
+                text-sm
+                font-medium
+                text-red-300
+                transition
+                hover:bg-red-500/20
+                disabled:opacity-50
+                "
               >
                 Delete
               </button>

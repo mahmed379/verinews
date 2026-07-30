@@ -34,14 +34,24 @@ export function DashboardPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-ink">
-        My Dashboard
-      </h1>
+      <div className="mb-8">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.3em] text-secondary">
+          User Panel
+        </p>
+
+        <h1 className="text-4xl font-bold text-white">
+          My Dashboard
+        </h1>
+
+        <p className="mt-2 text-slate-400">
+          View your submitted articles, comments, and reports.
+        </p>
+      </div>
 
       <div className="mt-8 space-y-10">
 
         <section>
-          <h2 className="mb-4 text-xl font-semibold text-ink">
+          <h2 className="mb-4 text-xl font-semibold text-white">
             My Submissions
           </h2>
 
@@ -55,25 +65,43 @@ export function DashboardPage() {
               />
             )}
 
-          {myArticles?.results.map((article) => (
-            <div
-              key={article.id}
-              className="flex items-center justify-between border-b border-slate-200 py-3"
-            >
-              <Link
-                to={`/articles/${article.id}`}
-                className="text-primary hover:underline"
+          <div className="space-y-4">
+            {myArticles?.results.map((article) => (
+              <div
+                key={article.id}
+                className="
+                  flex
+                  items-center
+                  justify-between
+                  rounded-xl
+                  border
+                  border-white/10
+                  bg-white/5
+                  p-4
+                  backdrop-blur-xl
+                "
               >
-                {article.title}
-              </Link>
+                <Link
+                  to={`/articles/${article.id}`}
+                  className="
+                  font-medium
+                  text-blue-300
+                  transition
+                  hover:text-white
+                  hover:underline
+                  "
+                >
+                  {article.title}
+                </Link>
 
-              <StatusBadge status={article.status} />
-            </div>
-          ))}
+                <StatusBadge status={article.status} />
+              </div>
+            ))}
+          </div>
         </section>
 
         <section>
-          <h2 className="mb-4 text-xl font-semibold text-ink">
+          <h2 className="mb-4 text-xl font-semibold text-white">
             My Comments
           </h2>
 
@@ -90,16 +118,30 @@ export function DashboardPage() {
           {myComments?.results.map((comment) => (
             <div
               key={comment.id}
-              className="border-b border-slate-200 py-3"
+              className="
+              rounded-xl
+              border
+              border-white/10
+              bg-white/5
+              p-4
+              backdrop-blur-xl
+              "
             >
               <Link
                 to={`/articles/${comment.article}`}
-                className="text-primary hover:underline text-sm"
+                className="
+                text-sm
+                font-medium
+                text-blue-300
+                transition
+                hover:text-white
+                hover:underline
+                "
               >
                 Article #{comment.article}
               </Link>
 
-              <p className="text-sm text-slate-700">
+              <p className="mt-2 text-sm leading-6 text-slate-200">
                 {comment.body}
               </p>
             </div>
@@ -107,7 +149,7 @@ export function DashboardPage() {
         </section>
 
         <section>
-          <h2 className="mb-4 text-xl font-semibold text-ink">
+          <h2 className="mb-4 text-xl font-semibold text-white">
             My Reports
           </h2>
 

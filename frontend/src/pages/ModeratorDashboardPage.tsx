@@ -11,11 +11,29 @@ export function ModeratorDashboardPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
 
-      <h1 className="text-2xl font-bold text-ink mb-6">
-        Moderator Dashboard
-      </h1>
+      <div className="mb-8">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.3em] text-secondary">
+          Moderation Panel
+        </p>
 
-      <div className="grid grid-cols-2 gap-4 mb-8">
+        <h1 className="text-4xl font-bold text-white">
+          Moderator Dashboard
+        </h1>
+
+        <p className="mt-2 text-slate-400">
+          Review articles, manage reports, and handle flagged content.
+        </p>
+      </div>
+
+      <div
+        className="
+          grid
+          grid-cols-1
+          sm:grid-cols-2
+          gap-4
+          mb-8
+        "
+      >
 
         <StatCard
           label="Pending Review"
@@ -29,25 +47,64 @@ export function ModeratorDashboardPage() {
 
       </div>
 
-      <div className="flex gap-4">
+      <div className="flex flex-wrap gap-4">
 
         <Link
           to="/moderation/queue"
-          className="text-primary font-medium hover:underline"
+          className="
+          inline-flex
+          items-center
+          rounded-xl
+          border
+          border-white/20
+          bg-white/5
+          px-4
+          py-2
+          text-blue-300
+          transition
+          hover:bg-white/10
+          hover:text-white
+          "
         >
           Go to Moderation Queue →
         </Link>
 
         <Link
           to="/moderation/reports"
-          className="text-primary font-medium hover:underline"
+          className="
+          inline-flex
+          items-center
+          rounded-xl
+          border
+          border-white/20
+          bg-white/5
+          px-4
+          py-2
+          text-blue-300
+          transition
+          hover:bg-white/10
+          hover:text-white
+          "
         >
           Go to Report Management →
         </Link>
 
         <Link
           to="/moderation/comments"
-          className="text-primary font-medium hover:underline"
+          className="
+          inline-flex
+          items-center
+          rounded-xl
+          border
+          border-white/20
+          bg-white/5
+          px-4
+          py-2
+          text-blue-300
+          transition
+          hover:bg-white/10
+          hover:text-white
+          "
         >
           Flagged Comments →
         </Link>

@@ -10,12 +10,20 @@ export function StatCard({
   value,
 }: StatCardProps) {
   return (
-    <GlassCard className="text-center">
-      <div className="text-3xl font-bold text-primary">
+    <GlassCard
+      className="
+        p-6
+        text-center
+        transition-all
+        duration-200
+        hover:-translate-y-1
+      "
+    >
+      <div className="text-4xl font-bold text-white">
         {value}
       </div>
 
-      <div className="text-sm text-slate-600 mt-1">
+      <div className="mt-2 text-sm font-medium text-slate-300">
         {label}
       </div>
     </GlassCard>

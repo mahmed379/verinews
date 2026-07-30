@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { Modal } from "../ui/Modal";
+import { GlassSelect } from "../ui/GlassSelect";
 
 interface ReportModalProps {
   open: boolean;
@@ -54,19 +55,12 @@ export function ReportModal({
             Reason
           </label>
 
-          <select
+          <GlassSelect
             value={reason}
-            onChange={(e) => setReason(e.target.value)}
-            >
-            {REASONS.map((r) => (
-                <option
-                key={r.value}
-                value={r.value}
-                >
-                {r.label}
-                </option>
-            ))}
-          </select>
+            onChange={setReason}
+            options={REASONS}
+            aria-label="Reason"
+          />
         </div>
 
         <div>

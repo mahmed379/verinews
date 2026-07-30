@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { useReviewArticle } from "../../hooks/useModeration";
 import type { ArticleStatus, NewsArticle } from "../../types";
+import { GlassSelect } from "../ui/GlassSelect";
 
 const STATUS_OPTIONS: {
   value: ArticleStatus;
@@ -73,37 +74,29 @@ export function ArticleReviewForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="solid-card p-4 space-y-3"
+      className="
+      glass-card
+      space-y-5
+      p-6
+      "
     >
 
       <div>
-        <label className="block text-sm font-medium text-ink mb-1">
+        <label className="mb-2 block text-sm font-semibold text-white">
           New status
         </label>
 
-        <select
+        <GlassSelect<ArticleStatus>
           value={newStatus}
-          onChange={(e) =>
-            setNewStatus(
-              e.target.value as ArticleStatus
-            )
-          }
-          className="w-full border border-slate-300 rounded-lg px-3 py-2"
-        >
-          {STATUS_OPTIONS.map((option) => (
-            <option
-              key={option.value}
-              value={option.value}
-            >
-              {option.label}
-            </option>
-          ))}
-        </select>
+          onChange={setNewStatus}
+          options={STATUS_OPTIONS}
+          aria-label="New status"
+        />
       </div>
 
 
       <div>
-        <label className="block text-sm font-medium text-ink mb-1">
+        <label className="mb-2 block text-sm font-semibold text-white">
           Reason (shown publicly)
         </label>
 
@@ -114,13 +107,33 @@ export function ArticleReviewForm({
           }
           required
           rows={3}
-          className="w-full border border-slate-300 rounded-lg px-3 py-2"
+          className="
+          w-full
+          rounded-xl
+          border
+          border-white/15
+          bg-white/5
+          px-4
+          py-3
+          text-white
+          outline-none
+          transition
+          focus:border-blue-400
+          "
         />
       </div>
 
 
       {newStatus === article.status && (
-        <p className="text-sm text-warning">
+        <p className="
+          rounded-xl
+          border
+          border-yellow-400/20
+          bg-yellow-500/10
+          p-3
+          text-sm
+          text-yellow-200" 
+        >
           Choose a different status than the current one.
         </p>
       )}
@@ -132,7 +145,19 @@ export function ArticleReviewForm({
           isPending ||
           newStatus === article.status
         }
-        className="bg-primary text-white px-4 py-2 rounded-lg disabled:opacity-50"
+        className="
+        rounded-xl
+        bg-secondary
+        px-5
+        py-3
+        font-semibold
+        text-white
+        transition-all
+        duration-200
+        hover:opacity-90
+        disabled:cursor-not-allowed
+        disabled:opacity-50
+        "
       >
         {isPending
           ? "Saving..."

@@ -2,6 +2,15 @@ import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useSubmitArticle } from "../../hooks/useArticles";
+import { GlassSelect } from "../ui/GlassSelect";
+
+const CATEGORY_OPTIONS = [
+  { value: "politics", label: "Politics" },
+  { value: "technology", label: "Technology" },
+  { value: "health", label: "Health" },
+  { value: "business", label: "Business" },
+  { value: "other", label: "Other" },
+];
 
 
 export function ArticleSubmitForm() {
@@ -94,17 +103,12 @@ export function ArticleSubmitForm() {
           Category
         </label>
 
-        <select
+        <GlassSelect
           value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          className={inputClass}
-        >
-          <option value="politics">Politics</option>
-          <option value="technology">Technology</option>
-          <option value="health">Health</option>
-          <option value="business">Business</option>
-          <option value="other">Other</option>
-        </select>
+          onChange={setCategory}
+          options={CATEGORY_OPTIONS}
+          aria-label="Category"
+        />
       </div>
 
 

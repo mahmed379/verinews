@@ -15,6 +15,10 @@ const STATUS_FILTERS: {
   label: string;
 }[] = [
   {
+    value: "",
+    label: "All",
+  },
+  {
     value: "open",
     label: "Open",
   },
@@ -26,10 +30,7 @@ const STATUS_FILTERS: {
     value: "dismissed",
     label: "Dismissed",
   },
-  {
-    value: "",
-    label: "All",
-  },
+  
 ];
 
 
@@ -72,11 +73,19 @@ export function ReportsTable({
             onClick={() =>
               setStatusFilter(filter.value)
             }
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium ${
-              statusFilter === filter.value
-                ? "bg-primary text-white"
-                : "bg-slate-100 text-slate-600"
-            }`}
+            className={`
+              px-4
+              py-2
+              rounded-xl
+              text-sm
+              font-medium
+              transition
+              ${
+                statusFilter === filter.value
+                  ? "bg-blue-500/20 text-blue-300 border border-blue-400/30"
+                  : "bg-white/5 text-slate-300 border border-white/10 hover:bg-white/10"
+              }
+            `}
           >
             {filter.label}
           </button>
@@ -105,9 +114,19 @@ export function ReportsTable({
       {data &&
         data.results.length > 0 && (
 
-        <table className="w-full solid-card">
+        <table
+          className="
+            w-full
+            overflow-hidden
+            rounded-2xl
+            border
+            border-white/10
+            bg-white/5
+            backdrop-blur-xl
+          "
+        >
 
-          <thead className="border-b border-slate-200 text-left text-sm text-slate-500">
+          <thead className="border-b border-white/10 text-left text-sm text-slate-400">
             <tr>
               <th className="p-3">
                 Article
@@ -144,14 +163,20 @@ export function ReportsTable({
 
               <tr
                 key={report.id}
-                className="border-b border-slate-100 last:border-0"
+                className="border-b border-white/10 last:border-0"
               >
 
                 <td className="p-3">
 
                   <Link
                     to={`/articles/${report.article}`}
-                    className="text-primary hover:underline"
+                    className="
+                      font-medium
+                      text-blue-300
+                      transition
+                      hover:text-white
+                      hover:underline
+                    "
                   >
                     {report.article_title}
                   </Link>
@@ -159,26 +184,37 @@ export function ReportsTable({
                 </td>
 
 
-                <td className="p-3 text-slate-600 capitalize">
+                <td className="p-3 text-slate-300 capitalize">
                   {report.reason}
                 </td>
 
 
                 {showActions && (
-                  <td className="p-3 text-slate-600">
+                  <td className="p-3 text-slate-300">
                     {report.reported_by}
                   </td>
                 )}
 
 
-                <td className="p-3 text-slate-600 capitalize">
+                <td className="p-3 text-slate-300 capitalize">
                   {report.status}
                 </td>
 
                 <td className="p-3">
                   {report.moderation_flag?.is_flagged ? (
                     <div className="space-y-2">
-                      <span className="inline-block rounded-full border border-yellow-300 bg-yellow-50 px-2 py-1 text-xs font-semibold text-yellow-800">
+                      <span className="
+                        inline-block
+                        rounded-full
+                        border
+                        border-yellow-400/30
+                        bg-yellow-500/10
+                        px-3
+                        py-1
+                        text-xs
+                        font-semibold
+                        text-yellow-300
+                      ">
                         ⚠ AI Flagged
                       </span>
 
@@ -208,7 +244,18 @@ export function ReportsTable({
                             resolveMutation.mutate(report.id)
                           }
                           disabled={resolveMutation.isPending}
-                          className="text-sm font-medium text-secondary hover:underline"
+                          className="
+                          rounded-xl
+                          border
+                          border-emerald-400/20
+                          bg-emerald-500/10
+                          px-3
+                          py-1.5
+                          text-sm
+                          font-medium
+                          text-emerald-300
+                          hover:bg-emerald-500/20
+                          "
                         >
                           Resolve
                         </button>
@@ -218,7 +265,18 @@ export function ReportsTable({
                             dismissMutation.mutate(report.id)
                           }
                           disabled={dismissMutation.isPending}
-                          className="text-sm font-medium text-slate-500 hover:underline"
+                          className="
+                          rounded-xl
+                          border
+                          border-white/10
+                          bg-white/5
+                          px-3
+                          py-1.5
+                          text-sm
+                          font-medium
+                          text-slate-300
+                          hover:bg-white/10
+                          "
                         >
                           Dismiss
                         </button>

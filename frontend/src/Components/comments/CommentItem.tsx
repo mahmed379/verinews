@@ -27,21 +27,26 @@ export function CommentItem({
   return (
     <div
       className="
-        rounded-xl
+        rounded-2xl
         border
-        border-white/15
-        bg-slate-800/30
-        p-4
+        border-white/10
+        bg-white/5
+        p-5
         backdrop-blur-xl
+        transition-all
+        duration-200
+        hover:-translate-y-1
+        hover:border-white/20
+        hover:bg-white/10
       "
     >
-      <div className="mb-2 flex items-center justify-between">
+      <div className="mb-4 flex items-start justify-between">
         <div>
-          <p className="font-semibold text-white">
+          <p className="text-lg font-semibold text-white">
             {comment.author}
           </p>
 
-          <p className="text-xs text-slate-500">
+          <p className="mt-1 text-xs text-slate-400">
             {new Date(comment.created_at).toLocaleString()}
           </p>
         </div>
@@ -53,14 +58,18 @@ export function CommentItem({
                 type="button"
                 onClick={() => setEditing(!editing)}
                 className="
-                  rounded-lg
+                  rounded-xl
+                  border
+                  border-blue-400/20
+                  bg-blue-500/10
                   px-3
-                  py-1
+                  py-1.5
                   text-sm
+                  font-medium
                   text-blue-300
-                  transition
-                  hover:bg-blue-500/10
-                  hover:text-blue-200
+                  transition-all
+                  duration-200
+                  hover:bg-blue-500/20
                 "
               >
                 {editing ? "Cancel" : "Edit"}
@@ -73,14 +82,18 @@ export function CommentItem({
                 disabled={isDeleting}
                 onClick={onDelete}
                 className="
-                  rounded-lg
+                  rounded-xl
+                  border
+                  border-red-400/20
+                  bg-red-500/10
                   px-3
-                  py-1
+                  py-1.5
                   text-sm
+                  font-medium
                   text-red-300
-                  transition
-                  hover:bg-red-500/10
-                  hover:text-red-200
+                  transition-all
+                  duration-200
+                  hover:bg-red-500/20
                 "
               >
                 Delete
@@ -101,7 +114,7 @@ export function CommentItem({
           }}
         />
       ) : (
-        <p className="whitespace-pre-line leading-relaxed text-slate-300">
+        <p className="whitespace-pre-line text-[15px] leading-7 text-slate-300">
           {comment.body}
         </p>
       )}

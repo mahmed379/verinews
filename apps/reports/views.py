@@ -104,12 +104,21 @@ class ReportViewSet(viewsets.ModelViewSet):
     ]
 
     def get_queryset(self):
-        if self.request.user.is_staff:
-            return Report.objects.all()
+        queryset = Report.objects.all()
 
-        return Report.objects.filter(
-            reported_by=self.request.user
-        )
+        if not self.request.user.is_staff:
+            queryset = queryset.filter(
+                reported_by=self.request.user
+            )
+
+        status = self.request.query_params.get("status")
+
+        if status:
+            queryset = queryset.filter(
+                status=status
+            )
+
+        return queryset
 
     @action(
     detail=True,
