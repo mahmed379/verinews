@@ -31,6 +31,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 # "apps.news" — shorter, and matches Django's own tutorials/docs.
 sys.path.insert(0, str(BASE_DIR / "apps"))
 
+# Frontend URL
+FRONTEND_URL = "http://localhost:5173"
+
+# Email Configuration (Development)
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+DEFAULT_FROM_EMAIL = "noreply@verinews.local"
+
 # SECURITY WARNING: keep this secret in production!
 # We read it from an environment variable with a fallback so the
 # project runs out-of-the-box in development. In prod.py we will make
@@ -39,6 +47,8 @@ SECRET_KEY = os.environ.get(
     "DJANGO_SECRET_KEY",
     "django-insecure-dev-only-key-change-me",
 )
+
+
 
 # ALLOWED_HOSTS is deliberately left empty here — dev.py and prod.py
 # each set an appropriate value, because "which hosts may serve this

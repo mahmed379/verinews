@@ -1,6 +1,14 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
+
+from .serializers import (
+    RegisterSerializer,
+    UserSerializer,
+    PasswordResetSerializer,
+    PasswordResetConfirmSerializer,
+)
+
 from .forms import RegisterForm
 
 from .models import User
@@ -108,6 +116,50 @@ class LogoutAPIView(APIView):
     def post(self, request):
         request.auth.delete()
         return Response(status=204)
+
+@extend_schema(
+    request=PasswordResetSerializer,
+    responses={200: None},
+    description="Request a password reset email."
+)
+class PasswordResetAPIView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        serializer = PasswordResetSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(
+            {
+                "message": (
+                    "If an account with that email exists, "
+                    "a password reset link has been sent."
+                )
+            },
+            status=200,
+        )
+
+
+@extend_schema(
+    request=PasswordResetConfirmSerializer,
+    responses={200: None},
+    description="Reset password using a valid reset token."
+)
+class PasswordResetConfirmAPIView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        serializer = PasswordResetConfirmSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(
+            {
+                "message": "Password has been reset successfully."
+            },
+            status=200,
+        )
 
 @extend_schema(
     description="Superuser only. List all registered users. Read-only — role changes are managed via Django admin."

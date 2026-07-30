@@ -11,6 +11,8 @@ from apps.accounts.views import (
     RegisterAPIView,
     MeAPIView,
     LogoutAPIView,
+    PasswordResetAPIView,
+    PasswordResetConfirmAPIView,
 )
 
 router = DefaultRouter()
@@ -60,6 +62,18 @@ urlpatterns = [
         "auth/logout/",
         LogoutAPIView.as_view(),
         name="api_logout",
+    ),
+
+    path(
+        "auth/password-reset/",
+        PasswordResetAPIView.as_view(),
+        name="api_password_reset",
+    ),
+
+    path(
+        "auth/password-reset-confirm/",
+        PasswordResetConfirmAPIView.as_view(),
+        name="api_password_reset_confirm",
     ),
     
     path(
