@@ -5,4 +5,10 @@ app_name = "dashboard"
 
 urlpatterns = [
     path("", views.DashboardView.as_view(), name="dashboard"),
+
+    path(
+        "stats/",
+        views.DashboardStatsAPIView.as_view(),
+        name="dashboard_stats",
+    ),
 ]

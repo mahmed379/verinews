@@ -6,6 +6,8 @@ from apps.comments.views import CommentViewSet
 from apps.news.views import ArticleViewSet, VoteViewSet
 from apps.reports.views import ReportViewSet
 
+from apps.dashboard.views import DashboardStatsAPIView
+
 from apps.accounts.views import UserListAPIView
 from apps.accounts.views import (
     RegisterAPIView,
@@ -45,6 +47,12 @@ router.register(
 
 urlpatterns = [
     path("", include(router.urls)),
+
+    path(
+        "dashboard/stats/",
+        DashboardStatsAPIView.as_view(),
+        name="dashboard_stats",
+    ),
 
     path(
         "auth-token/",

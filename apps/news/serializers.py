@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from .models import CredibilityReview, NewsArticle, Vote
+from apps.accounts.serializers import UserSummarySerializer
 
 from apps.ai.serializers import (
     AIAnalysisSerializer,
@@ -14,7 +15,7 @@ class NewsArticleSerializer(serializers.ModelSerializer):
     allow_null=True,
     )
 
-    submitted_by = serializers.StringRelatedField(read_only=True)
+    submitted_by = UserSummarySerializer(read_only=True)
     status = serializers.CharField(read_only=True)
 
     average_rating = serializers.FloatField(read_only=True)
@@ -53,7 +54,7 @@ class NewsArticleSerializer(serializers.ModelSerializer):
 
 class CredibilityReviewSerializer(serializers.ModelSerializer):
 
-    reviewed_by = serializers.StringRelatedField(read_only=True)
+    reviewed_by = UserSummarySerializer(read_only=True)
 
     class Meta:
         model = CredibilityReview
@@ -95,7 +96,7 @@ class StatusChangeSerializer(serializers.Serializer):
 
 class VoteSerializer(serializers.ModelSerializer):
 
-    user = serializers.StringRelatedField(read_only=True)
+    user = UserSummarySerializer(read_only=True)
 
     class Meta:
         model = Vote

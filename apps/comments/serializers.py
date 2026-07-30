@@ -2,9 +2,10 @@ from rest_framework import serializers
 
 from .models import Comment
 
+from apps.accounts.serializers import UserSummarySerializer
 
 class CommentSerializer(serializers.ModelSerializer):
-    author = serializers.StringRelatedField(read_only=True)
+    author = UserSummarySerializer(read_only=True)
 
     moderation_flag = serializers.SerializerMethodField()
 

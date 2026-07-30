@@ -1,12 +1,15 @@
 from django.contrib.auth.models import AbstractUser
+from django.db import models
 
 
 class User(AbstractUser):
     """
     Custom user model for VeriNews.
 
-    Right now it behaves exactly like Django's default User model.
-    We define it now so we can easily add fields later
-    (bio, reputation, profile picture, etc.).
+    Users must have a unique email address.
     """
-    pass
+
+    email = models.EmailField(
+        unique=True,
+        blank=False,
+    )

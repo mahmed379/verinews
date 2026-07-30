@@ -1,10 +1,12 @@
 from rest_framework import serializers
 
+from apps.accounts.serializers import UserSummarySerializer
+
 from .models import Report
 
 
 class ReportSerializer(serializers.ModelSerializer):
-    reported_by = serializers.StringRelatedField(read_only=True)
+    reported_by = UserSummarySerializer(read_only=True)
 
     article_title = serializers.CharField(
         source="article.title",

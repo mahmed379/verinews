@@ -11,6 +11,24 @@ from rest_framework import serializers
 
 User = get_user_model()
 
+class UserSummarySerializer(serializers.ModelSerializer):
+    display_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = [
+            "id",
+            "username",
+            "display_name",
+        ]
+
+    def get_display_name(self, obj):
+        full_name = f"{obj.first_name} {obj.last_name}".strip()
+
+        if full_name:
+            return full_name
+
+        return obj.username
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -35,6 +53,10 @@ class UserSerializer(serializers.ModelSerializer):
 
 class RegisterSerializer(serializers.ModelSerializer):
 
+    email = serializers.EmailField(
+        required=True
+    )
+
     password = serializers.CharField(
         write_only=True,
         min_length=8
@@ -52,6 +74,14 @@ class RegisterSerializer(serializers.ModelSerializer):
             "password",
             "password2",
         ]
+
+    def validate_email(self, value):
+        if User.objects.filter(email__iexact=value).exists():
+            raise serializers.ValidationError(
+                "A user with this email address already exists."
+            )
+
+        return value
 
     def validate_password(self, value):
         validate_password(value)

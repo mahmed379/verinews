@@ -4,6 +4,12 @@ from django.views.generic import TemplateView
 from apps.news.models import CredibilityReview, NewsArticle
 from apps.reports.models import Report
 
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAdminUser
+from rest_framework.response import Response
+
+from apps.comments.models import Comment
+from apps.accounts.models import User
 
 class DashboardView(LoginRequiredMixin, TemplateView):
     template_name = "dashboard/dashboard.html"
@@ -76,3 +82,36 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             ).order_by("-created_at")[:10]
 
         return context
+
+class DashboardStatsAPIView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+
+        stats = {
+            "users": User.objects.count(),
+
+            "articles": NewsArticle.objects.count(),
+
+            "verified_articles": NewsArticle.objects.filter(
+                status=NewsArticle.Status.VERIFIED
+            ).count(),
+
+            "pending_articles": NewsArticle.objects.filter(
+                status=NewsArticle.Status.PENDING
+            ).count(),
+
+            "disputed_articles": NewsArticle.objects.filter(
+                status=NewsArticle.Status.DISPUTED
+            ).count(),
+
+            "false_articles": NewsArticle.objects.filter(
+                status=NewsArticle.Status.FALSE
+            ).count(),
+
+            "comments": Comment.objects.count(),
+
+            "reports": Report.objects.count(),
+        }
+
+        return Response(stats)
