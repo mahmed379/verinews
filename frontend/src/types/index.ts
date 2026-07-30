@@ -13,6 +13,11 @@ export interface AIAnalysis {
   analyzer_version: string;
   created_at: string;
 }
+export interface UserSummary {
+  id: number;
+  username: string;
+  display_name: string;
+}
 
 export type ArticleStatus =
   | "pending"
@@ -27,7 +32,7 @@ export interface NewsArticle {
   description: string;
   category: string;
   status: ArticleStatus;
-  submitted_by: string;
+  submitted_by: UserSummary;
   created_at: string;
   average_rating: number | null;
   vote_count: number;

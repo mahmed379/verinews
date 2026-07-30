@@ -156,7 +156,7 @@ export default function ArticleDetailPage() {
           </span>
 
           <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
-            Submitted by {article.submitted_by}
+            Submitted by {article.submitted_by?.display_name}
           </span>
 
           <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">

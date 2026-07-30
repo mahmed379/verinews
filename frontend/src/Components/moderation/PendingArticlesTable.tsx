@@ -87,7 +87,7 @@ export function PendingArticlesTable() {
               </td>
 
               <td className="px-5 py-4 text-slate-200">
-                {article.submitted_by}
+                {article.submitted_by?.display_name}
               </td>
 
 

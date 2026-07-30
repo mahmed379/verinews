@@ -49,7 +49,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
 
 
       <p className="mt-3 text-xs tracking-wide text-slate-400">
-        {article.category} · submitted by {article.submitted_by}
+        {article.category} · submitted by {article.submitted_by?.display_name}
       </p>
 
       <div className="my-3 h-px bg-white/10" />
