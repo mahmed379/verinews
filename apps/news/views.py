@@ -5,6 +5,8 @@ from django.contrib.auth.decorators import login_required
 
 from django.views.generic import ListView, DetailView, CreateView
 
+from apps.moderation_audit.services import log_action
+from apps.moderation_audit.models import ActionType
 
 from .forms import NewsSubmissionForm, StatusChangeForm, VoteForm
 from .models import NewsArticle, CredibilityReview, Vote
@@ -382,8 +384,27 @@ class ArticleViewSet(viewsets.ModelViewSet):
             new_status=serializer.validated_data["new_status"],
             reason=serializer.validated_data["reason"],
         )
+        previous_status = article.status
+        new_status = serializer.validated_data["new_status"]
 
-        article.status = serializer.validated_data["new_status"]
+        log_action(
+        moderator=request.user,
+        action=(
+            ActionType.APPROVE
+            if new_status == "verified"
+            else ActionType.REJECT
+            if new_status == "false"
+            else ActionType.EDIT
+        ),
+        target=article,
+        reason=serializer.validated_data["reason"],
+        metadata={
+            "previous_status": previous_status,
+            "new_status": new_status,
+        },
+        )
+
+        article.status = new_status
         article.save()
 
         article = self.get_queryset().get(

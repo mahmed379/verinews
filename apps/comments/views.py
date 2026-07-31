@@ -5,6 +5,9 @@ from django.views.generic import UpdateView, DeleteView
 
 from apps.news.models import NewsArticle
 
+from apps.moderation_audit.services import log_action
+from apps.moderation_audit.models import ActionType
+
 from .forms import CommentForm
 from .models import Comment
 from rest_framework import permissions, viewsets
@@ -119,3 +122,13 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+    def perform_destroy(self, instance):
+        log_action(
+            moderator=self.request.user,
+            action=ActionType.DELETE,
+            target=instance,
+            reason="Comment deleted by moderator",
+        )
+
+        instance.delete()

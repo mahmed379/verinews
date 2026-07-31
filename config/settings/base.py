@@ -83,6 +83,7 @@ LOCAL_APPS = [
       "apps.dashboard",
       "apps.api",
       "apps.ai",
+      "apps.moderation_audit.apps.ModerationAuditConfig",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS

@@ -5,6 +5,9 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from apps.news.models import NewsArticle
 
+from apps.moderation_audit.services import log_action
+from apps.moderation_audit.models import ActionType
+
 from .forms import ReportForm
 from rest_framework import permissions, viewsets
 from rest_framework.exceptions import ValidationError
@@ -124,15 +127,25 @@ class ReportViewSet(viewsets.ModelViewSet):
         return queryset
 
     @action(
-    detail=True,
-    methods=["post"],
-    permission_classes=[permissions.IsAdminUser],
-)
+        detail=True,
+        methods=["post"],
+        permission_classes=[permissions.IsAdminUser],
+    )
     def resolve(self, request, pk=None):
         report = self.get_object()
 
         report.status = "resolved"
         report.save()
+
+        log_action(
+            moderator=request.user,
+            action=ActionType.EDIT,
+            target=report,
+            reason="Report resolved by moderator",
+            metadata={
+                "new_status": "resolved",
+            },
+        )
 
         return Response(
             {
@@ -151,6 +164,16 @@ class ReportViewSet(viewsets.ModelViewSet):
 
         report.status = "dismissed"
         report.save()
+
+        log_action(
+            moderator=request.user,
+            action=ActionType.EDIT,
+            target=report,
+            reason="Report dismissed by moderator",
+            metadata={
+                "new_status": "dismissed",
+            },
+        )
 
         return Response(
             {
