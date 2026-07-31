@@ -17,6 +17,7 @@ to run* decides the environment, not a value you might forget to flip.
 import os
 import sys
 from pathlib import Path
+from dotenv import load_dotenv
 
 # BASE_DIR points at the project root (the folder containing manage.py).
 # We use it to build every other path (templates, static files, the
@@ -24,7 +25,7 @@ from pathlib import Path
 # .parent three times because this file is config/settings/base.py:
 #   base.py -> settings/ -> config/ -> project root
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-
+load_dotenv(BASE_DIR / ".env")
 # Our own apps live in apps/, e.g. apps/accounts, apps/news.
 # Adding this folder to sys.path lets us write INSTALLED_APPS entries
 # and imports as "accounts", "news" instead of "apps.accounts",
