@@ -3,10 +3,16 @@ import { Routes, Route } from "react-router-dom";
 import { AppShell } from "../Components/Layout/AppShell";
 import RequireAuth from "./RequireAuth";
 
+import VerifyEmailPage from "../pages/VerifyEmailPage";
+
 import Home from "../pages/Home";
 import ArticleDetailPage from "../pages/ArticleDetailPage";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
+
+import ResetPasswordPage from "../pages/ResetPasswordPage";
+
+import { ForgotPasswordPage } from "../pages/ForgotPasswordPage";
 
 import { ModeratorDashboardPage } from "../pages/ModeratorDashboardPage";
 import { ModerationQueuePage } from "../pages/ModerationQueuePage";
@@ -23,6 +29,7 @@ import { SubmitArticlePage } from "../pages/SubmitArticlePage";
 import { FlaggedCommentsPage } from "../pages/FlaggedCommentsPage";
 
 import { DashboardPage } from "../pages/DashboardPage";
+
 
 export function AppRoutes() {
   return (
@@ -41,7 +48,13 @@ export function AppRoutes() {
 
         <Route path="/login" element={<Login />} />
 
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
+
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+
         <Route path="/register" element={<Register />} />
+        
+        <Route path="/verify-email" element={<VerifyEmailPage />} />
 
         {/* Authenticated user routes */}
         <Route element={<RequireAuth />}>

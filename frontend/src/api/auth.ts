@@ -4,6 +4,10 @@ export interface LoginResponse {
   token: string;
 }
 
+export interface VerifyEmailResponse {
+  message: string;
+}
+
 export interface RegisterResponse {
   token: string;
   user: {
@@ -13,6 +17,10 @@ export interface RegisterResponse {
     is_staff: boolean;
     is_superuser: boolean;
   };
+}
+
+export interface PasswordResetResponse {
+  message: string;
 }
 
 export interface User {
@@ -71,4 +79,48 @@ export async function getMe(): Promise<User> {
 
 export async function logout(): Promise<void> {
   await apiClient.post("/auth/logout/");
+}
+
+export async function requestPasswordReset(
+  email: string
+): Promise<PasswordResetResponse> {
+  const response = await apiClient.post<PasswordResetResponse>(
+    "/auth/password-reset/",
+    {
+      email,
+    }
+  );
+
+  return response.data;
+}
+export async function confirmPasswordReset(
+  uid: string,
+  token: string,
+  password: string
+): Promise<PasswordResetConfirmResponse> {
+  const response =
+    await apiClient.post<PasswordResetConfirmResponse>(
+      "/auth/password-reset-confirm/",
+      {
+        uid,
+        token,
+        password,
+      }
+    );
+
+  return response.data;
+}
+
+export interface PasswordResetConfirmResponse {
+  message: string;
+}
+export async function verifyEmail(
+  uid: string,
+  token: string
+): Promise<VerifyEmailResponse> {
+  const response = await apiClient.get<VerifyEmailResponse>(
+    `/auth/verify-email/${uid}/${token}/`
+  );
+
+  return response.data;
 }
