@@ -7,6 +7,8 @@ from django.utils.encoding import force_bytes, force_str
 from django.core.mail import send_mail
 from django.conf import settings
 
+from .tokens import email_verification_token
+
 from rest_framework import serializers
 
 User = get_user_model()
@@ -102,11 +104,67 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         validated_data.pop("password2")
 
-        return User.objects.create_user(
+        user = User.objects.create_user(
             username=validated_data["username"],
             email=validated_data.get("email", ""),
             password=validated_data["password"],
         )
+
+        user.is_active = False
+        user.save(update_fields=["is_active"])
+
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        token = email_verification_token.make_token(user)
+
+        verification_url = (
+            f"{settings.FRONTEND_URL}/verify-email"
+            f"?uid={uid}&token={token}"
+        )
+
+        send_mail(
+            subject="Verify your VeriNews account",
+            message=(
+                f"Hello {user.username},\n\n"
+                "Thank you for registering with VeriNews.\n\n"
+                "Please click the link below to verify your email address:\n\n"
+                f"{verification_url}\n\n"
+                "If you did not create this account, you can safely ignore this email."
+            ),
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
+            fail_silently=False,
+        )
+
+        return user
+
+from django.contrib.auth import authenticate
+
+
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, attrs):
+        username = attrs.get("username")
+        password = attrs.get("password")
+
+        user = authenticate(
+            username=username,
+            password=password,
+        )
+
+        if user is None:
+            raise serializers.ValidationError(
+                "Invalid username or password."
+            )
+
+        if not user.is_active:
+            raise serializers.ValidationError(
+                "Please verify your email before logging in."
+            )
+
+        attrs["user"] = user
+        return attrs
 
 class PasswordResetSerializer(serializers.Serializer):
     email = serializers.EmailField()

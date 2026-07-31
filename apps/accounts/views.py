@@ -2,6 +2,9 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 
+from django.utils.http import urlsafe_base64_decode
+from django.utils.encoding import force_str
+
 from .serializers import (
     RegisterSerializer,
     UserSerializer,
@@ -9,7 +12,7 @@ from .serializers import (
     PasswordResetConfirmSerializer,
 )
 
-from .forms import RegisterForm
+from .tokens import email_verification_token
 
 from .models import User
 
@@ -18,14 +21,17 @@ from .forms import CustomUserCreationForm
 from api.permissions import IsSuperUser
 
 from rest_framework import generics, permissions
-from rest_framework.authtoken.models import Token
+
 from rest_framework.response import Response
 
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
-from .serializers import RegisterSerializer, UserSerializer
+from django.contrib.auth import login
+from rest_framework.authtoken.models import Token
+
+from .serializers import LoginSerializer
 
 from drf_spectacular.utils import extend_schema
 
@@ -86,16 +92,87 @@ class RegisterAPIView(generics.CreateAPIView):
 
         user = serializer.save()
 
-        token, _ = Token.objects.get_or_create(user=user)
-
         return Response(
             {
+                "message": (
+                    "Registration successful. "
+                    "Please check your email to verify your account."
+                ),
                 "user": UserSerializer(user).data,
-                "token": token.key,
             },
             status=201,
         )
 
+@extend_schema(
+    request=LoginSerializer,
+    responses={200: None},
+    description="Authenticate a user and return an API token."
+)
+class LoginAPIView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        serializer = LoginSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        user = serializer.validated_data["user"]
+
+        token, _ = Token.objects.get_or_create(user=user)
+
+        return Response(
+            {
+                "token": token.key,
+                "user": UserSerializer(user).data,
+            },
+            status=200,
+        )
+
+
+@extend_schema(
+    request=None,
+    responses={200: None},
+    description="Verify a user's email address."
+)
+class VerifyEmailAPIView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, uid, token):
+
+        try:
+            user_id = force_str(urlsafe_base64_decode(uid))
+            user = User.objects.get(pk=user_id)
+
+        except (
+            User.DoesNotExist,
+            ValueError,
+            TypeError,
+            OverflowError,
+        ):
+            return Response(
+                {
+                    "detail": "Invalid verification link."
+                },
+                status=400,
+            )
+
+        if not email_verification_token.check_token(user, token):
+            return Response(
+                {
+                    "detail": "Verification link is invalid or has expired."
+                },
+                status=400,
+            )
+
+        if not user.is_active:
+            user.is_active = True
+            user.save(update_fields=["is_active"])
+
+        return Response(
+            {
+                "message": "Email verified successfully."
+            },
+            status=200,
+        )
 
 class MeAPIView(generics.RetrieveUpdateAPIView):
     serializer_class = UserSerializer
