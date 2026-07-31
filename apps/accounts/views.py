@@ -102,9 +102,9 @@ class RegisterAPIView(generics.CreateAPIView):
         return Response(
             {
                 "message": (
-                    "Registration successful. "
-                    "Please check your email to verify your account."
-                ),
+                    "Registration successful. You can now login."
+
+                 ),
                 "user": UserSerializer(user).data,
             },
             status=201,

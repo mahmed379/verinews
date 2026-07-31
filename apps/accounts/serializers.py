@@ -4,8 +4,9 @@ from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
-from django.core.mail import send_mail
+
 from django.conf import settings
+from django.core.mail import send_mail
 
 from .tokens import email_verification_token
 
@@ -120,21 +121,6 @@ class RegisterSerializer(serializers.ModelSerializer):
             f"{settings.FRONTEND_URL}/verify-email"
             f"?uid={uid}&token={token}"
         )
-
-        try:
-            send_mail(
-                subject="Verify your VeriNews account",
-                message=(
-                    f"Hello {user.username},\n\n"
-                    "Thank you for registering with VeriNews."
-                ),
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[user.email],
-                fail_silently=True,
-            )
-
-        except Exception as e:
-            print("Email failed:", e)
 
         return user
 
