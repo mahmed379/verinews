@@ -60,7 +60,6 @@ export function ReportsTable({
   const dismissMutation =
     useDismissReport();
 
-
   return (
     <div>
 
@@ -128,7 +127,7 @@ export function ReportsTable({
 
           <thead className="border-b border-white/10 text-left text-sm text-slate-400">
             <tr>
-              <th className="p-3">
+              <th className="p-3 w-[38%]">
                 Article
               </th>
 
@@ -137,7 +136,7 @@ export function ReportsTable({
               </th>
 
               {showActions && (
-                <th className="p-3">
+                <th className="p-3 w-40 whitespace-nowrap">
                   Reported By
                 </th>
               )}
@@ -163,7 +162,7 @@ export function ReportsTable({
 
               <tr
                 key={report.id}
-                className="border-b border-white/10 last:border-0"
+                className="border-b border-white/10 last:border-0 hover:bg-white/5 transition-colors"
               >
 
                 <td className="p-3">
@@ -184,20 +183,32 @@ export function ReportsTable({
                 </td>
 
 
-                <td className="p-3 text-slate-300 capitalize">
-                  {report.reason}
+                <td className="p-3 text-slate-300">
+                  {report.reason
+                    .replace(/_/g, " ")
+                    .replace(/\b\w/g, (char) => char.toUpperCase())}
                 </td>
 
 
                 {showActions && (
                   <td className="p-3 text-slate-300">
-                    {report.reported_by}
+                    {report.reported_by.display_name}
                   </td>
                 )}
 
 
-                <td className="p-3 text-slate-300 capitalize">
-                  {report.status}
+                <td className="p-3">
+                  <span
+                    className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${
+                      report.status === "open"
+                        ? "bg-yellow-500/20 text-yellow-300"
+                        : report.status === "resolved"
+                        ? "bg-emerald-500/20 text-emerald-300"
+                        : "bg-slate-500/20 text-slate-300"
+                    }`}
+                  >
+                    {report.status.charAt(0).toUpperCase() + report.status.slice(1)}
+                  </span>
                 </td>
 
                 <td className="p-3">
@@ -227,15 +238,16 @@ export function ReportsTable({
                       </ul>
                     </div>
                   ) : (
-                    <span className="text-xs text-slate-400">
-                      —
+                    <span className="text-xs font-medium text-emerald-300">
+                      ✓ Clear
                     </span>
                   )}
                 </td>
 
 
                 {showActions && (
-                  <td className="p-3 text-right space-x-2">
+                  <td className="p-3">
+                    <div className="flex flex-col gap-2 items-end">
 
                     {report.status === "open" && (
                       <>
@@ -282,7 +294,7 @@ export function ReportsTable({
                         </button>
                       </>
                     )}
-
+                    </div>
                   </td>
                 )}
 

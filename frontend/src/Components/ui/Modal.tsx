@@ -1,4 +1,5 @@
 import { type ReactNode, useEffect } from "react";
+import { createPortal } from "react-dom";
 
 interface ModalProps {
   isOpen: boolean;
@@ -31,14 +32,34 @@ export function Modal({
 
   if (!isOpen) return null;
 
-  return (
+    return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4"
+      className="
+      fixed
+      inset-0
+      z-[9999]
+      flex
+      items-center
+      justify-center
+      bg-black/60
+      backdrop-blur-sm
+      p-4
+      "
       onClick={onClose}
       role="presentation"
     >
       <div
-        className="glass-card w-full max-w-md bg-white/90 p-6"
+        className="
+        glass-card
+        w-full
+        max-w-md
+        rounded-2xl
+        bg-slate-900/90
+        border
+        border-slate-700
+        p-6
+        text-white
+        "
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -47,7 +68,7 @@ export function Modal({
         <div className="mb-4 flex items-center justify-between">
           <h2
             id="modal-title"
-            className="text-lg font-semibold text-ink"
+            className="text-lg font-semibold text-white"
           >
             {title}
           </h2>
@@ -56,7 +77,11 @@ export function Modal({
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="text-slate-400 transition-colors hover:text-ink"
+            className="
+            text-slate-400
+            transition-colors
+            hover:text-white
+            "
           >
             ✕
           </button>
@@ -64,6 +89,7 @@ export function Modal({
 
         {children}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

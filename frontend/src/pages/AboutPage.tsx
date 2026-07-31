@@ -12,7 +12,7 @@ export default function AboutPage() {
         </h1>
 
         <p className="mt-3 text-slate-400">
-          A community-powered platform for transparent news credibility assessment.
+          A community-driven platform for transparent news credibility assessment.
         </p>
       </div>
 
@@ -29,9 +29,9 @@ export default function AboutPage() {
         </h2>
 
         <p className="text-slate-300">
-          VeriNews is a community-driven platform for submitting news articles
-          and collaboratively assessing their credibility through ratings,
-          comments, and moderated review.
+          VeriNews is a community-driven news credibility platform that enables users to submit news articles,
+          evaluate their credibility through community ratings, participate in discussions, and report potentially
+          misleading content. Moderators review submissions to help maintain transparency and reliability.
         </p>
       </section>
 
@@ -48,9 +48,9 @@ export default function AboutPage() {
         </h2>
 
         <p className="text-slate-300">
-          Misinformation spreads quickly. VeriNews provides readers a
-          transparent way to rate credibility, report concerns, and understand
-          how article decisions are made.
+          The rapid spread of misinformation makes it increasingly difficult to distinguish reliable news from
+          misleading content. VeriNews promotes transparency by combining community participation, moderator
+          oversight, and AI-assisted analysis to support informed decision-making.
         </p>
       </section>
 
@@ -67,11 +67,13 @@ export default function AboutPage() {
         </h2>
 
         <ul className="list-disc list-inside text-slate-300 space-y-1">
-          <li>Community credibility ratings (1–5 scale)</li>
-          <li>Moderator verification workflow</li>
-          <li>Transparent article reporting</li>
-          <li>Role-based dashboards</li>
-          <li>REST API with authentication</li>
+          <li>⭐ Community credibility ratings (1 – 5 scale)</li>
+          <li>🛡️ Moderator review and verification workflow</li>
+          <li>🚩 Transparent article reporting system</li>
+          <li>🤖 AI-assisted credibility analysis</li>
+          <li>👥 Role-based user and moderator dashboards</li>
+          <li>🔐 Secure authentication and account management</li>
+          <li>📄 RESTful API for developers</li>
         </ul>
       </section>
 
@@ -88,10 +90,15 @@ export default function AboutPage() {
         </h2>
 
         <ul className="list-disc list-inside text-slate-300 space-y-1">
-          <li>Django 5 + Django REST Framework</li>
-          <li>React + TypeScript + Vite</li>
+          <li>Django 5</li>
+          <li>Django REST Framework (DRF)</li>
+          <li>TypeScript</li>
+          <li>Vite</li>
           <li>Tailwind CSS</li>
           <li>TanStack Query</li>
+          <li>PostgreSQL</li>
+          <li>WhiteNoise</li>
+          <li>Gunicorn</li>
         </ul>
       </section>
 
@@ -108,9 +115,11 @@ export default function AboutPage() {
         </h2>
 
         <p className="text-slate-300">
-        VeriNews was designed and developed by{" "}
-        <span className="font-medium">Hafiz Muhammad Ahmed</span>,
-        focusing on building a transparent community-driven platform for news credibility verification.
+          VeriNews was designed and developed by{" "}
+          <span className="font-medium">Hafiz Muhammad Ahmed</span> as a
+          full-stack portfolio project showcasing Django, React, REST APIs,
+          AI-assisted moderation, secure authentication, and a transparent,
+          community-driven approach to news credibility assessment.
         </p>
       </section>
 

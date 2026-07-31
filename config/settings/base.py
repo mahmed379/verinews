@@ -33,7 +33,12 @@ load_dotenv(BASE_DIR / ".env")
 sys.path.insert(0, str(BASE_DIR / "apps"))
 
 # Frontend URL
-FRONTEND_URL = "http://localhost:5173"
+# Uses the production frontend URL when provided,
+# otherwise falls back to localhost for development.
+FRONTEND_URL = os.environ.get(
+    "FRONTEND_URL",
+    "http://localhost:5173",
+)
 
 # --- Email Configuration -----------------------------------------------------
 # Driven entirely by environment variables so credentials never live in

@@ -60,12 +60,16 @@ export interface Report {
   article_title: string;
   reason: string;
   details: string;
+  reported_by: UserSummary;
   status: ReportStatus;
-  reported_by: string;
-  moderation_flag: ModerationFlag | null;
   created_at: string;
+  moderation_flag?: {
+    is_flagged: boolean;
+    score: number;
+    reasons: string[];
+    flagger_version: string;
+  };
 }
-
 export interface ArticleSummary {
   summary: string;
   key_points: string[];

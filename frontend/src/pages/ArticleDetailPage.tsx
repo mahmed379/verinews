@@ -121,7 +121,7 @@ export default function ArticleDetailPage() {
   }
 
   return (
-
+    <>
     <div className="max-w-5xl mx-auto px-4 py-10">
 
 
@@ -280,7 +280,7 @@ export default function ArticleDetailPage() {
 
       </GlassCard>
 
-
+    
 
       <GlassCard className="mt-6 p-6">
         <h2 className="mb-4 text-xl font-bold text-white">
@@ -349,13 +349,15 @@ export default function ArticleDetailPage() {
 
       </div>
 
-      <ReportModal
-        open={reportOpen}
-        isSubmitting={createReportMutation.isPending}
-        onClose={() => setReportOpen(false)}
-        onSubmit={handleReport}
-      />
     </div>
+
+    <ReportModal
+      open={reportOpen}
+      isSubmitting={createReportMutation.isPending}
+      onClose={() => setReportOpen(false)}
+      onSubmit={handleReport}
+    />
+    </>
 
   );
 }

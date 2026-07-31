@@ -5,8 +5,25 @@ import EmptyState from "../ui/EmptyState";
 
 export function UserTable() {
   const [page, setPage] = useState(1);
+const [search, setSearch] = useState("");
 
   const { data, isLoading } = useUsers(page);
+
+  const filteredUsers =
+    data?.results.filter(
+      (user) =>
+        user.username
+          .toLowerCase()
+          .includes(search.toLowerCase()) ||
+        user.email
+          .toLowerCase()
+          .includes(search.toLowerCase())
+    ) ?? [];
+
+  const totalUsers = data?.results.length ?? 0;
+  const staffUsers =
+    data?.results.filter((u) => u.is_staff).length ?? 0;
+  const memberUsers = totalUsers - staffUsers;
 
   if (isLoading) {
     return <LoadingSpinner />;
@@ -23,6 +40,58 @@ export function UserTable() {
 
   return (
     <div>
+
+      <div className="mb-5 flex gap-6 text-sm">
+
+        <span className="text-slate-300">
+          👥 Total:
+          <span className="ml-1 font-semibold text-white">
+            {totalUsers}
+          </span>
+        </span>
+
+        <span className="text-slate-300">
+          👤 Members:
+          <span className="ml-1 font-semibold text-emerald-300">
+            {memberUsers}
+          </span>
+        </span>
+
+        <span className="text-slate-300">
+          🛡 Staff:
+          <span className="ml-1 font-semibold text-blue-300">
+            {staffUsers}
+          </span>
+        </span>
+
+      </div>
+        
+      <div className="mb-5 max-w-md">
+
+        <input
+          type="text"
+          placeholder="Search username or email..."
+          value={search}
+          onChange={(e) =>
+            setSearch(e.target.value)
+          }
+          className="
+            w-full
+            rounded-xl
+            border
+            border-white/10
+            bg-white/5
+            px-4
+            py-3
+            text-white
+            placeholder:text-slate-500
+            focus:border-blue-400
+            focus:outline-none
+          "
+        />
+
+      </div>
+
       <table
         className="
           w-full
@@ -34,6 +103,7 @@ export function UserTable() {
           backdrop-blur-xl
         "
       >
+        
         <thead className="border-b border-white/10 text-left text-sm text-slate-400">
           <tr>
             <th className="p-3">Username</th>
@@ -44,10 +114,16 @@ export function UserTable() {
         </thead>
 
         <tbody>
-          {data.results.map((user) => (
+          {filteredUsers.map((user) => (
             <tr
               key={user.id}
-              className="border-b border-white/10 last:border-0"
+              className="
+              border-b
+              border-white/10
+              last:border-0
+              hover:bg-white/5
+              transition-colors
+              "
             >
               <td className="p-3 font-medium text-white">
                 {user.username}
@@ -100,7 +176,13 @@ export function UserTable() {
         </tbody>
       </table>
 
-      <div className="flex gap-2 mt-4">
+      <div className="mt-5 flex items-center justify-between">
+
+        <p className="text-sm text-slate-400">
+          Showing {filteredUsers.length} of {totalUsers} users
+        </p>
+
+        <div className="flex gap-2">
         <button
           disabled={!data.previous}
           onClick={() => setPage((p) => p - 1)}
@@ -139,6 +221,7 @@ export function UserTable() {
           Next
         </button>
       </div>
+    </div>
     </div>
   );
 }
