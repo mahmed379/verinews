@@ -47,7 +47,7 @@ export function AppRoutes() {
         <Route path="/articles/:id" element={<ArticleDetailPage />} />
 
         <Route path="/login" element={<Login />} />
-
+        
         <Route path="/reset-password" element={<ResetPasswordPage />} />
 
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />

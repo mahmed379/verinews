@@ -5,6 +5,17 @@ Run with: DJANGO_SETTINGS_MODULE=config.settings.dev (this is already
 set as the default in manage.py, so normally you don't type this).
 """
 
+from pathlib import Path
+
+from dotenv import load_dotenv
+
+# Load .env (project root, next to manage.py) BEFORE importing base.py,
+# so os.environ.get(...) calls in base.py (e.g. EMAIL_HOST_PASSWORD)
+# see these values. Safe to call even if .env doesn't exist — dotenv
+# just no-ops and base.py's fallbacks (console email backend, etc.)
+# still apply.
+load_dotenv(Path(__file__).resolve().parent.parent.parent / ".env")
+
 from .base import *  # noqa: F401,F403  (star import is the standard Django pattern here)
 
 DEBUG = True

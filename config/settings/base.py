@@ -34,10 +34,25 @@ sys.path.insert(0, str(BASE_DIR / "apps"))
 # Frontend URL
 FRONTEND_URL = "http://localhost:5173"
 
-# Email Configuration (Development)
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+# --- Email Configuration -----------------------------------------------------
+# Driven entirely by environment variables so credentials never live in
+# source control. EMAIL_BACKEND defaults to the console backend (prints
+# emails to the terminal) so the project still runs out-of-the-box with
+# zero setup — set EMAIL_BACKEND to the SMTP backend (and the
+# EMAIL_HOST_* variables below) in your environment/.env to send real
+# email. See .env.example for the Gmail SMTP values.
+EMAIL_BACKEND = os.environ.get(
+    "EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
+)
+EMAIL_HOST = os.environ.get("EMAIL_HOST", "smtp.gmail.com")
+EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "587"))
+EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "True") == "True"
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
 
-DEFAULT_FROM_EMAIL = "noreply@verinews.local"
+DEFAULT_FROM_EMAIL = os.environ.get(
+    "DEFAULT_FROM_EMAIL", "noreply@verinews.local"
+)
 
 # SECURITY WARNING: keep this secret in production!
 # We read it from an environment variable with a fallback so the
