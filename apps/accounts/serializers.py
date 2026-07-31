@@ -122,21 +122,24 @@ class RegisterSerializer(serializers.ModelSerializer):
             f"?uid={uid}&token={token}"
         )
 
-        send_mail(
-            subject="Verify your VeriNews account",
-            message=(
-                f"Hello {user.username},\n\n"
-                "Thank you for registering with VeriNews.\n\n"
-                "Please click the link below to verify your email:\n\n"
-                f"{verification_url}\n\n"
-                "If you did not create this account, ignore this email."
-            ),
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[user.email],
-            fail_silently=False,
-        )
-        print("EMAIL SENT TO:", user.email)
-        print("VERIFY URL:", verification_url)
+        try:
+            send_mail(
+                subject="Verify your VeriNews account",
+                message=(
+                    f"Hello {user.username},\n\n"
+                    "Thank you for registering with VeriNews.\n\n"
+                    f"{verification_url}\n\n"
+                    "If you did not create this account, ignore this email."
+                ),
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+                fail_silently=False,
+            )
+
+            print("EMAIL SENT SUCCESSFULLY")
+
+        except Exception as e:
+            print("EMAIL FAILED:", e)
 
         return user
 from django.contrib.auth import authenticate
