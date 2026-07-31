@@ -111,8 +111,9 @@ class RegisterSerializer(serializers.ModelSerializer):
             password=validated_data["password"],
         )
 
+        user.is_verified = False
         user.is_active = False
-        user.save(update_fields=["is_active"])
+        user.save()
 
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         token = email_verification_token.make_token(user)
@@ -122,8 +123,23 @@ class RegisterSerializer(serializers.ModelSerializer):
             f"?uid={uid}&token={token}"
         )
 
-        return user
+        send_mail(
+            subject="Verify your VeriNews account",
+            message=(
+                f"Hello {user.username},\n\n"
+                "Thank you for registering with VeriNews.\n\n"
+                "Please click the link below to verify your email:\n\n"
+                f"{verification_url}\n\n"
+                "If you did not create this account, ignore this email."
+            ),
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
+            fail_silently=False,
+        )
+        print("EMAIL SENT TO:", user.email)
+        print("VERIFY URL:", verification_url)
 
+        return user
 from django.contrib.auth import authenticate
 
 
@@ -174,20 +190,7 @@ class PasswordResetSerializer(serializers.Serializer):
             f"{settings.FRONTEND_URL}/reset-password"
             f"?uid={uid}&token={token}"
         )
-
-        send_mail(
-            subject="Reset your VeriNews password",
-            message=(
-                f"Hello {user.username},\n\n"
-                f"Click the link below to reset your password:\n\n"
-                f"{reset_url}\n\n"
-                "If you did not request this, you can ignore this email."
-            ),
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[user.email],
-            fail_silently=False,
-        )
-
+    
 
 class PasswordResetConfirmSerializer(serializers.Serializer):
     uid = serializers.CharField()

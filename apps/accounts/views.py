@@ -101,10 +101,7 @@ class RegisterAPIView(generics.CreateAPIView):
 
         return Response(
             {
-                "message": (
-                    "Registration successful. You can now login."
-
-                 ),
+                "message": "Registration successful. Please check your email to verify your account.",
                 "user": UserSerializer(user).data,
             },
             status=201,
@@ -171,9 +168,9 @@ class VerifyEmailAPIView(APIView):
                 status=400,
             )
 
-        if not user.is_active:
-            user.is_active = True
-            user.save(update_fields=["is_active"])
+        user.is_active = True
+        user.is_verified = True
+        user.save(update_fields=["is_active", "is_verified"])
 
         return Response(
             {
