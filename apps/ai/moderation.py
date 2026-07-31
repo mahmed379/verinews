@@ -31,7 +31,7 @@ class ModerationResult:
 
 class CommentSpamAnalyzer:
 
-    version = "moderation-heuristic-v1"
+    version = "moderation-heuristic-v2"
 
     def analyze(self, comment):
 
@@ -43,19 +43,19 @@ class CommentSpamAnalyzer:
         url_count = len(URL_PATTERN.findall(body))
 
         if url_count > 0:
-            score += 25 * min(url_count, 2)
+            score += 18 * min(url_count, 2)
             reasons.append(
                 f"Contains {url_count} link(s)."
             )
 
         if len(body.strip()) < 15 and url_count > 0:
-            score += 20
+            score += 15
             reasons.append(
                 "Very short comment consisting mostly of a link."
             )
 
         if REPEATED_CHAR_PATTERN.search(body):
-            score += 15
+            score += 12
             reasons.append(
                 "Contains an unusually repeated character sequence."
             )
@@ -70,7 +70,10 @@ class CommentSpamAnalyzer:
         ]
 
         if matched:
-            score += 20 * len(matched)
+            # Diminishing returns: each additional matched keyword adds
+            # less than the last, so a comment with several borderline
+            # phrases doesn't jump straight to a 100 "certain spam" score.
+            score += sum(18 - min(i * 4, 12) for i in range(len(matched)))
 
             reasons.append(
                 f"Contains common spam phrasing: {', '.join(matched)}."
@@ -111,7 +114,7 @@ class CommentSpamAnalyzer:
 
 class ReportSuspicionAnalyzer:
 
-    version = "moderation-heuristic-v1"
+    version = "moderation-heuristic-v2"
 
 
     def analyze(self, report):
@@ -128,6 +131,26 @@ class ReportSuspicionAnalyzer:
                 "No additional details were provided."
             )
 
+        # Dismissed reports are a moderator-confirmed signal that this
+        # reporter's past claims didn't hold up — a much stronger and
+        # fairer signal than raw open-report count, which previously
+        # penalized prolific but accurate reporters just as much as
+        # bad-faith ones.
+        dismissed_count = (
+            report.__class__.objects
+            .filter(
+                reported_by=report.reported_by,
+                status="dismissed",
+            )
+            .exclude(pk=report.pk)
+            .count()
+        )
+
+        if dismissed_count >= 2:
+            score += min(15 * dismissed_count, 45)
+            reasons.append(
+                f"Reporter has {dismissed_count} previously dismissed report(s)."
+            )
 
         recent_open_count = (
             report.__class__.objects
@@ -139,12 +162,14 @@ class ReportSuspicionAnalyzer:
             .count()
         )
 
-
-        if recent_open_count >= 3:
-            score += 30
+        # A high open-report count alone is a weak signal (it could just
+        # mean an active, accurate reporter awaiting moderator review),
+        # so it contributes far less than a confirmed-dismissed history.
+        if recent_open_count >= 5:
+            score += 10
 
             reasons.append(
-                f"Reporter currently has {recent_open_count} other open reports."
+                f"Reporter currently has {recent_open_count} other open reports awaiting review."
             )
 
 

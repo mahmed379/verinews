@@ -14,16 +14,25 @@ from urllib.parse import urlparse
 
 
 REPUTABLE_DOMAINS = {
-    "bbc.com",
-    "reuters.com",
-    "apnews.com",
-    "npr.org",
-    "theguardian.com",
-    "nytimes.com",
-    "washingtonpost.com",
-    "wsj.com",
-    "aljazeera.com",
+    # Wire services / international
+    "bbc.com", "reuters.com", "apnews.com", "afp.com",
+    # US
+    "npr.org", "nytimes.com", "washingtonpost.com", "wsj.com",
+    "usatoday.com", "latimes.com", "chicagotribune.com",
+    "propublica.org", "axios.com", "politico.com",
+    # UK / Europe
+    "theguardian.com", "independent.co.uk", "ft.com",
+    "economist.com", "dw.com", "france24.com", "euronews.com",
+    # International / regional
+    "aljazeera.com", "dawn.com", "tribune.com.pk", "thenews.com.pk",
+    "hindustantimes.com", "thehindu.com", "scmp.com", "japantimes.co.jp",
+    "cbc.ca", "abc.net.au", "smh.com.au",
 }
+
+# TLDs restricted to accredited institutions — a mild positive signal,
+# since registration itself implies some vetting (unlike .com/.xyz/etc,
+# which anyone can register).
+INSTITUTIONAL_TLDS = {".gov", ".edu", ".ac.uk", ".gov.uk"}
 
 SUSPICIOUS_TLDS = {
     ".xyz",
@@ -40,6 +49,12 @@ SENSATIONAL_PHRASES = [
     "miracle cure",
     "secret they don't want you to know",
     "what happens next will",
+    "this one trick",
+    "won't believe what happened",
+    "goes viral",
+    "breaks the internet",
+    "number will shock you",
+    "left speechless",
 ]
 
 
@@ -57,7 +72,7 @@ class AnalysisResult:
     risk_level: str
     factors: list[Factor] = field(default_factory=list)
     suggested_steps: list[str] = field(default_factory=list)
-    analyzer_version: str = "heuristic-v1"
+    analyzer_version: str = "heuristic-v2"
 
 
 class BaseAnalyzer:
@@ -75,7 +90,7 @@ class BaseAnalyzer:
 
 
 class HeuristicAnalyzer(BaseAnalyzer):
-    version = "heuristic-v1"
+    version = "heuristic-v2"
 
     def analyze(self, article) -> AnalysisResult:
         factors = []
@@ -84,6 +99,7 @@ class HeuristicAnalyzer(BaseAnalyzer):
         score += self._score_source(article.source_url, factors)
         score += self._score_writing_pattern(article.title, factors)
         score += self._score_content_length(article.description, factors)
+        score += self._score_attribution(article.description, factors)
 
         score = max(0, min(score, 100))
 
@@ -109,6 +125,16 @@ class HeuristicAnalyzer(BaseAnalyzer):
                     "positive",
                     f"{domain} is a widely recognized news source.",
                     15,
+                )
+            )
+        elif any(domain.endswith(tld) for tld in INSTITUTIONAL_TLDS):
+            delta += 8
+            factors.append(
+                Factor(
+                    "Source reputation",
+                    "positive",
+                    f"'{domain}' uses a restricted institutional TLD, which requires accreditation to register.",
+                    8,
                 )
             )
         elif any(domain.endswith(tld) for tld in SUSPICIOUS_TLDS):
@@ -234,6 +260,51 @@ class HeuristicAnalyzer(BaseAnalyzer):
         )
 
         return 3
+
+    def _score_attribution(
+        self,
+        description: str,
+        factors: list[Factor],
+    ) -> int:
+        has_quote = '"' in description or "\u201c" in description
+
+        attribution_pattern = re.search(
+            r"\b(according to|said|told|reported by|confirmed by)\b",
+            description,
+            re.IGNORECASE,
+        )
+
+        if has_quote and attribution_pattern:
+            factors.append(
+                Factor(
+                    "Attribution",
+                    "positive",
+                    "Description includes a direct quote with named attribution.",
+                    10,
+                )
+            )
+            return 10
+
+        if attribution_pattern:
+            factors.append(
+                Factor(
+                    "Attribution",
+                    "positive",
+                    "Description attributes claims to a named source.",
+                    5,
+                )
+            )
+            return 5
+
+        factors.append(
+            Factor(
+                "Attribution",
+                "neutral",
+                "No clear source attribution detected in the description.",
+                0,
+            )
+        )
+        return 0
 
     def _risk_level(self, score: int) -> str:
         if score >= 70:

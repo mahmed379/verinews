@@ -304,18 +304,21 @@ class PermissionClassTests(TestCase):
 
     def setUp(self):
         self.user = User.objects.create_user(
-            username="normal",
+            username="user",
+            email="user@test.com",
             password="password123"
         )
 
         self.staff = User.objects.create_user(
             username="staff",
+            email="staff@test.com",
             password="password123",
             is_staff=True
         )
 
         self.admin = User.objects.create_superuser(
             username="admin",
+            email="admin@test.com",
             password="password123"
         )
 
