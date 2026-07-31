@@ -121,19 +121,22 @@ class RegisterSerializer(serializers.ModelSerializer):
             f"?uid={uid}&token={token}"
         )
 
-        send_mail(
-            subject="Verify your VeriNews account",
-            message=(
-                f"Hello {user.username},\n\n"
-                "Thank you for registering with VeriNews.\n\n"
-                "Please click the link below to verify your email address:\n\n"
-                f"{verification_url}\n\n"
-                "If you did not create this account, you can safely ignore this email."
-            ),
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[user.email],
-            fail_silently=False,
-        )
+        try:
+            send_mail(
+                subject="Verify your VeriNews account",
+                message=(
+                    f"Hello {user.username},\n\n"
+                    "Thank you for registering with VeriNews.\n\n"
+                    "Please click the link below to verify your email address:\n\n"
+                    f"{verification_url}\n\n"
+                    "If you did not create this account, you can safely ignore this email."
+                ),
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+                fail_silently=True,
+            )
+        except Exception as e:
+            print("Email sending failed:", e)
 
         return user
 
