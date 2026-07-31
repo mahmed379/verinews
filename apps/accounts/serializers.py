@@ -111,9 +111,8 @@ class RegisterSerializer(serializers.ModelSerializer):
             password=validated_data["password"],
         )
 
-        user.is_verified = False
         user.is_active = False
-        user.save()
+        user.save(update_fields=["is_active"])
 
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         token = email_verification_token.make_token(user)
