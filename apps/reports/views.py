@@ -12,6 +12,8 @@ from rest_framework.exceptions import ValidationError
 from .models import Report
 from .serializers import ReportSerializer
 
+from apps.api.throttles import ReportThrottle
+
 from drf_spectacular.utils import (
     OpenApiExample,
     extend_schema,
@@ -98,6 +100,7 @@ def report_article(request, article_pk):
 class ReportViewSet(viewsets.ModelViewSet):
     serializer_class = ReportSerializer
     queryset = Report.objects.all()
+    throttle_classes = [ReportThrottle]
 
     permission_classes = [
         permissions.IsAuthenticated

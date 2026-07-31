@@ -2,6 +2,12 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 
+from apps.api.throttles import (
+    RegisterThrottle,
+    LoginThrottle,
+    PasswordResetThrottle,
+)
+
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
 
@@ -85,6 +91,7 @@ def dashboard(request):
 class RegisterAPIView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
     permission_classes = [permissions.AllowAny]
+    throttle_classes = [RegisterThrottle]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -110,6 +117,7 @@ class RegisterAPIView(generics.CreateAPIView):
 )
 class LoginAPIView(APIView):
     permission_classes = [permissions.AllowAny]
+    throttle_classes = [LoginThrottle]
 
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
@@ -201,6 +209,7 @@ class LogoutAPIView(APIView):
 )
 class PasswordResetAPIView(APIView):
     permission_classes = [permissions.AllowAny]
+    throttle_classes = [PasswordResetThrottle]
 
     def post(self, request):
         serializer = PasswordResetSerializer(data=request.data)

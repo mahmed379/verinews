@@ -170,6 +170,20 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 10,
 
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
+    ],
+
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "100/hour",
+        "user": "1000/hour",
+
+        "register": "5/hour",
+        "login": "10/minute",
+        "password_reset": "3/hour",
+        "report": "20/hour",
+    },
 
     "EXCEPTION_HANDLER": "api.exceptions.verinews_exception_handler",
 }
