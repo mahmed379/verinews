@@ -16,17 +16,29 @@ from urllib.parse import urlparse
 REPUTABLE_DOMAINS = {
     # Wire services / international
     "bbc.com", "reuters.com", "apnews.com", "afp.com",
-    # US
+    # US — general news
     "npr.org", "nytimes.com", "washingtonpost.com", "wsj.com",
     "usatoday.com", "latimes.com", "chicagotribune.com",
-    "propublica.org", "axios.com", "politico.com",
+    "propublica.org", "axios.com", "politico.com", "time.com",
+    "newsweek.com", "cbsnews.com", "abcnews.go.com", "nbcnews.com",
+    "pbs.org",
+    # US — business / finance
+    "bloomberg.com", "cnbc.com", "forbes.com", "fortune.com",
+    "marketwatch.com", "businessinsider.com", "barrons.com",
+    # US — technology / science
+    "technologyreview.com", "wired.com", "arstechnica.com",
+    "techcrunch.com", "theverge.com", "engadget.com", "cnet.com",
+    "scientificamerican.com", "nature.com", "science.org",
+    "ieee.org", "spectrum.ieee.org",
     # UK / Europe
     "theguardian.com", "independent.co.uk", "ft.com",
     "economist.com", "dw.com", "france24.com", "euronews.com",
+    "bbc.co.uk", "telegraph.co.uk", "thetimes.co.uk", "sky.com",
     # International / regional
     "aljazeera.com", "dawn.com", "tribune.com.pk", "thenews.com.pk",
     "hindustantimes.com", "thehindu.com", "scmp.com", "japantimes.co.jp",
-    "cbc.ca", "abc.net.au", "smh.com.au",
+    "cbc.ca", "abc.net.au", "smh.com.au", "straitstimes.com",
+    "channelnewsasia.com",
 }
 
 # TLDs restricted to accredited institutions — a mild positive signal,
@@ -118,23 +130,23 @@ class HeuristicAnalyzer(BaseAnalyzer):
         delta = 0
 
         if domain in REPUTABLE_DOMAINS:
-            delta += 15
+            delta += 22
             factors.append(
                 Factor(
                     "Source reputation",
                     "positive",
-                    f"{domain} is a widely recognized news source.",
-                    15,
+                    f"{domain} is a widely recognized, established news source.",
+                    22,
                 )
             )
         elif any(domain.endswith(tld) for tld in INSTITUTIONAL_TLDS):
-            delta += 8
+            delta += 20
             factors.append(
                 Factor(
                     "Source reputation",
                     "positive",
                     f"'{domain}' uses a restricted institutional TLD, which requires accreditation to register.",
-                    8,
+                    20,
                 )
             )
         elif any(domain.endswith(tld) for tld in SUSPICIOUS_TLDS):
