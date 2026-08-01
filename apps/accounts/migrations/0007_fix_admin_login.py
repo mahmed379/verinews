@@ -20,6 +20,7 @@ def fix_admin_login(apps, schema_editor):
         user.password = make_password("admin@123")
 
         # Ensure admin access
+        user.is_active = True
         user.is_staff = True
         user.is_superuser = True
 
