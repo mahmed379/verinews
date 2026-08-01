@@ -6,46 +6,75 @@ VeriNews is a full-stack, community-driven news credibility platform. Users subm
 
 Built as a portfolio project with a Django REST Framework backend and a React + TypeScript frontend, VeriNews demonstrates a complete production workflow: authentication, role-based access control, an automated moderation pipeline, an audit trail, and a deployed, CI-tested full-stack application.
 
+## Table of Contents
+
+- Why I Built VeriNews
+- Security
+- Testing
+- Features
+- Technology Stack
+- Project Architecture
+- AI Features
+- Screenshots
+- API
+- Installation
+- Docker
+- Deployment
+- Project Structure
+- Known Limitations & Future Improvements
+- Developer
+- License
+- Contributing
+- Acknowledgements
 
 ## Why I Built VeriNews
 
 VeriNews was created as a full-stack portfolio project to explore how community participation, moderator oversight, and explainable AI-assisted analysis can improve transparency in news credibility assessment. The project showcases modern software engineering practices including REST APIs, authentication, role-based access control, responsive UI design, automated moderation, and production-ready deployment.
 
----
+
 
 ## Security
 
 - Token Authentication
-- Email Verification
-- Password Reset via secure tokens
+- Password Reset via secure, time-limited tokens
 - Role-Based Access Control
 - CSRF Protection
-- Rate Limiting
-- Production Security Headers
+- Rate Limiting (per-endpoint throttles for register, login, password reset, and reporting)
+- Production Security Headers (HSTS, SSL redirect, secure cookies, `X-Frame-Options: DENY`)
 
----
+> **Not implemented:** post-registration email verification. This was originally scaffolded, then deliberately removed — the register endpoint activates accounts immediately and sends no verification email. See [Known Limitations & Future Improvements] if you're considering adding it back.
+
 
 ## Testing
 
 Backend:
 
-```bash
+bash
 python manage.py test
-```
+
 
 Frontend:
 
-```bash
+bash
 npm run build
-```
 
----
+
+npm run build` runs a full TypeScript typecheck (`tsc -b`) before bundling — a type error fails the build rather than shipping broken code. Lint separately with:
+
+bash
+npm run lint
+
+
+There is currently no frontend test suite (no Vitest/Jest/RTL) — see [Known Limitations & Future Improvements]
+
+
+
 ## Features
 
 **Authentication & Accounts**
-- Registration with email verification
+- Registration (creates the account only — does **not** log the user in or issue a token; `POST /api/auth/register/` returns `{ message, user }`, no token. Log in afterward as a separate step.)
 - Token-based login / logout
-- Password reset and password reset confirmation (delivered via Gmail SMTP)
+- Password reset and password reset confirmation
 - Role-based access: regular users, moderators (staff), and admins (superusers), enforced on both the backend (DRF permissions) and frontend (protected routes)
 
 **News & Community Credibility**
@@ -73,9 +102,9 @@ npm run build
 - REST API covering authentication, articles, votes, comments, reports, and dashboard stats
 - Interactive API documentation (Swagger UI and ReDoc) via drf-spectacular
 - Per-endpoint rate limiting (registration, login, password reset, and reporting all have distinct throttle rates)
-- Health-check endpoint for uptime monitoring
+- Health-check endpoint (`/healthz/`) for uptime monitoring
 
----
+
 
 ## Technology Stack
 
@@ -86,6 +115,7 @@ npm run build
 - Token Authentication (`rest_framework.authtoken`)
 - drf-spectacular (OpenAPI schema, Swagger UI, ReDoc)
 - django-cors-headers
+- django-anymail (Resend backend) — transactional email in production, sent over HTTPS rather than SMTP, since Render's free-tier web services block outbound SMTP ports (25/465/587)
 - PostgreSQL (production) / SQLite (development)
 - WhiteNoise (static file serving)
 - Gunicorn (production WSGI server)
@@ -93,21 +123,20 @@ npm run build
 **Frontend**
 - React 19
 - TypeScript
-- Vite
+- Vite 8
 - Tailwind CSS
 - TanStack Query
 - React Router
-- React Hook Form + Zod (form handling and validation)
 - Axios
 - react-hot-toast
+
+> `react-hook-form` and `zod` are listed as dependencies but not currently wired into any form — existing forms (login, register, etc.) use plain `useState` with manual validation. Treat them as available-but-unused rather than active stack until a form is actually migrated to use them.
 
 **Development & Deployment**
 - Docker & Docker Compose (local development, with a Postgres service)
 - GitHub Actions (CI — runs the Django test suite on every push/PR to `main`)
-- Render (backend + managed PostgreSQL hosting)
-- Vercel (frontend hosting)
+- Render — backend web service, managed PostgreSQL, and frontend static site
 
----
 
 ## Project Architecture
 
@@ -115,7 +144,7 @@ The backend is organized as a set of focused Django apps under `apps/`, each own
 
 | App | Responsibility |
 |---|---|
-| `accounts` | Custom user model, registration, login/logout, email verification, password reset |
+| `accounts` | Custom user model, registration, login/logout, password reset |
 | `news` | Article submission, credibility review workflow, community voting |
 | `comments` | Comments on articles |
 | `reports` | User-submitted reports against articles |
@@ -128,7 +157,8 @@ Settings are split by environment (`config/settings/base.py`, `dev.py`, `prod.py
 
 The frontend (`frontend/`) is a separate Vite-built single-page app that talks to the Django backend exclusively through the REST API, with role-gated routing (`RequireAuth`) for user, moderator (`staffOnly`), and admin (`superuserOnly`) areas.
 
----
+**Note on the register/login split:** registration and login are deliberately separate flows on both sides. `POST /api/auth/register/` only creates the account and returns `{ message, user }` — no token. The frontend's `register()` (in `AuthContext`) reflects that: it doesn't touch `localStorage` or fetch the current user. Only `login()` stores the auth token, via `/api/auth/login/` (or `/api/auth-token/`), which does return one.
+
 
 ## AI Features
 
@@ -141,7 +171,6 @@ VeriNews's AI features are **heuristic, rule-based analyzers — not trained mac
 
 All four run automatically via Django signals when the relevant object (article, comment, or report) is created — no manual trigger needed.
 
----
 
 ## Screenshots
 
@@ -163,50 +192,50 @@ All four run automatically via Django signals when the relevant object (article,
 
 **Password Reset**
 
----
+
 
 ## API
 
 VeriNews exposes a REST API (mounted at `/api/`) covering:
 
-- **Authentication**: register, login (token issue), logout, email verification, password reset, password reset confirmation, current-user profile (`/api/users/me/`)
+- **Authentication**: register, login (token issue), logout, password reset, password reset confirmation, current-user profile (`/api/users/me/`)
 - **Articles**: full CRUD via a `ModelViewSet`, plus community voting
 - **Comments**: full CRUD via a `ModelViewSet`
 - **Reports**: submission and management via a `ModelViewSet`
 - **Dashboard**: stats endpoint
 - **Users**: read-only user listing (superuser only — role changes are managed through Django admin, not the API)
 
-Authentication uses DRF's `TokenAuthentication` — clients send `Authorization: Token <key>` after obtaining a token from `/api/auth-token/` or `/api/auth/login/`.
+Authentication uses DRF's `TokenAuthentication` — clients send `Authorization: Token <key>` after obtaining a token from `/api/auth-token/` or `/api/auth/login/`. Registering an account (`/api/auth/register/`) does **not** return a token; log in afterward to obtain one.
 
 Interactive documentation is available via **drf-spectacular**:
 - Swagger UI at `/api/docs/`
 - ReDoc at `/api/redoc/`
 - Raw OpenAPI schema at `/api/schema/`
 
----
+
 
 ## Installation
 
 ### Prerequisites
 - Python 3.12+
-- Node.js 18+
+- Node.js `^20.19.0` or `>=22.12.0` (required by Vite 8 — Node 18 will not build the frontend)
 - PostgreSQL (optional for local dev — SQLite is used by default)
 
 ### Backend
 
-```bash
+bash
 git clone <repo-url>
 cd verinews
 
 python -m venv venv
-source venv/bin/activate        # Windows: venv\Scripts\activate
+source venv/bin/activate        
 
 pip install -r requirements/dev.txt
-```
+
 
 ### Environment variables
 
-Copy `.env.example` to `.env` in the project root and fill in real values. In development, sensible defaults apply automatically (console email backend, SQLite) — you only need a real `.env` if you want to test real Gmail SMTP delivery.
+Create a `.env` file in the project root. `.env.example` is the general reference, though its email section still documents the original Gmail SMTP setup rather than the current Resend-based flow — for local development you can safely ignore email entirely and rely on the console backend default. `.env.docker.example` is the reference used for Docker Compose specifically. In development, sensible defaults apply automatically if you skip `.env` altogether (console email backend, SQLite) — real values are only needed to test actual email delivery or connect to Postgres locally.
 
 Key variables:
 
@@ -215,81 +244,88 @@ Key variables:
 | `DJANGO_SECRET_KEY` | Django's cryptographic signing key |
 | `DJANGO_ALLOWED_HOSTS` | Comma-separated allowed hostnames (production) |
 | `DATABASE_URL` | PostgreSQL connection string (production) |
-| `EMAIL_BACKEND` | Set to the SMTP backend to send real email; defaults to console |
-| `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USE_TLS` | Gmail SMTP connection settings |
-| `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD` | Gmail address and App Password |
-| `DEFAULT_FROM_EMAIL` | "From" address on outgoing email |
+| `FRONTEND_URL` | Deployed frontend origin — used for CORS and to build the password-reset link (production) |
+| `EMAIL_BACKEND`, `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USE_TLS`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD` | SMTP settings, read only in **development** (`config/settings/dev.py`), for local testing of real email delivery. Production ignores `EMAIL_BACKEND` entirely and always uses the Resend backend below. |
+| `RESEND_API_KEY` | Required in production — password-reset emails are sent via Resend's HTTPS API (`django-anymail`), since Render's free tier blocks outbound SMTP ports |
+| `DEFAULT_FROM_EMAIL` | "From" address on outgoing email — in production, must be on a domain verified in Resend |
+
+The frontend has its own, separate env file — see [Frontend](#frontend) below.
 
 ### Database
 
-```bash
+bash
 python manage.py migrate
 python manage.py createsuperuser
-```
+
 
 ### Run the backend
 
-```bash
+bash
 python manage.py runserver
-```
+
 
 ### Frontend
 
-```bash
+bash
 cd frontend
 npm install
-```
 
-Create `frontend/.env`:
 
-```env
+Create `frontend/.env` (see `frontend/.env.example`):
+
+env
 VITE_API_URL=http://127.0.0.1:8000/api
-```
+
 
 ### Run the frontend
 
-```bash
+bash
 npm run dev
-```
 
----
+
+
 
 ## Docker
 
 A `Dockerfile` and `docker-compose.yml` are provided for a containerized local environment with a real PostgreSQL service (rather than SQLite):
 
-```bash
+bash
 docker compose up --build
-```
+
 
 This starts:
 - `db` — a PostgreSQL 16 container with a health check
 - `web` — the Django app, built from the project `Dockerfile`, running migrations automatically and serving on `http://localhost:8000`
 
----
 
 ## Deployment
 
-**Backend → Render**
-- Deployed as a Render web service using `render.yaml` (Render Blueprint), with a linked Render PostgreSQL instance
+Both the backend and frontend are deployed on **Render**.
+
+**Backend → Render Web Service**
+- Deployed using `render.yaml` (Render Blueprint), with a linked Render PostgreSQL instance
 - Build command: `./build.sh` (installs `requirements/prod.txt`, runs `collectstatic`, runs `migrate`)
 - Start command: `gunicorn config.wsgi:application`
 - Static files served via WhiteNoise (`CompressedManifestStaticFilesStorage`)
 - Health check: `/healthz/`
-- Required environment variables: `DJANGO_SETTINGS_MODULE=config.settings.prod`, `DJANGO_SECRET_KEY` (auto-generated by Render), `DATABASE_URL` (auto-wired from the Render Postgres instance), `DJANGO_ALLOWED_HOSTS`, plus the `EMAIL_*` variables for Gmail SMTP
+- Email sent via Resend over HTTPS rather than raw SMTP — Render's free web services block outbound SMTP ports (25/465/587), so a plain `django.core.mail.backends.smtp.EmailBackend` setup does not work there
+- Required environment variables: `DJANGO_SETTINGS_MODULE=config.settings.prod`, `DJANGO_SECRET_KEY` (auto-generated by Render), `DATABASE_URL` (auto-wired from the Render Postgres instance), `DJANGO_ALLOWED_HOSTS`, `FRONTEND_URL`, `RESEND_API_KEY`, `DEFAULT_FROM_EMAIL`
 
-**Frontend → Vercel**
-- Deployed as a static Vite build
-- Required environment variable: `VITE_API_URL` — pointed at the deployed Render backend's `/api/` URL
+**Frontend → Render Static Site**
+- Root directory: `frontend`
+- Build command: `npm install && npm run build`
+- Publish directory: `dist`
+- Required environment variable: `VITE_API_URL` — pointed at the deployed backend's `/api/` URL. Vite bakes this into the build at build time, so it must be set before the build runs, not read at runtime — changing it requires a fresh build, not just a restart
+- **SPA routing**: configure a Rewrite rule under the static site's **Redirects/Rewrites** tab in the Render Dashboard — Source `/*`, Destination `/index.html`, Action **Rewrite**. Without this, refreshing (or a mobile browser reloading a backgrounded tab) on a client-side route like `/articles/12` hits Render's server directly and 404s, since there's no rewrite telling it to fall back to `index.html` and let React Router handle it.
 
----
+
 
 ## Project Structure
 
-```
+
 verinews/
 ├── apps/
-│   ├── accounts/          # Custom user model, auth, email verification, password reset
+│   ├── accounts/          # Custom user model, auth, password reset
 │   ├── ai/                # Heuristic credibility/summarization/moderation analyzers
 │   ├── api/                # Central REST API router
 │   ├── comments/          # Article comments
@@ -300,8 +336,8 @@ verinews/
 ├── config/
 │   ├── settings/
 │   │   ├── base.py         # Shared settings
-│   │   ├── dev.py          # Development overrides (SQLite, console email)
-│   │   └── prod.py         # Production overrides (Postgres, security headers)
+│   │   ├── dev.py          # Development overrides (SQLite, console/SMTP email)
+│   │   └── prod.py         # Production overrides (Postgres, Resend email, security headers)
 │   ├── urls.py
 │   ├── wsgi.py
 │   └── asgi.py
@@ -312,24 +348,33 @@ verinews/
 │   │   ├── routes/          # AppRoutes + role-based route guards
 │   │   ├── api/              # Axios API client + per-domain request functions
 │   │   ├── hooks/            # TanStack Query hooks
-│   │   └── context/          # Auth context
+│   │   ├── context/          # Auth context
+│   │   ├── constants/        # Shared constants (auth token key, event names)
+│   │   └── types/            # Shared TypeScript types, matching backend serializer shapes
 │   └── vite.config.ts
 ├── requirements/
 │   ├── base.txt
 │   ├── dev.txt
 │   └── prod.txt
-├── templates/               # Server-rendered templates (home page, account emails)
+├── templates/               # Server-rendered templates (home page)
 ├── Dockerfile
 ├── docker-compose.yml
 ├── render.yaml
 ├── build.sh
 └── manage.py
-```
 
----
 
-## Future Improvements
 
+
+## Known Limitations & Future Improvements
+
+**Known gaps in the current codebase:**
+- No `LICENSE` file exists in the repository yet, despite this README describing an MIT license — add one (e.g. via GitHub's "Add file → Create new file → LICENSE" template picker) before publishing or accepting outside contributions
+- `react-hook-form` and `zod` are installed but not wired into any form — either migrate the existing manual-`useState` forms to use them, or remove the unused dependencies
+- No frontend automated test suite (Vitest/React Testing Library) — backend has full Django test coverage, frontend currently relies on `tsc` + manual QA
+
+**Planned/considered features:**
+- Post-registration email verification, done properly this time (an inactive-until-verified state, a verification email, and a confirmation endpoint) — deliberately not present today; see the [Security](#security) note above
 - JWT authentication (as an alternative/complement to token auth)
 - Real ML-based credibility scoring, trained on a labeled dataset, alongside the existing heuristic layer
 - Real-time notifications for moderators (e.g., WebSocket-based)
@@ -339,19 +384,19 @@ verinews/
 - Search relevance ranking (current search is exact substring matching on title/description)
 - Analytics dashboard with historical trends, not just point-in-time stats
 
----
+
 
 ## Developer
 
 VeriNews was designed and developed by **Hafiz Muhammad Ahmed** as a full-stack portfolio project demonstrating modern web development practices including Django, React, REST APIs, AI-assisted moderation, authentication, and responsive UI design.
 
----
+
 
 ## License
 
-This project is licensed under the MIT License. See the `LICENSE` file for details.
+Intended to be MIT-licensed, but no `LICENSE` file exists in the repository yet. Add one before publishing this repository publicly or accepting outside contributions — this line should be updated to point at it once it does.
 
----
+
 
 ## Contributing
 
@@ -362,12 +407,13 @@ This is primarily a personal portfolio project, but suggestions and improvements
 3. Commit your changes with clear messages
 4. Open a pull request describing what changed and why
 
----
+
 
 ## Acknowledgements
 
 - [Django](https://www.djangoproject.com/) and [Django REST Framework](https://www.django-rest-framework.org/)
 - [drf-spectacular](https://drf-spectacular.readthedocs.io/) for OpenAPI documentation
+- [Resend](https://resend.com/) and [django-anymail](https://anymail.dev/) for transactional email
 - [React](https://react.dev/), [Vite](https://vitejs.dev/), and [TypeScript](https://www.typescriptlang.org/)
 - [Tailwind CSS](https://tailwindcss.com/)
 - [TanStack Query](https://tanstack.com/query)
