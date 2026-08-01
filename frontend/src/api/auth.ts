@@ -4,10 +4,6 @@ export interface LoginResponse {
   token: string;
 }
 
-export interface VerifyEmailResponse {
-  message: string;
-}
-
 export interface RegisterResponse {
   token: string;
   user: {
@@ -113,14 +109,4 @@ export async function confirmPasswordReset(
 
 export interface PasswordResetConfirmResponse {
   message: string;
-}
-export async function verifyEmail(
-  uid: string,
-  token: string
-): Promise<VerifyEmailResponse> {
-  const response = await apiClient.get<VerifyEmailResponse>(
-    `/auth/verify-email/${uid}/${token}/`
-  );
-
-  return response.data;
 }

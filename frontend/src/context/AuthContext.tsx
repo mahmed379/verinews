@@ -16,7 +16,7 @@ import {
 
 import type { User } from "../api/auth";
 
-import { TOKEN_KEY } from "../constants/auth";
+import { TOKEN_KEY, AUTH_LOGOUT_EVENT } from "../constants/auth";
 
 
 interface AuthContextType {
@@ -73,6 +73,19 @@ export function AuthProvider({
     }
 
     loadUser();
+  }, []);
+
+
+  useEffect(() => {
+    function handleForcedLogout() {
+      setUser(null);
+    }
+
+    window.addEventListener(AUTH_LOGOUT_EVENT, handleForcedLogout);
+
+    return () => {
+      window.removeEventListener(AUTH_LOGOUT_EVENT, handleForcedLogout);
+    };
   }, []);
 
 

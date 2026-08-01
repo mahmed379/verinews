@@ -14,7 +14,11 @@ export default function RequireAuth({
   const location = useLocation();
 
   if (loading) {
-    return null;
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-950">
+        <span className="h-8 w-8 animate-spin rounded-full border-2 border-slate-500 border-t-blue-500" />
+      </div>
+    );
   }
 
   if (!user) {

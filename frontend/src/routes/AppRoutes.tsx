@@ -3,8 +3,6 @@ import { Routes, Route } from "react-router-dom";
 import { AppShell } from "../Components/Layout/AppShell";
 import RequireAuth from "./RequireAuth";
 
-import VerifyEmailPage from "../pages/VerifyEmailPage";
-
 import Home from "../pages/Home";
 import ArticleDetailPage from "../pages/ArticleDetailPage";
 import Login from "../pages/Login";
@@ -53,8 +51,6 @@ export function AppRoutes() {
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
         <Route path="/register" element={<Register />} />
-        
-        <Route path="/verify-email" element={<VerifyEmailPage />} />
 
         {/* Authenticated user routes */}
         <Route element={<RequireAuth />}>

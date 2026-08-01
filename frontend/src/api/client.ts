@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { TOKEN_KEY } from "../constants/auth";
+import { TOKEN_KEY, AUTH_LOGOUT_EVENT } from "../constants/auth";
 
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -29,6 +29,7 @@ apiClient.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem(TOKEN_KEY);
+      window.dispatchEvent(new Event(AUTH_LOGOUT_EVENT));
     }
 
     return Promise.reject(error);
