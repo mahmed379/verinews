@@ -101,18 +101,17 @@ export function GlassSelect<T extends string = string>({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [open]);
 
-  // When opening, seed the highlighted option and move focus into the listbox.
+  // When opening, move focus into the listbox. The highlighted option is
+  // seeded synchronously in openDropdown() itself (see below), not here,
+  // since setting state directly in response to a render is an anti-pattern.
   useEffect(() => {
     if (!open) return;
-
-    setHighlightedIndex(selectedIndex >= 0 ? selectedIndex : 0);
 
     const frame = requestAnimationFrame(() => {
       listboxRef.current?.focus();
     });
 
     return () => cancelAnimationFrame(frame);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   // Keep the highlighted option scrolled into view.
@@ -123,6 +122,7 @@ export function GlassSelect<T extends string = string>({
 
   function openDropdown() {
     if (disabled) return;
+    setHighlightedIndex(selectedIndex >= 0 ? selectedIndex : 0);
     setOpen(true);
   }
 

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import {
   useCastVote,
@@ -20,7 +20,7 @@ export function RatingWidget({
   const { data: myVote } =
     useMyVote(articleId);
 
-  const [selected, setSelected] =
+  const [optimisticSelection, setOptimisticSelection] =
     useState<number | null>(null);
 
   const {
@@ -28,11 +28,9 @@ export function RatingWidget({
     isPending,
   } = useCastVote(articleId);
 
-  useEffect(() => {
-    if (myVote) {
-      setSelected(myVote.rating);
-    }
-  }, [myVote]);
+  // Prefer the server-confirmed vote once it's available; fall back to the
+  // optimistic value set on click while the mutation is still in flight.
+  const selected = myVote ? myVote.rating : optimisticSelection;
 
   if (!user) {
     return (
@@ -58,7 +56,7 @@ export function RatingWidget({
           type="button"
           disabled={isPending}
           onClick={() => {
-            setSelected(value);
+            setOptimisticSelection(value);
             mutate(value as 1 | 2 | 3 | 4 | 5);
           }}
           className={`h-10 w-10 rounded-xl border font-semibold transition ${
