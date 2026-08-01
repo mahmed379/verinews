@@ -27,4 +27,10 @@ services:
       - key: PYTHON_VERSION
         value: "3.12.3"
 
+      - key: RESEND_API_KEY
+        sync: false
+
+      - key: DEFAULT_FROM_EMAIL
+        sync: false
+
     healthCheckPath: /healthz/

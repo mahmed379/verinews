@@ -7,3 +7,8 @@ psycopg[binary]==3.2.3
 # (it's single-threaded and not hardened) — gunicorn is what actually
 # serves traffic in production. Covered in the Deployment milestone.
 gunicorn==23.0.0
+
+# Transactional email over Resend's HTTPS API. Render's free tier blocks
+# outbound SMTP (ports 25/465/587), so raw smtplib doesn't work there —
+# Anymail sends over HTTPS instead, which is never blocked.
+django-anymail[resend]==15.1

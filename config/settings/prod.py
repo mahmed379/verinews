@@ -74,19 +74,28 @@ else:
     CORS_ALLOWED_ORIGINS = []
 
 
-# Email configuration (SMTP)
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+# Anymail needs to be in INSTALLED_APPS. Only added here (not in
+# base.py) because it's a production-only concern — dev keeps using
+# the plain console backend from base.py, no API key required.
+INSTALLED_APPS += ["anymail"]
 
-EMAIL_HOST = os.environ.get("EMAIL_HOST", "smtp.gmail.com")
-EMAIL_PORT = int(os.environ.get("EMAIL_PORT", 587))
-EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "True") == "True"
+# Email configuration (Resend, over HTTPS)
+# Render's free web services block outbound traffic on SMTP ports
+# (25, 465, 587), so django.core.mail.backends.smtp.EmailBackend
+# fails there with "OSError: [Errno 101] Network is unreachable".
+# Resend sends over HTTPS (port 443), which is never blocked.
+EMAIL_BACKEND = "anymail.backends.resend.EmailBackend"
 
-EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+ANYMAIL = {
+    "RESEND_API_KEY": os.environ.get("RESEND_API_KEY"),
+}
 
+# Must be an address on a domain verified in your Resend account
+# (or Resend's own onboarding@resend.dev sandbox address, which only
+# delivers to the email you signed up to Resend with).
 DEFAULT_FROM_EMAIL = os.environ.get(
     "DEFAULT_FROM_EMAIL",
-    EMAIL_HOST_USER
+    "onboarding@resend.dev",
 )
 
 LOGGING = {
