@@ -113,15 +113,11 @@ export function ReportsTable({
       {data &&
         data.results.length > 0 && (
 
+        <div className="overflow-x-auto rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl">
         <table
           className="
             w-full
-            overflow-hidden
-            rounded-2xl
-            border
-            border-white/10
-            bg-white/5
-            backdrop-blur-xl
+            min-w-[760px]
           "
         >
 
@@ -305,6 +301,7 @@ export function ReportsTable({
           </tbody>
 
         </table>
+        </div>
 
       )}
 

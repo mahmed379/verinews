@@ -92,15 +92,11 @@ const [search, setSearch] = useState("");
 
       </div>
 
+      <div className="overflow-x-auto rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl">
       <table
         className="
           w-full
-          overflow-hidden
-          rounded-2xl
-          border
-          border-white/10
-          bg-white/5
-          backdrop-blur-xl
+          min-w-[640px]
         "
       >
         
@@ -175,6 +171,7 @@ const [search, setSearch] = useState("");
           ))}
         </tbody>
       </table>
+      </div>
 
       <div className="mt-5 flex items-center justify-between">
 
