@@ -8,8 +8,6 @@ from django.utils.encoding import force_bytes, force_str
 from django.conf import settings
 from django.core.mail import send_mail
 
-from .tokens import email_verification_token
-
 from rest_framework import serializers
 
 User = get_user_model()
@@ -162,7 +160,19 @@ class PasswordResetSerializer(serializers.Serializer):
             f"{settings.FRONTEND_URL}/reset-password"
             f"?uid={uid}&token={token}"
         )
-    
+
+        send_mail(
+            subject="Reset your VeriNews password",
+            message=(
+                "We received a request to reset your VeriNews password.\n\n"
+                f"Reset it here: {reset_url}\n\n"
+                "If you didn't request this, you can safely ignore this email."
+            ),
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
+            fail_silently=False,
+        )
+
 
 class PasswordResetConfirmSerializer(serializers.Serializer):
     uid = serializers.CharField()

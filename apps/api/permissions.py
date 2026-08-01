@@ -65,6 +65,7 @@ class IsOwnerOrStaffOrReadOnly(permissions.BasePermission):
         owner = (
             getattr(obj, "author", None)
             or getattr(obj, "user", None)
+            or getattr(obj, "submitted_by", None)
         )
 
         return owner == request.user

@@ -11,7 +11,3 @@ class User(AbstractUser):
         unique=True,
         blank=False,
     )
-
-    is_verified = models.BooleanField(
-        default=False
-    )

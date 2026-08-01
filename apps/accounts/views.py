@@ -8,17 +8,12 @@ from apps.api.throttles import (
     PasswordResetThrottle,
 )
 
-from django.utils.http import urlsafe_base64_decode
-from django.utils.encoding import force_str
-
 from .serializers import (
     RegisterSerializer,
     UserSerializer,
     PasswordResetSerializer,
     PasswordResetConfirmSerializer,
 )
-
-from .tokens import email_verification_token
 
 from .models import User
 
@@ -34,7 +29,6 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
-from django.contrib.auth import login
 from rest_framework.authtoken.models import Token
 
 from .serializers import LoginSerializer
@@ -101,7 +95,7 @@ class RegisterAPIView(generics.CreateAPIView):
 
         return Response(
             {
-                "message": "Registration successful. Please check your email to verify your account.",
+                "message": "Registration successful.",
                 "user": UserSerializer(user).data,
             },
             status=201,
@@ -132,52 +126,6 @@ class LoginAPIView(APIView):
             status=200,
         )
 
-
-@extend_schema(
-    request=None,
-    responses={200: None},
-    description="Verify a user's email address."
-)
-class VerifyEmailAPIView(APIView):
-    permission_classes = [permissions.AllowAny]
-
-    def get(self, request, uid, token):
-
-        try:
-            user_id = force_str(urlsafe_base64_decode(uid))
-            user = User.objects.get(pk=user_id)
-
-        except (
-            User.DoesNotExist,
-            ValueError,
-            TypeError,
-            OverflowError,
-        ):
-            return Response(
-                {
-                    "detail": "Invalid verification link."
-                },
-                status=400,
-            )
-
-        if not email_verification_token.check_token(user, token):
-            return Response(
-                {
-                    "detail": "Verification link is invalid or has expired."
-                },
-                status=400,
-            )
-
-        user.is_active = True
-        user.is_verified = True
-        user.save(update_fields=["is_active", "is_verified"])
-
-        return Response(
-            {
-                "message": "Email verified successfully."
-            },
-            status=200,
-        )
 
 class MeAPIView(generics.RetrieveUpdateAPIView):
     serializer_class = UserSerializer

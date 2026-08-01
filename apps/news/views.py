@@ -27,7 +27,7 @@ from rest_framework import (
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from apps.api.permissions import IsStaffOrReadOnly, IsSuperUser
+from apps.api.permissions import IsStaffOrReadOnly, IsSuperUser, IsOwnerOrStaffOrReadOnly
 
 from .serializers import (
     NewsArticleSerializer,
@@ -252,7 +252,8 @@ class ArticleViewSet(viewsets.ModelViewSet):
     serializer_class = NewsArticleSerializer
 
     permission_classes = [
-        permissions.IsAuthenticatedOrReadOnly
+        permissions.IsAuthenticatedOrReadOnly,
+        IsOwnerOrStaffOrReadOnly,
     ]
 
     def get_queryset(self):

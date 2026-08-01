@@ -8,25 +8,14 @@ from apps.reports.views import ReportViewSet
 
 from apps.dashboard.views import DashboardStatsAPIView
 
-from apps.accounts.views import UserListAPIView
-
 from apps.accounts.views import (
     RegisterAPIView,
     LoginAPIView,
-    VerifyEmailAPIView,
     MeAPIView,
     LogoutAPIView,
     PasswordResetAPIView,
     PasswordResetConfirmAPIView,
-)
-
-from apps.accounts.views import (
-    RegisterAPIView,
-    VerifyEmailAPIView,
-    MeAPIView,
-    LogoutAPIView,
-    PasswordResetAPIView,
-    PasswordResetConfirmAPIView,
+    UserListAPIView,
 )
 
 router = DefaultRouter()
@@ -82,12 +71,6 @@ urlpatterns = [
         "auth/login/",
         LoginAPIView.as_view(),
         name="api_login",
-    ),
-
-    path(
-        "auth/verify-email/<uid>/<token>/",
-        VerifyEmailAPIView.as_view(),
-        name="api_verify_email",
     ),
 
     path(
