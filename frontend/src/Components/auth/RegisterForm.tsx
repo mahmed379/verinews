@@ -50,9 +50,9 @@ function RegisterForm() {
         password2,
       });
 
-      toast.success("Account created successfully.");
+      toast.success("Account created successfully. Please sign in.");
 
-    navigate("/");
+      navigate("/login");
     } 
     catch (error) {
       const message = getErrorMessage(error);

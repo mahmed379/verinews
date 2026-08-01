@@ -14,7 +14,7 @@ import {
   logout as logoutRequest,
 } from "../api/auth";
 
-import type { User } from "../api/auth";
+import type { User, RegisterResponse } from "../api/auth";
 
 import { TOKEN_KEY, AUTH_LOGOUT_EVENT } from "../constants/auth";
 
@@ -33,7 +33,7 @@ interface AuthContextType {
     password: string;
     password2: string;
   }
-) => Promise<void>;
+) => Promise<RegisterResponse>;
   logout: () => Promise<void>;
 }
 
@@ -115,15 +115,13 @@ export function AuthProvider({
     password: string;
     password2: string;
   }) {
+    // Registration only creates the account. It does not authenticate
+    // the user and the backend does not return a token here, so we must
+    // NOT touch localStorage or call getMe()/setUser() in this function.
+    // Logging in afterwards (a separate step) is what stores the token.
     const response = await registerRequest(data);
 
-    localStorage.setItem(
-      TOKEN_KEY,
-      response.token
-    );
-
-    const currentUser = await getMe();
-    setUser(currentUser);
+    return response;
   }
 
 
