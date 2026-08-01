@@ -8,30 +8,30 @@ Built as a portfolio project with a Django REST Framework backend and a React + 
 
 ## Table of Contents
 
-- Why I Built VeriNews
-- Security
-- Testing
-- Features
-- Technology Stack
-- Project Architecture
-- AI Features
-- Screenshots
-- API
-- Installation
-- Docker
-- Deployment
-- Project Structure
-- Known Limitations & Future Improvements
-- Developer
-- License
-- Contributing
-- Acknowledgements
+- [Why I Built VeriNews](#why-i-built-verinews)
+- [Security](#security)
+- [Testing](#testing)
+- [Features](#features)
+- [Technology Stack](#technology-stack)
+- [Project Architecture](#project-architecture)
+- [AI Features](#ai-features)
+- [Screenshots](#screenshots)
+- [API](#api)
+- [Installation](#installation)
+- [Docker](#docker)
+- [Deployment](#deployment)
+- [Project Structure](#project-structure)
+- [Known Limitations & Future Improvements](#known-limitations--future-improvements)
+- [Developer](#developer)
+- [License](#license)
+- [Contributing](#contributing)
+- [Acknowledgements](#acknowledgements)
 
 ## Why I Built VeriNews
 
 VeriNews was created as a full-stack portfolio project to explore how community participation, moderator oversight, and explainable AI-assisted analysis can improve transparency in news credibility assessment. The project showcases modern software engineering practices including REST APIs, authentication, role-based access control, responsive UI design, automated moderation, and production-ready deployment.
 
-
+---
 
 ## Security
 
@@ -42,32 +42,33 @@ VeriNews was created as a full-stack portfolio project to explore how community 
 - Rate Limiting (per-endpoint throttles for register, login, password reset, and reporting)
 - Production Security Headers (HSTS, SSL redirect, secure cookies, `X-Frame-Options: DENY`)
 
-> **Not implemented:** post-registration email verification. This was originally scaffolded, then deliberately removed — the register endpoint activates accounts immediately and sends no verification email. See [Known Limitations & Future Improvements] if you're considering adding it back.
+> **Not implemented:** post-registration email verification. This was originally scaffolded, then deliberately removed — the register endpoint activates accounts immediately and sends no verification email. See [Known Limitations & Future Improvements](#known-limitations--future-improvements) if you're considering adding it back.
 
+---
 
 ## Testing
 
 Backend:
 
-bash
+```bash
 python manage.py test
-
+```
 
 Frontend:
 
-bash
+```bash
 npm run build
+```
 
+`npm run build` runs a full TypeScript typecheck (`tsc -b`) before bundling — a type error fails the build rather than shipping broken code. Lint separately with:
 
-npm run build` runs a full TypeScript typecheck (`tsc -b`) before bundling — a type error fails the build rather than shipping broken code. Lint separately with:
-
-bash
+```bash
 npm run lint
+```
 
+There is currently no frontend test suite (no Vitest/Jest/RTL) — see [Known Limitations & Future Improvements](#known-limitations--future-improvements).
 
-There is currently no frontend test suite (no Vitest/Jest/RTL) — see [Known Limitations & Future Improvements]
-
-
+---
 
 ## Features
 
@@ -104,7 +105,7 @@ There is currently no frontend test suite (no Vitest/Jest/RTL) — see [Known Li
 - Per-endpoint rate limiting (registration, login, password reset, and reporting all have distinct throttle rates)
 - Health-check endpoint (`/healthz/`) for uptime monitoring
 
-
+---
 
 ## Technology Stack
 
@@ -137,6 +138,7 @@ There is currently no frontend test suite (no Vitest/Jest/RTL) — see [Known Li
 - GitHub Actions (CI — runs the Django test suite on every push/PR to `main`)
 - Render — backend web service, managed PostgreSQL, and frontend static site
 
+---
 
 ## Project Architecture
 
@@ -159,6 +161,7 @@ The frontend (`frontend/`) is a separate Vite-built single-page app that talks t
 
 **Note on the register/login split:** registration and login are deliberately separate flows on both sides. `POST /api/auth/register/` only creates the account and returns `{ message, user }` — no token. The frontend's `register()` (in `AuthContext`) reflects that: it doesn't touch `localStorage` or fetch the current user. Only `login()` stores the auth token, via `/api/auth/login/` (or `/api/auth-token/`), which does return one.
 
+---
 
 ## AI Features
 
@@ -171,6 +174,7 @@ VeriNews's AI features are **heuristic, rule-based analyzers — not trained mac
 
 All four run automatically via Django signals when the relevant object (article, comment, or report) is created — no manual trigger needed.
 
+---
 
 ## Screenshots
 
@@ -192,7 +196,7 @@ All four run automatically via Django signals when the relevant object (article,
 
 **Password Reset**
 
-
+---
 
 ## API
 
@@ -212,7 +216,7 @@ Interactive documentation is available via **drf-spectacular**:
 - ReDoc at `/api/redoc/`
 - Raw OpenAPI schema at `/api/schema/`
 
-
+---
 
 ## Installation
 
@@ -223,15 +227,15 @@ Interactive documentation is available via **drf-spectacular**:
 
 ### Backend
 
-bash
+```bash
 git clone <repo-url>
 cd verinews
 
 python -m venv venv
-source venv/bin/activate        
+source venv/bin/activate        # Windows: venv\Scripts\activate
 
 pip install -r requirements/dev.txt
-
+```
 
 ### Environment variables
 
@@ -253,50 +257,51 @@ The frontend has its own, separate env file — see [Frontend](#frontend) below.
 
 ### Database
 
-bash
+```bash
 python manage.py migrate
 python manage.py createsuperuser
-
+```
 
 ### Run the backend
 
-bash
+```bash
 python manage.py runserver
-
+```
 
 ### Frontend
 
-bash
+```bash
 cd frontend
 npm install
-
+```
 
 Create `frontend/.env` (see `frontend/.env.example`):
 
-env
+```env
 VITE_API_URL=http://127.0.0.1:8000/api
-
+```
 
 ### Run the frontend
 
-bash
+```bash
 npm run dev
+```
 
-
-
+---
 
 ## Docker
 
 A `Dockerfile` and `docker-compose.yml` are provided for a containerized local environment with a real PostgreSQL service (rather than SQLite):
 
-bash
+```bash
 docker compose up --build
-
+```
 
 This starts:
 - `db` — a PostgreSQL 16 container with a health check
 - `web` — the Django app, built from the project `Dockerfile`, running migrations automatically and serving on `http://localhost:8000`
 
+---
 
 ## Deployment
 
@@ -318,11 +323,11 @@ Both the backend and frontend are deployed on **Render**.
 - Required environment variable: `VITE_API_URL` — pointed at the deployed backend's `/api/` URL. Vite bakes this into the build at build time, so it must be set before the build runs, not read at runtime — changing it requires a fresh build, not just a restart
 - **SPA routing**: configure a Rewrite rule under the static site's **Redirects/Rewrites** tab in the Render Dashboard — Source `/*`, Destination `/index.html`, Action **Rewrite**. Without this, refreshing (or a mobile browser reloading a backgrounded tab) on a client-side route like `/articles/12` hits Render's server directly and 404s, since there's no rewrite telling it to fall back to `index.html` and let React Router handle it.
 
-
+---
 
 ## Project Structure
 
-
+```
 verinews/
 ├── apps/
 │   ├── accounts/          # Custom user model, auth, password reset
@@ -362,14 +367,13 @@ verinews/
 ├── render.yaml
 ├── build.sh
 └── manage.py
+```
 
-
-
+---
 
 ## Known Limitations & Future Improvements
 
 **Known gaps in the current codebase:**
-- No `LICENSE` file exists in the repository yet, despite this README describing an MIT license — add one (e.g. via GitHub's "Add file → Create new file → LICENSE" template picker) before publishing or accepting outside contributions
 - `react-hook-form` and `zod` are installed but not wired into any form — either migrate the existing manual-`useState` forms to use them, or remove the unused dependencies
 - No frontend automated test suite (Vitest/React Testing Library) — backend has full Django test coverage, frontend currently relies on `tsc` + manual QA
 
@@ -384,19 +388,19 @@ verinews/
 - Search relevance ranking (current search is exact substring matching on title/description)
 - Analytics dashboard with historical trends, not just point-in-time stats
 
-
+---
 
 ## Developer
 
 VeriNews was designed and developed by **Hafiz Muhammad Ahmed** as a full-stack portfolio project demonstrating modern web development practices including Django, React, REST APIs, AI-assisted moderation, authentication, and responsive UI design.
 
-
+---
 
 ## License
 
-Intended to be MIT-licensed, but no `LICENSE` file exists in the repository yet. Add one before publishing this repository publicly or accepting outside contributions — this line should be updated to point at it once it does.
+This project is licensed under the MIT License. See the [`LICENSE`](./LICENSE) file for details.
 
-
+---
 
 ## Contributing
 
@@ -407,7 +411,7 @@ This is primarily a personal portfolio project, but suggestions and improvements
 3. Commit your changes with clear messages
 4. Open a pull request describing what changed and why
 
-
+---
 
 ## Acknowledgements
 
