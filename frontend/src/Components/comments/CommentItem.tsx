@@ -43,7 +43,7 @@ export function CommentItem({
       <div className="mb-4 flex items-start justify-between">
         <div>
           <p className="text-lg font-semibold text-white">
-            {comment.author}
+            {comment.author.display_name}
           </p>
 
           <p className="mt-1 text-xs text-slate-400">

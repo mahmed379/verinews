@@ -40,9 +40,9 @@ export function CommentList({
         <CommentItem
           key={comment.id}
           comment={comment}
-          canEdit={comment.author === currentUsername}
+          canEdit={comment.author.username === currentUsername}
           canDelete={
-            isStaff || comment.author === currentUsername
+            isStaff || comment.author.username === currentUsername
           }
           isUpdating={updatingId === comment.id}
           isDeleting={deletingId === comment.id}

@@ -86,7 +86,7 @@ export interface CommentModerationFlag {
 export interface Comment {
   id: number;
   article: number;
-  author: string;
+  author: UserSummary;
   body: string;
   moderation_flag: CommentModerationFlag | null;
   created_at: string;
@@ -97,6 +97,7 @@ export interface Vote {
   id: number;
   article: number;
   rating: 1 | 2 | 3 | 4 | 5;
-  voter: string;
+  user: UserSummary;
   created_at: string;
+  updated_at: string;
 }

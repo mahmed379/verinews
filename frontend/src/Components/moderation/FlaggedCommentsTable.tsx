@@ -43,7 +43,7 @@ export function FlaggedCommentsTable() {
           "
         >
           <p className="text-sm text-slate-400">
-            👤 {comment.author}
+            👤 {comment.author.display_name}
           </p>
 
           <p className="mt-4 whitespace-pre-line text-slate-200 leading-7">
